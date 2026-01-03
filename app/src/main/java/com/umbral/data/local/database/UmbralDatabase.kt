@@ -22,7 +22,7 @@ import com.umbral.data.local.entity.NfcTagEntity
         BlockedAttemptEntity::class,
         BlockingSessionEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

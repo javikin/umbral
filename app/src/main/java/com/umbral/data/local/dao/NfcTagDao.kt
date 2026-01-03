@@ -12,13 +12,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NfcTagDao {
 
-    @Query("SELECT * FROM nfc_tags WHERE profileId = :profileId")
+    @Query("SELECT * FROM nfc_tags ORDER BY created_at DESC")
+    fun getAllTags(): Flow<List<NfcTagEntity>>
+
+    @Query("SELECT * FROM nfc_tags WHERE profile_id = :profileId ORDER BY created_at DESC")
     fun getTagsForProfile(profileId: String): Flow<List<NfcTagEntity>>
 
-    @Query("SELECT * FROM nfc_tags WHERE tagUid = :tagUid LIMIT 1")
-    suspend fun getTagByUid(tagUid: String): NfcTagEntity?
+    @Query("SELECT * FROM nfc_tags WHERE uid = :uid LIMIT 1")
+    suspend fun getTagByUid(uid: String): NfcTagEntity?
 
-    @Query("SELECT * FROM nfc_tags WHERE id = :id")
+    @Query("SELECT * FROM nfc_tags WHERE id = :id LIMIT 1")
     suspend fun getTagById(id: String): NfcTagEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -30,6 +33,15 @@ interface NfcTagDao {
     @Delete
     suspend fun deleteTag(tag: NfcTagEntity)
 
-    @Query("UPDATE nfc_tags SET lastUsedAt = :timestamp WHERE id = :tagId")
-    suspend fun updateLastUsed(tagId: String, timestamp: Long)
+    @Query("DELETE FROM nfc_tags WHERE id = :id")
+    suspend fun deleteTagById(id: String)
+
+    @Query("UPDATE nfc_tags SET last_used_at = :timestamp, use_count = use_count + 1 WHERE uid = :uid")
+    suspend fun updateLastUsed(uid: String, timestamp: Long)
+
+    @Query("SELECT COUNT(*) FROM nfc_tags")
+    suspend fun getTagCount(): Int
+
+    @Query("SELECT COUNT(*) FROM nfc_tags WHERE profile_id = :profileId")
+    suspend fun getTagCountForProfile(profileId: String): Int
 }

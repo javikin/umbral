@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.umbral.presentation.ui.components.UmbralScaffold
 import com.umbral.presentation.ui.screens.home.HomeScreen
+import com.umbral.presentation.ui.screens.nfc.NfcScanScreen
 import com.umbral.presentation.ui.screens.profiles.ProfilesScreen
 import com.umbral.presentation.ui.screens.settings.SettingsScreen
 import com.umbral.presentation.ui.screens.stats.StatsScreen
@@ -52,9 +53,11 @@ fun UmbralNavHost(
                 SettingsScreen()
             }
 
-            // Secondary destinations (without bottom nav - to be implemented)
+            // Secondary destinations (without bottom nav)
             composable(NavRoutes.NFC_SCAN) {
-                // TODO: NfcScanScreen
+                NfcScanScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
 
             composable(NavRoutes.QR_SCAN) {
