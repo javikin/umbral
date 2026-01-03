@@ -20,7 +20,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material.icons.filled.SignalWifiOff
 import androidx.compose.material3.AlertDialog
@@ -108,7 +110,9 @@ fun NfcScanScreen(
         if (uiState.showRegisterDialog) {
             RegisterTagDialog(
                 tagName = uiState.tagName,
+                tagLocation = uiState.tagLocation,
                 onTagNameChange = viewModel::updateTagName,
+                onTagLocationChange = viewModel::updateTagLocation,
                 onConfirm = viewModel::registerTag,
                 onDismiss = viewModel::dismissDialog
             )
@@ -208,6 +212,22 @@ private fun NfcScanContent(
                     textAlign = TextAlign.Center
                 )
             }
+            is ScanState.Writing -> {
+                WritingAnimation()
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = "Escribiendo tag...",
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "No retires el tag",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
+            }
             is ScanState.Success -> {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
@@ -224,6 +244,31 @@ private fun NfcScanContent(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Bloqueo activado/desactivado",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                OutlinedButton(onClick = onResetClick) {
+                    Text("Escanear otro")
+                }
+            }
+            is ScanState.TagRegistered -> {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = "Tag registrado",
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "\"${scanState.tag.name}\" está listo para usar",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -333,9 +378,67 @@ private fun ScanningAnimation(
 }
 
 @Composable
+private fun WritingAnimation(
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "nfc_write")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rotation"
+    )
+
+    Box(
+        modifier = modifier.size(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Rotating ring
+        Box(
+            modifier = Modifier
+                .size(160.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f),
+                    shape = CircleShape
+                )
+        )
+
+        // Inner circle with icon
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = Color.White
+            )
+        }
+
+        // Progress indicator
+        androidx.compose.material3.CircularProgressIndicator(
+            modifier = Modifier.size(180.dp),
+            color = MaterialTheme.colorScheme.tertiary,
+            strokeWidth = 4.dp
+        )
+    }
+}
+
+@Composable
 private fun RegisterTagDialog(
     tagName: String,
+    tagLocation: String,
     onTagNameChange: (String) -> Unit,
+    onTagLocationChange: (String) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -355,8 +458,23 @@ private fun RegisterTagDialog(
                     value = tagName,
                     onValueChange = onTagNameChange,
                     label = { Text("Nombre del tag") },
+                    placeholder = { Text("Ej: Mi tag personal") },
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.Nfc, contentDescription = null)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = tagLocation,
+                    onValueChange = onTagLocationChange,
+                    label = { Text("Ubicación (opcional)") },
                     placeholder = { Text("Ej: Puerta principal") },
                     singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.LocationOn, contentDescription = null)
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

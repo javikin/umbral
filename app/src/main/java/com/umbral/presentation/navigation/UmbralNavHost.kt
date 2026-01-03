@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.umbral.presentation.ui.components.UmbralScaffold
 import com.umbral.presentation.ui.screens.home.HomeScreen
 import com.umbral.presentation.ui.screens.nfc.NfcScanScreen
+import com.umbral.presentation.ui.screens.nfc.TagsScreen
 import com.umbral.presentation.ui.screens.profiles.ProfilesScreen
 import com.umbral.presentation.ui.screens.settings.SettingsScreen
 import com.umbral.presentation.ui.screens.stats.StatsScreen
@@ -50,13 +51,22 @@ fun UmbralNavHost(
             }
 
             composable(NavRoutes.SETTINGS) {
-                SettingsScreen()
+                SettingsScreen(
+                    onNavigateToNfcTags = { navController.navigate(NavRoutes.NFC_TAGS) }
+                )
             }
 
             // Secondary destinations (without bottom nav)
             composable(NavRoutes.NFC_SCAN) {
                 NfcScanScreen(
                     onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoutes.NFC_TAGS) {
+                TagsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToScan = { navController.navigate(NavRoutes.NFC_SCAN) }
                 )
             }
 
@@ -78,6 +88,7 @@ object NavRoutes {
     const val STATS = "stats"
     const val SETTINGS = "settings"
     const val NFC_SCAN = "nfc_scan"
+    const val NFC_TAGS = "nfc_tags"
     const val QR_SCAN = "qr_scan"
     const val PROFILE_DETAIL = "profile/{profileId}"
     const val ONBOARDING = "onboarding"

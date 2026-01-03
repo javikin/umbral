@@ -2,11 +2,10 @@ package com.umbral.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.umbral.data.local.dao.NfcTagDao
-import com.umbral.data.local.entity.NfcTagEntity
 import com.umbral.data.local.preferences.UmbralPreferences
 import com.umbral.domain.nfc.NfcError
 import com.umbral.domain.nfc.NfcManager
+import com.umbral.domain.nfc.NfcRepository
 import com.umbral.domain.nfc.NfcResult
 import com.umbral.domain.nfc.NfcState
 import com.umbral.domain.nfc.NfcTag
@@ -15,8 +14,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
@@ -25,20 +26,25 @@ data class NfcScanUiState(
     val scanState: ScanState = ScanState.Idle,
     val lastEvent: TagEvent? = null,
     val tagName: String = "",
-    val showRegisterDialog: Boolean = false
+    val tagLocation: String = "",
+    val showRegisterDialog: Boolean = false,
+    val isWriting: Boolean = false,
+    val lastScannedTag: NfcTag? = null
 )
 
 sealed class ScanState {
     data object Idle : ScanState()
     data object Scanning : ScanState()
+    data object Writing : ScanState()
     data object Success : ScanState()
+    data class TagRegistered(val tag: NfcTag) : ScanState()
     data class Error(val error: NfcError) : ScanState()
 }
 
 @HiltViewModel
 class NfcScanViewModel @Inject constructor(
     private val nfcManager: NfcManager,
-    private val nfcTagDao: NfcTagDao,
+    private val nfcRepository: NfcRepository,
     private val preferences: UmbralPreferences
 ) : ViewModel() {
 
@@ -73,18 +79,24 @@ class NfcScanViewModel @Inject constructor(
                     it.copy(
                         scanState = ScanState.Success,
                         lastEvent = event,
+                        lastScannedTag = event.tag,
                         showRegisterDialog = false
                     )
                 }
-                // Toggle blocking when known tag is scanned
-                toggleBlocking()
+                // Update last used and toggle blocking
+                viewModelScope.launch {
+                    nfcRepository.updateLastUsed(event.tag.uid)
+                    toggleBlocking()
+                }
             }
             is TagEvent.UnknownTag -> {
                 _uiState.update {
                     it.copy(
                         scanState = ScanState.Idle,
                         lastEvent = event,
-                        showRegisterDialog = true
+                        showRegisterDialog = true,
+                        tagName = "",
+                        tagLocation = ""
                     )
                 }
             }
@@ -111,32 +123,62 @@ class NfcScanViewModel @Inject constructor(
         _uiState.update { it.copy(tagName = name) }
     }
 
+    fun updateTagLocation(location: String) {
+        _uiState.update { it.copy(tagLocation = location) }
+    }
+
     fun registerTag() {
         val event = _uiState.value.lastEvent
         if (event !is TagEvent.UnknownTag) return
 
         val name = _uiState.value.tagName.ifBlank { "Tag NFC" }
+        val location = _uiState.value.tagLocation.ifBlank { null }
 
         viewModelScope.launch {
-            val tagEntity = NfcTagEntity(
+            // Show writing state
+            _uiState.update {
+                it.copy(
+                    scanState = ScanState.Writing,
+                    isWriting = true,
+                    showRegisterDialog = false
+                )
+            }
+
+            val newTag = NfcTag(
                 id = UUID.randomUUID().toString(),
                 uid = event.uid,
                 name = name,
-                createdAt = System.currentTimeMillis()
+                location = location,
+                createdAt = Instant.now()
             )
 
-            nfcTagDao.insertTag(tagEntity)
+            // Insert tag first
+            val insertResult = nfcRepository.insertTag(newTag)
+
+            if (insertResult.isFailure) {
+                _uiState.update {
+                    it.copy(
+                        scanState = ScanState.Error(NfcError.UNKNOWN_ERROR),
+                        isWriting = false,
+                        tagName = "",
+                        tagLocation = ""
+                    )
+                }
+                return@launch
+            }
 
             // Write Umbral payload to tag
-            val writeResult = nfcManager.writeTag(event.androidTag, tagEntity.id)
+            val writeResult = nfcManager.writeTag(event.androidTag, newTag.id)
 
             when (writeResult) {
                 is NfcResult.Success -> {
                     _uiState.update {
                         it.copy(
-                            scanState = ScanState.Success,
-                            showRegisterDialog = false,
-                            tagName = ""
+                            scanState = ScanState.TagRegistered(newTag),
+                            lastScannedTag = newTag,
+                            isWriting = false,
+                            tagName = "",
+                            tagLocation = ""
                         )
                     }
                     // Toggle blocking after registering
@@ -144,11 +186,13 @@ class NfcScanViewModel @Inject constructor(
                 }
                 is NfcResult.Error -> {
                     // Delete the tag if write failed
-                    nfcTagDao.deleteTagById(tagEntity.id)
+                    nfcRepository.deleteTag(newTag.id)
                     _uiState.update {
                         it.copy(
                             scanState = ScanState.Error(writeResult.error),
-                            showRegisterDialog = false
+                            isWriting = false,
+                            tagName = "",
+                            tagLocation = ""
                         )
                     }
                 }
@@ -178,13 +222,9 @@ class NfcScanViewModel @Inject constructor(
         nfcManager.openNfcSettings(context)
     }
 
-    private fun toggleBlocking() {
-        viewModelScope.launch {
-            preferences.blockingEnabled.collect { isEnabled ->
-                preferences.setBlockingEnabled(!isEnabled)
-                return@collect
-            }
-        }
+    private suspend fun toggleBlocking() {
+        val isEnabled = preferences.blockingEnabled.first()
+        preferences.setBlockingEnabled(!isEnabled)
     }
 
     fun isNfcAvailable(): Boolean = nfcManager.isNfcAvailable()

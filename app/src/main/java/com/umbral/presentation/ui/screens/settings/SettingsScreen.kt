@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timeline
@@ -49,6 +50,7 @@ import com.umbral.presentation.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
+    onNavigateToNfcTags: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -79,6 +81,20 @@ fun SettingsScreen(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+        // NFC Tags Section
+        SectionHeader(title = "Tags NFC")
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SettingsNavigationCard(
+            icon = Icons.Default.Nfc,
+            title = "Gestionar tags",
+            description = "Ver, editar y eliminar tags NFC registrados",
+            onClick = onNavigateToNfcTags
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         // Required Permissions Section
         SectionHeader(title = stringResource(R.string.required_permissions))
 
@@ -318,6 +334,59 @@ private fun AboutRow(
 
         if (showChevron) {
             Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                imageVector = Icons.Outlined.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingsNavigationCard(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(28.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
