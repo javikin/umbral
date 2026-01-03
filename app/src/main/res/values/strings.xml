@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Umbral</string>
+
+    <!-- Navigation -->
+    <string name="back">Volver</string>
+    <string name="home">Inicio</string>
+    <string name="profiles">Perfiles</string>
+    <string name="stats">Estadisticas</string>
+    <string name="settings">Ajustes</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">Bienvenido a Umbral</string>
+    <string name="home_subtitle">Bloquea apps con NFC o QR</string>
+    <string name="blocking_active">Bloqueo activo</string>
+    <string name="blocking_inactive">Sin bloqueo</string>
+    <string name="tap_to_scan">Toca para escanear</string>
+
+    <!-- Profiles -->
+    <string name="profiles_empty">No hay perfiles creados</string>
+    <string name="create_profile">Crear perfil</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="delete_profile">Eliminar perfil</string>
+    <string name="profile_name">Nombre del perfil</string>
+    <string name="select_apps">Seleccionar apps</string>
+    <string name="blocked_apps">Apps bloqueadas</string>
+    <string name="strict_mode">Modo estricto</string>
+    <string name="strict_mode_desc">No permite desbloqueo sin NFC/QR</string>
+
+    <!-- Stats -->
+    <string name="stats_empty">Aun no hay estadisticas</string>
+    <string name="today">Hoy</string>
+    <string name="this_week">Esta semana</string>
+    <string name="blocked_attempts">Intentos bloqueados</string>
+    <string name="top_blocked_apps">Apps mas bloqueadas</string>
+    <string name="current_streak">Racha actual</string>
+    <string name="days">dias</string>
+
+    <!-- Settings -->
+    <string name="settings_placeholder">Configuracion proximamente</string>
+    <string name="permissions">Permisos</string>
+    <string name="usage_stats_permission">Acceso a uso de apps</string>
+    <string name="overlay_permission">Mostrar sobre otras apps</string>
+    <string name="notification_permission">Notificaciones</string>
+    <string name="grant_permission">Conceder</string>
+    <string name="granted">Concedido</string>
+
+    <!-- NFC -->
+    <string name="scan_nfc">Escanear NFC</string>
+    <string name="write_nfc">Escribir en tag</string>
+    <string name="nfc_ready">Acerca un tag NFC</string>
+    <string name="nfc_success">Tag detectado</string>
+    <string name="nfc_error">Error al leer tag</string>
+    <string name="nfc_not_supported">NFC no disponible</string>
+    <string name="nfc_disabled">NFC desactivado</string>
+
+    <!-- QR -->
+    <string name="scan_qr">Escanear QR</string>
+    <string name="generate_qr">Generar QR</string>
+    <string name="qr_ready">Apunta la camara al codigo QR</string>
+    <string name="qr_success">QR detectado</string>
+    <string name="qr_error">Error al leer QR</string>
+    <string name="qr_invalid">QR no valido</string>
+    <string name="save_qr">Guardar QR</string>
+
+    <!-- Blocking -->
+    <string name="app_blocked">App bloqueada</string>
+    <string name="unlock_with_nfc">Desbloquear con NFC</string>
+    <string name="unlock_with_qr">Desbloquear con QR</string>
+    <string name="unlock_with_timer">Esperar %1$d segundos</string>
+    <string name="unlocking">Desbloqueando...</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_label">Umbral</string>
+    <string name="tile_active">Bloqueo activo</string>
+    <string name="tile_inactive">Bloqueo inactivo</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">Bienvenido</string>
+    <string name="onboarding_how_it_works">Como funciona</string>
+    <string name="onboarding_permissions">Permisos necesarios</string>
+    <string name="onboarding_select_apps">Selecciona apps</string>
+    <string name="onboarding_done">Listo!</string>
+    <string name="next">Siguiente</string>
+    <string name="skip">Saltar</string>
+    <string name="get_started">Comenzar</string>
+
+    <!-- Common -->
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="error">Error</string>
+    <string name="loading">Cargando...</string>
+    <string name="retry">Reintentar</string>
+</resources>
