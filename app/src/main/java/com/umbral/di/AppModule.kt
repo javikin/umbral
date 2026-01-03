@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.umbral.data.local.dao.BlockingProfileDao
+import com.umbral.data.local.dao.NfcTagDao
+import com.umbral.data.local.dao.StatsDao
 import com.umbral.data.local.database.UmbralDatabase
+import com.umbral.data.local.preferences.UmbralPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,5 +36,37 @@ object AppModule {
         @ApplicationContext context: Context
     ): DataStore<Preferences> {
         return context.dataStore
+    }
+
+    @Provides
+    @Singleton
+    fun provideUmbralPreferences(
+        dataStore: DataStore<Preferences>
+    ): UmbralPreferences {
+        return UmbralPreferences(dataStore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBlockingProfileDao(
+        database: UmbralDatabase
+    ): BlockingProfileDao {
+        return database.blockingProfileDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNfcTagDao(
+        database: UmbralDatabase
+    ): NfcTagDao {
+        return database.nfcTagDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatsDao(
+        database: UmbralDatabase
+    ): StatsDao {
+        return database.statsDao()
     }
 }
