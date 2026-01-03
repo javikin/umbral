@@ -4,13 +4,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.umbral.presentation.ui.components.UmbralScaffold
 import com.umbral.presentation.ui.screens.home.HomeScreen
 import com.umbral.presentation.ui.screens.nfc.NfcScanScreen
 import com.umbral.presentation.ui.screens.nfc.TagsScreen
+import com.umbral.presentation.ui.screens.profiles.ProfileDetailScreen
 import com.umbral.presentation.ui.screens.profiles.ProfilesScreen
 import com.umbral.presentation.ui.screens.settings.SettingsScreen
 import com.umbral.presentation.ui.screens.stats.StatsScreen
@@ -74,9 +77,18 @@ fun UmbralNavHost(
                 // TODO: QrScanScreen
             }
 
-            composable(NavRoutes.PROFILE_DETAIL) { backStackEntry ->
-                val profileId = backStackEntry.arguments?.getString("profileId")
-                // TODO: ProfileDetailScreen(profileId)
+            composable(
+                route = NavRoutes.PROFILE_DETAIL,
+                arguments = listOf(
+                    navArgument("profileId") { type = NavType.StringType }
+                )
+            ) {
+                ProfileDetailScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToAppSelector = {
+                        // TODO: Navigate to app selector
+                    }
+                )
             }
         }
     }
