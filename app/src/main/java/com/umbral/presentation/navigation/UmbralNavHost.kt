@@ -1,11 +1,13 @@
 package com.umbral.presentation.navigation
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.umbral.presentation.ui.components.UmbralScaffold
 import com.umbral.presentation.ui.screens.home.HomeScreen
 import com.umbral.presentation.ui.screens.profiles.ProfilesScreen
 import com.umbral.presentation.ui.screens.settings.SettingsScreen
@@ -17,35 +19,52 @@ fun UmbralNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: String = NavRoutes.HOME
 ) {
-    NavHost(
+    UmbralScaffold(
         navController = navController,
-        startDestination = startDestination,
         modifier = modifier
-    ) {
-        composable(NavRoutes.HOME) {
-            HomeScreen(
-                onNavigateToProfiles = { navController.navigate(NavRoutes.PROFILES) },
-                onNavigateToStats = { navController.navigate(NavRoutes.STATS) },
-                onNavigateToSettings = { navController.navigate(NavRoutes.SETTINGS) }
-            )
-        }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // Main destinations (with bottom nav)
+            composable(NavRoutes.HOME) {
+                HomeScreen(
+                    onNavigateToNfcScan = { navController.navigate(NavRoutes.NFC_SCAN) },
+                    onNavigateToQrScan = { navController.navigate(NavRoutes.QR_SCAN) }
+                )
+            }
 
-        composable(NavRoutes.PROFILES) {
-            ProfilesScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
+            composable(NavRoutes.PROFILES) {
+                ProfilesScreen(
+                    onNavigateToProfileDetail = { profileId ->
+                        navController.navigate(NavRoutes.profileDetail(profileId))
+                    }
+                )
+            }
 
-        composable(NavRoutes.STATS) {
-            StatsScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
+            composable(NavRoutes.STATS) {
+                StatsScreen()
+            }
 
-        composable(NavRoutes.SETTINGS) {
-            SettingsScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
+            composable(NavRoutes.SETTINGS) {
+                SettingsScreen()
+            }
+
+            // Secondary destinations (without bottom nav - to be implemented)
+            composable(NavRoutes.NFC_SCAN) {
+                // TODO: NfcScanScreen
+            }
+
+            composable(NavRoutes.QR_SCAN) {
+                // TODO: QrScanScreen
+            }
+
+            composable(NavRoutes.PROFILE_DETAIL) { backStackEntry ->
+                val profileId = backStackEntry.arguments?.getString("profileId")
+                // TODO: ProfileDetailScreen(profileId)
+            }
         }
     }
 }

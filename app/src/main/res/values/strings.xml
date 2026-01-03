@@ -40,11 +40,25 @@
     <!-- Settings -->
     <string name="settings_placeholder">Configuracion proximamente</string>
     <string name="permissions">Permisos</string>
+    <string name="required_permissions">Permisos requeridos</string>
+    <string name="optional_permissions">Permisos opcionales</string>
     <string name="usage_stats_permission">Acceso a uso de apps</string>
+    <string name="usage_stats_desc">Necesario para detectar que app esta en primer plano</string>
     <string name="overlay_permission">Mostrar sobre otras apps</string>
+    <string name="overlay_desc">Necesario para mostrar pantalla de bloqueo</string>
     <string name="notification_permission">Notificaciones</string>
+    <string name="notification_desc">Para mostrar el estado de bloqueo</string>
+    <string name="camera_permission">Camara</string>
+    <string name="camera_desc">Necesario para escanear codigos QR</string>
     <string name="grant_permission">Conceder</string>
     <string name="granted">Concedido</string>
+    <string name="about">Acerca de</string>
+    <string name="version">Version</string>
+    <string name="open_source">Codigo abierto</string>
+    <string name="open_source_desc">Umbral es 100%% open source</string>
+    <string name="github_repo">Ver en GitHub</string>
+    <string name="privacy">Privacidad</string>
+    <string name="privacy_desc">Tus datos nunca salen de tu dispositivo</string>
 
     <!-- NFC -->
     <string name="scan_nfc">Escanear NFC</string>
