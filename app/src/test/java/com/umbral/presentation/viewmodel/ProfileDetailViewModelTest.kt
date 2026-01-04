@@ -79,10 +79,11 @@ class ProfileDetailViewModelTest {
 
         // When
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
             val state = awaitItem()
             assertFalse(state.isLoading)
             assertTrue(state.isNewProfile)
@@ -105,10 +106,11 @@ class ProfileDetailViewModelTest {
 
         // When
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
             val state = awaitItem()
             assertFalse(state.isLoading)
             assertFalse(state.isNewProfile)
@@ -131,10 +133,11 @@ class ProfileDetailViewModelTest {
 
         // When
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
             val state = awaitItem()
             assertFalse(state.isLoading)
             assertEquals("Perfil no encontrado", state.error)
@@ -148,14 +151,17 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.updateName("New Name")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.updateName("New Name")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals("New Name", state.name)
             assertNull(state.error)
@@ -169,14 +175,17 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.updateColor("#FF0000")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.updateColor("#FF0000")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals("#FF0000", state.colorHex)
         }
@@ -189,14 +198,17 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.updateIcon("lock")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.updateIcon("lock")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals("lock", state.iconName)
         }
@@ -209,22 +221,23 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // When - First toggle
-        viewModel.toggleStrictMode()
-        testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When - First toggle
+            viewModel.toggleStrictMode()
+            testDispatcher.scheduler.advanceUntilIdle()
+
             val state1 = awaitItem()
             assertTrue(state1.isStrictMode)
-        }
 
-        // When - Second toggle
-        viewModel.toggleStrictMode()
-        testDispatcher.scheduler.advanceUntilIdle()
+            // When - Second toggle
+            viewModel.toggleStrictMode()
+            testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.uiState.test {
             val state2 = awaitItem()
             assertFalse(state2.isStrictMode)
         }
@@ -237,14 +250,17 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.addBlockedApp("com.facebook.katana")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.addBlockedApp("com.facebook.katana")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals(1, state.blockedApps.size)
             assertTrue(state.blockedApps.contains("com.facebook.katana"))
@@ -257,19 +273,30 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.addBlockedApp("com.facebook.katana")
-        testDispatcher.scheduler.advanceUntilIdle()
-        viewModel.addBlockedApp("com.facebook.katana")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
-            val state = awaitItem()
-            assertEquals(1, state.blockedApps.size)
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When - add first app
+            viewModel.addBlockedApp("com.facebook.katana")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val stateAfterFirst = awaitItem()
+            assertEquals(1, stateAfterFirst.blockedApps.size)
+
+            // When - try to add duplicate
+            viewModel.addBlockedApp("com.facebook.katana")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then - no new emission since it's a duplicate, verify size is still 1
+            // The state hasn't changed, so we cancel and check the current value
+            cancelAndIgnoreRemainingEvents()
         }
+
+        // Verify the current state still has only 1 app
+        assertEquals(1, viewModel.uiState.value.blockedApps.size)
     }
 
     // removeBlockedApp Tests
@@ -279,11 +306,17 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.addBlockedApp("com.facebook.katana")
-        viewModel.addBlockedApp("com.instagram.android")
-        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            viewModel.addBlockedApp("com.facebook.katana")
+            viewModel.addBlockedApp("com.instagram.android")
+            testDispatcher.scheduler.advanceUntilIdle()
+            cancelAndIgnoreRemainingEvents()
+        }
 
         // When
         viewModel.removeBlockedApp("com.facebook.katana")
@@ -305,15 +338,18 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        val newApps = listOf("com.app1", "com.app2", "com.app3")
-        viewModel.setBlockedApps(newApps)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            val newApps = listOf("com.app1", "com.app2", "com.app3")
+            viewModel.setBlockedApps(newApps)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals(3, state.blockedApps.size)
             assertEquals(newApps, state.blockedApps)
@@ -329,14 +365,20 @@ class ProfileDetailViewModelTest {
         every { nfcRepository.getAllTags() } returns flowOf(listOf(testTag))
         coEvery { nfcRepository.unlinkTagFromProfile("tag-1") } returns Result.success(Unit)
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.unlinkTag("tag-1")
-        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
 
-        // Then
-        coVerify(exactly = 1) { nfcRepository.unlinkTagFromProfile("tag-1") }
+            // When
+            viewModel.unlinkTag("tag-1")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
+            coVerify(exactly = 1) { nfcRepository.unlinkTagFromProfile("tag-1") }
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     // saveProfile Tests
@@ -347,20 +389,24 @@ class ProfileDetailViewModelTest {
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         coEvery { profileRepository.saveProfile(any()) } returns Result.success(Unit)
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.updateName("My Profile")
-        testDispatcher.scheduler.advanceUntilIdle()
 
         var successCalled = false
 
-        // When
-        viewModel.saveProfile { successCalled = true }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
-            val state = awaitItem()
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            viewModel.updateName("My Profile")
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.saveProfile { successCalled = true }
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then - skip isSaving=true state, get final state
+            val state = expectMostRecentItem()
             assertFalse(state.isSaving)
             assertTrue(state.saveSuccess)
             assertNull(state.error)
@@ -375,16 +421,19 @@ class ProfileDetailViewModelTest {
         savedStateHandle = SavedStateHandle(mapOf("profileId" to "new"))
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         var successCalled = false
 
-        // When
-        viewModel.saveProfile { successCalled = true }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.saveProfile { successCalled = true }
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals("El nombre es requerido", state.error)
             assertFalse(state.saveSuccess)
@@ -400,20 +449,24 @@ class ProfileDetailViewModelTest {
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         coEvery { profileRepository.saveProfile(any()) } returns Result.failure(RuntimeException("Save failed"))
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.updateName("My Profile")
-        testDispatcher.scheduler.advanceUntilIdle()
 
         var successCalled = false
 
-        // When
-        viewModel.saveProfile { successCalled = true }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
-            val state = awaitItem()
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            viewModel.updateName("My Profile")
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.saveProfile { successCalled = true }
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
+            val state = expectMostRecentItem()
             assertFalse(state.isSaving)
             assertFalse(state.saveSuccess)
             assertEquals("Error al guardar el perfil", state.error)
@@ -428,21 +481,24 @@ class ProfileDetailViewModelTest {
         every { nfcRepository.getAllTags() } returns flowOf(emptyList())
         coEvery { profileRepository.saveProfile(any()) } returns Result.success(Unit)
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.updateName("My Profile")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // When
-        viewModel.saveProfile {}
-        // Don't advance scheduler to catch isSaving state
-
-        // Then
         viewModel.uiState.test {
-            val state = awaitItem()
-            // State might be isSaving or already completed depending on timing
-            // At least verify it doesn't error
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            viewModel.updateName("My Profile")
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.saveProfile {}
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then - verify operation completed without error
+            val state = expectMostRecentItem()
             assertNotNull(state)
+            assertTrue(state.saveSuccess)
         }
     }
 
@@ -457,10 +513,11 @@ class ProfileDetailViewModelTest {
 
         // When
         viewModel = ProfileDetailViewModel(savedStateHandle, profileRepository, nfcRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
             val state = awaitItem()
             assertEquals(1, state.linkedTags.size)
             assertEquals("tag-1", state.linkedTags[0].id)

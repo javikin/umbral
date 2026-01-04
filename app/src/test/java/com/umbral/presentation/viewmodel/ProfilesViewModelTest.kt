@@ -91,11 +91,12 @@ class ProfilesViewModelTest {
         every { profileRepository.getAllProfiles() } returns flowOf(listOf(testProfile1, testProfile2))
         viewModel = ProfilesViewModel(profileRepository)
 
-        // When
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
+        // Then - subscribe first, then advance
         viewModel.uiState.test {
+            // Initial state
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+
             val state = awaitItem()
             assertFalse(state.isLoading)
             assertEquals(2, state.profiles.size)
@@ -110,11 +111,11 @@ class ProfilesViewModelTest {
         every { profileRepository.getAllProfiles() } returns flowOf(emptyList())
         viewModel = ProfilesViewModel(profileRepository)
 
-        // When
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
+        // Then - subscribe first, then advance
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+
             val state = awaitItem()
             assertFalse(state.isLoading)
             assertEquals(0, state.profiles.size)
@@ -127,14 +128,17 @@ class ProfilesViewModelTest {
         // Given
         every { profileRepository.getAllProfiles() } returns flowOf(emptyList())
         viewModel = ProfilesViewModel(profileRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // When
-        viewModel.showDeleteDialog(testProfile1)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When
+            viewModel.showDeleteDialog(testProfile1)
+            testDispatcher.scheduler.advanceUntilIdle()
+
             val state = awaitItem()
             assertTrue(state.showDeleteDialog)
             assertNotNull(state.selectedProfile)
@@ -293,24 +297,24 @@ class ProfilesViewModelTest {
         every { profileRepository.getAllProfiles() } returns flowOf(listOf(testProfile1))
         coEvery { profileRepository.deleteProfile("profile-1") } returns Result.success(Unit)
         viewModel = ProfilesViewModel(profileRepository)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // When - Show dialog
-        viewModel.showDeleteDialog(testProfile1)
-        testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.test {
+            skipItems(1)
+            testDispatcher.scheduler.advanceUntilIdle()
+            skipItems(1)
+
+            // When - Show dialog
+            viewModel.showDeleteDialog(testProfile1)
+            testDispatcher.scheduler.advanceUntilIdle()
+
             val stateAfterShow = awaitItem()
             assertTrue(stateAfterShow.showDeleteDialog)
             assertEquals("profile-1", stateAfterShow.selectedProfile?.id)
-        }
 
-        // When - Confirm deletion
-        viewModel.deleteProfile()
-        testDispatcher.scheduler.advanceUntilIdle()
+            // When - Confirm deletion
+            viewModel.deleteProfile()
+            testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
-        viewModel.uiState.test {
             val stateAfterDelete = awaitItem()
             assertFalse(stateAfterDelete.showDeleteDialog)
             assertNull(stateAfterDelete.selectedProfile)

@@ -101,13 +101,17 @@ class NfcScanViewModelTest {
     fun `nfc state updates from manager`() = runTest {
         // Given
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-
-        // When
-        nfcStateFlow.value = NfcState.Disabled
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            // When
+            nfcStateFlow.value = NfcState.Disabled
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals(NfcState.Disabled, state.nfcState)
         }
@@ -117,16 +121,20 @@ class NfcScanViewModelTest {
     @Test
     fun `known tag event updates state and toggles blocking`() = runTest {
         // Given
-        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
         coEvery { nfcRepository.updateLastUsed(testTag.uid) } returns Unit
         coEvery { preferences.setBlockingEnabled(any()) } returns Unit
-
-        // When
-        tagEventsFlow.emit(TagEvent.KnownTag(testTag))
+        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            // When
+            tagEventsFlow.emit(TagEvent.KnownTag(testTag))
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertTrue(state.scanState is ScanState.Success)
             assertEquals(testTag, state.lastScannedTag)
@@ -140,13 +148,17 @@ class NfcScanViewModelTest {
     fun `unknown tag event shows register dialog`() = runTest {
         // Given
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-
-        // When
-        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            // When
+            tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertTrue(state.scanState is ScanState.Idle)
             assertTrue(state.showRegisterDialog)
@@ -159,13 +171,17 @@ class NfcScanViewModelTest {
     fun `invalid tag event shows error state`() = runTest {
         // Given
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-
-        // When
-        tagEventsFlow.emit(TagEvent.InvalidTag(NfcError.TAG_NOT_SUPPORTED))
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            // When
+            tagEventsFlow.emit(TagEvent.InvalidTag(NfcError.TAG_NOT_SUPPORTED))
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertTrue(state.scanState is ScanState.Error)
             val errorState = state.scanState as ScanState.Error
@@ -180,12 +196,15 @@ class NfcScanViewModelTest {
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.startScanning()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            // When
+            viewModel.startScanning()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertTrue(state.scanState is ScanState.Scanning)
         }
@@ -197,15 +216,20 @@ class NfcScanViewModelTest {
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.startScanning()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // When
-        viewModel.stopScanning()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            viewModel.startScanning()
+            testDispatcher.scheduler.advanceUntilIdle()
+            // Skip scanning state
+            awaitItem()
+
+            // When
+            viewModel.stopScanning()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertTrue(state.scanState is ScanState.Idle)
         }
@@ -218,12 +242,15 @@ class NfcScanViewModelTest {
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.updateTagName("Office Tag")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            // When
+            viewModel.updateTagName("Office Tag")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals("Office Tag", state.tagName)
         }
@@ -235,12 +262,15 @@ class NfcScanViewModelTest {
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
-        viewModel.updateTagLocation("Meeting Room")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
         viewModel.uiState.test {
+            // Skip initial state
+            awaitItem()
+
+            // When
+            viewModel.updateTagLocation("Meeting Room")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
             val state = awaitItem()
             assertEquals("Meeting Room", state.tagLocation)
         }
@@ -249,17 +279,18 @@ class NfcScanViewModelTest {
     @Test
     fun `registerTag successfully registers new tag`() = runTest {
         // Given
-        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.updateTagName("New Tag")
-        viewModel.updateTagLocation("Home")
-        testDispatcher.scheduler.advanceUntilIdle()
-
         coEvery { nfcRepository.insertTag(any()) } returns Result.success(Unit)
         coEvery { nfcManager.writeTag(androidTag, any()) } returns NfcResult.Success(Unit)
         coEvery { preferences.setBlockingEnabled(any()) } returns Unit
+        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Setup: emit unknown tag and set name/location
+        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
+        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.updateTagName("New Tag")
+        viewModel.updateTagLocation("Home")
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // When
         viewModel.registerTag()
@@ -281,13 +312,15 @@ class NfcScanViewModelTest {
     @Test
     fun `registerTag uses default name when blank`() = runTest {
         // Given
-        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
-        testDispatcher.scheduler.advanceUntilIdle()
-
         coEvery { nfcRepository.insertTag(any()) } returns Result.success(Unit)
         coEvery { nfcManager.writeTag(androidTag, any()) } returns NfcResult.Success(Unit)
         coEvery { preferences.setBlockingEnabled(any()) } returns Unit
+        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Setup: emit unknown tag
+        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // When
         viewModel.registerTag()
@@ -304,11 +337,13 @@ class NfcScanViewModelTest {
     @Test
     fun `registerTag fails when insert fails`() = runTest {
         // Given
+        coEvery { nfcRepository.insertTag(any()) } returns Result.failure(RuntimeException("DB error"))
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coEvery { nfcRepository.insertTag(any()) } returns Result.failure(RuntimeException("DB error"))
+        // Setup: emit unknown tag
+        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // When
         viewModel.registerTag()
@@ -326,13 +361,15 @@ class NfcScanViewModelTest {
     @Test
     fun `registerTag deletes tag when write fails`() = runTest {
         // Given
-        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
-        testDispatcher.scheduler.advanceUntilIdle()
-
         coEvery { nfcRepository.insertTag(any()) } returns Result.success(Unit)
         coEvery { nfcManager.writeTag(androidTag, any()) } returns NfcResult.Error(NfcError.WRITE_FAILED)
         coEvery { nfcRepository.deleteTag(any()) } returns Result.success(Unit)
+        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Setup: emit unknown tag
+        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // When
         viewModel.registerTag()
@@ -352,7 +389,7 @@ class NfcScanViewModelTest {
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // When
+        // When - no unknown tag event emitted
         viewModel.registerTag()
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -366,9 +403,11 @@ class NfcScanViewModelTest {
     fun `dismissDialog hides dialog and clears name`() = runTest {
         // Given
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
         testDispatcher.scheduler.advanceUntilIdle()
 
+        // Setup: emit unknown tag and set name
+        tagEventsFlow.emit(TagEvent.UnknownTag("04:A1:B2:C3", TagType.NTAG213, androidTag))
+        testDispatcher.scheduler.advanceUntilIdle()
         viewModel.updateTagName("Test Tag")
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -388,12 +427,14 @@ class NfcScanViewModelTest {
     @Test
     fun `resetState clears scan state and last event`() = runTest {
         // Given
-        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
-        tagEventsFlow.emit(TagEvent.KnownTag(testTag))
-        testDispatcher.scheduler.advanceUntilIdle()
-
         coEvery { nfcRepository.updateLastUsed(any()) } returns Unit
         coEvery { preferences.setBlockingEnabled(any()) } returns Unit
+        viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Setup: emit known tag
+        tagEventsFlow.emit(TagEvent.KnownTag(testTag))
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // When
         viewModel.resetState()
@@ -458,6 +499,7 @@ class NfcScanViewModelTest {
         coEvery { nfcRepository.updateLastUsed(any()) } returns Unit
         coEvery { preferences.setBlockingEnabled(any()) } returns Unit
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // When
         tagEventsFlow.emit(TagEvent.KnownTag(testTag))
@@ -474,6 +516,7 @@ class NfcScanViewModelTest {
         coEvery { nfcRepository.updateLastUsed(any()) } returns Unit
         coEvery { preferences.setBlockingEnabled(any()) } returns Unit
         viewModel = NfcScanViewModel(nfcManager, nfcRepository, preferences)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // When
         tagEventsFlow.emit(TagEvent.KnownTag(testTag))
