@@ -58,7 +58,7 @@ class BlockingManagerImpl @Inject constructor(
     override suspend fun startBlocking(profileId: String): Result<Unit> {
         return try {
             Timber.d("Starting blocking with profile: $profileId")
-            profileRepository.activateProfile(profileId)
+            profileRepository.activateProfile(profileId).getOrThrow()
             Result.success(Unit)
         } catch (e: Exception) {
             Timber.e(e, "Error starting blocking")
@@ -78,7 +78,7 @@ class BlockingManagerImpl @Inject constructor(
             }
 
             Timber.d("Stopping blocking")
-            profileRepository.deactivateAllProfiles()
+            profileRepository.deactivateAllProfiles().getOrThrow()
             Result.success(Unit)
         } catch (e: Exception) {
             Timber.e(e, "Error stopping blocking")
