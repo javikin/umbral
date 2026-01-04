@@ -23,6 +23,12 @@ room = "2.6.1"
 # DataStore
 datastore = "1.1.1"
 
+# Security
+securityCrypto = "1.1.0-alpha06"
+
+# Accompanist (Permissions)
+accompanist = "0.36.0"
+
 # Coroutines
 coroutines = "1.9.0"
 
@@ -79,8 +85,16 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 # DataStore
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
+# Security
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
+
+# Accompanist
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanist" }
+
 # Coroutines
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # CameraX

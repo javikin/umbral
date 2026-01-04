@@ -147,6 +147,12 @@ class ProfileDetailViewModel @Inject constructor(
         }
     }
 
+    fun setBlockedApps(apps: List<String>) {
+        _formState.update { state ->
+            state.copy(blockedApps = apps)
+        }
+    }
+
     fun unlinkTag(tagId: String) {
         viewModelScope.launch {
             nfcRepository.unlinkTagFromProfile(tagId)

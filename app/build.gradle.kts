@@ -85,8 +85,16 @@ dependencies {
     // DataStore
     implementation(libs.datastore.preferences)
 
+    // Security
+    implementation(libs.security.crypto)
+
+    // Accompanist (Permissions + DrawablePainter)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.drawablepainter)
+
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // CameraX (for QR scanning)
     implementation(libs.bundles.camerax)

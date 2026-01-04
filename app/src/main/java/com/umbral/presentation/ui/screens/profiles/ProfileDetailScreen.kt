@@ -53,7 +53,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -65,6 +64,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.umbral.R
 import com.umbral.domain.nfc.NfcTag
 import com.umbral.presentation.viewmodel.ProfileDetailViewModel
@@ -73,12 +73,20 @@ import com.umbral.presentation.viewmodel.ProfileDetailViewModel
 @Composable
 fun ProfileDetailScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToAppSelector: () -> Unit = {},
+    onNavigateToAppSelector: (List<String>) -> Unit = {},
+    selectedApps: List<String>? = null,
     modifier: Modifier = Modifier,
     viewModel: ProfileDetailViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Handle selected apps returned from AppSelectorScreen
+    LaunchedEffect(selectedApps) {
+        selectedApps?.let { apps ->
+            viewModel.setBlockedApps(apps)
+        }
+    }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
@@ -177,7 +185,7 @@ fun ProfileDetailScreen(
                 item {
                     BlockedAppsSection(
                         blockedApps = uiState.blockedApps,
-                        onAddApp = onNavigateToAppSelector,
+                        onAddApp = { onNavigateToAppSelector(uiState.blockedApps) },
                         onRemoveApp = viewModel::removeBlockedApp
                     )
                 }

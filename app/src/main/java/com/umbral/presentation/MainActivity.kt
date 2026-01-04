@@ -12,7 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.umbral.domain.nfc.NfcManager
-import com.umbral.presentation.navigation.UmbralNavHost
+import com.umbral.presentation.navigation.MainNavigation
 import com.umbral.presentation.ui.theme.UmbralTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    UmbralNavHost()
+                    MainNavigation()
                 }
             }
         }

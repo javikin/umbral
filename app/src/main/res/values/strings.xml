@@ -84,11 +84,24 @@
     <string name="unlock_with_qr">Desbloquear con QR</string>
     <string name="unlock_with_timer">Esperar %1$d segundos</string>
     <string name="unlocking">Desbloqueando...</string>
+    <string name="blocking_notification_channel_name">Bloqueo de apps</string>
+    <string name="blocking_notification_channel_description">Notificaciones cuando el bloqueo esta activo</string>
+    <string name="blocking_notification_text">Perfil activo: %1$s</string>
+    <string name="blocking_screen_title">Esta app esta bloqueada</string>
+    <string name="blocking_screen_message">Has configurado bloquear esta app para mantener tu enfoque.</string>
+    <string name="blocking_strict_mode_message">Escanea tu tag NFC para desbloquear.</string>
+    <string name="go_back">Volver al inicio</string>
+    <string name="disable_blocking">Desactivar bloqueo</string>
 
     <!-- Quick Settings Tile -->
     <string name="tile_label">Umbral</string>
     <string name="tile_active">Bloqueo activo</string>
     <string name="tile_inactive">Bloqueo inactivo</string>
+
+    <!-- Widgets -->
+    <string name="status_widget_description">Muestra si el bloqueo está activo o inactivo</string>
+    <string name="stats_widget_description">Muestra estadísticas de apps bloqueadas y tiempo ahorrado</string>
+    <string name="quick_toggle_widget_description">Botón rápido para activar/desactivar bloqueo</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome">Bienvenido</string>

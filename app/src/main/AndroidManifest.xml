@@ -72,9 +72,17 @@
 
         </activity>
 
-        <!-- Blocking Overlay Service -->
+        <!-- Blocking Activity (overlay when app is blocked) -->
+        <activity
+            android:name=".presentation.ui.blocking.BlockingActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Umbral" />
+
+        <!-- Blocking Foreground Service -->
         <service
-            android:name=".data.service.BlockingService"
+            android:name=".data.blocking.BlockingService"
             android:exported="false"
             android:foregroundServiceType="specialUse">
             <property
@@ -103,10 +111,55 @@
             </intent-filter>
         </receiver>
 
+        <!-- Glance Widgets -->
+        <receiver
+            android:name=".presentation.widget.StatusWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/status_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".presentation.widget.StatsWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stats_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".presentation.widget.QuickToggleWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quick_toggle_widget_info" />
+        </receiver>
+
         <!-- App Shortcuts -->
         <meta-data
             android:name="android.app.shortcuts"
             android:resource="@xml/shortcuts" />
+
+        <!-- FileProvider for QR code export -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 
