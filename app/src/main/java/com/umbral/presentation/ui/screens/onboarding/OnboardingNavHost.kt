@@ -107,7 +107,7 @@ fun OnboardingNavHost(
                             viewModel.nextStep()
                             navController.navigate("success") {
                                 // Clear backstack so user can't go back
-                                popUpTo("welcome") { inclusive = true }
+                                popUpTo("select_apps") { inclusive = true }
                             }
                         },
                         onError = { error ->

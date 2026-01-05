@@ -143,10 +143,26 @@ class OnboardingViewModel @Inject constructor(
     private fun loadInstalledApps() {
         viewModelScope.launch {
             _isLoading.value = true
+            var refreshAttempts = 0
+            val maxRefreshAttempts = 3
+
             try {
                 installedAppsRepository.getInstalledApps().collect { apps ->
                     _installedApps.value = apps.sortedBy { it.name.lowercase() }
-                    _isLoading.value = false
+
+                    if (apps.isNotEmpty()) {
+                        // Apps loaded successfully
+                        _isLoading.value = false
+                        refreshAttempts = maxRefreshAttempts // Stop any more refresh attempts
+                    } else if (refreshAttempts < maxRefreshAttempts) {
+                        // List is empty, try refreshing (with delay between retries)
+                        refreshAttempts++
+                        kotlinx.coroutines.delay(500L * refreshAttempts)
+                        installedAppsRepository.refreshApps()
+                    } else {
+                        // Max attempts reached, stop loading
+                        _isLoading.value = false
+                    }
                 }
             } catch (e: Exception) {
                 _error.value = "Error al cargar apps: ${e.message}"
@@ -157,6 +173,25 @@ class OnboardingViewModel @Inject constructor(
 
     fun clearError() {
         _error.value = null
+    }
+
+    fun refreshInstalledApps() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                installedAppsRepository.refreshApps()
+                // Small delay to allow the flow to emit
+                kotlinx.coroutines.delay(500)
+                if (_installedApps.value.isEmpty()) {
+                    _error.value = "No se encontraron apps. Verifica los permisos."
+                }
+                _isLoading.value = false
+            } catch (e: Exception) {
+                _error.value = "Error al cargar apps: ${e.message}"
+                _isLoading.value = false
+            }
+        }
     }
 }
 

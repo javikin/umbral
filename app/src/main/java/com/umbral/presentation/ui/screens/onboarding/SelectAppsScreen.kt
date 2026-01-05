@@ -446,16 +446,36 @@ fun SelectAppsScreen(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = if (searchQuery.isNotEmpty()) {
-                                "No se encontraron apps con \"$searchQuery\""
-                            } else {
-                                "No hay apps en esta categoría"
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(UmbralSpacing.md)
+                        ) {
+                            Text(
+                                text = if (searchQuery.isNotEmpty()) {
+                                    "No se encontraron apps con \"$searchQuery\""
+                                } else if (selectedCategory != null) {
+                                    "No hay apps en esta categoría"
+                                } else if (installedApps.isEmpty()) {
+                                    "No se pudieron cargar las apps instaladas.\nVerifica los permisos de la app."
+                                } else {
+                                    "No hay apps disponibles"
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+
+                            // Show retry button if no apps were loaded at all
+                            if (installedApps.isEmpty() && searchQuery.isEmpty() && selectedCategory == null) {
+                                UmbralButton(
+                                    text = "Reintentar",
+                                    onClick = {
+                                        viewModel.refreshInstalledApps()
+                                    },
+                                    variant = ButtonVariant.Secondary
+                                )
+                            }
+                        }
                     }
                 } else {
                     LazyColumn(
