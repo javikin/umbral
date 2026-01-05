@@ -1,0 +1,59 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <!-- Background circle -->
+    <path
+        android:pathData="M80,80m-55,0a55,55 0,1 1,110 0a55,55 0,1 1,-110 0"
+        android:fillColor="#94A3B8"
+        android:fillAlpha="0.08"/>
+
+    <!-- Folder back -->
+    <path
+        android:pathData="M35,55 L35,120 Q35,125 40,125 L120,125 Q125,125 125,120 L125,60 Q125,55 120,55 L75,55 L65,45 L40,45 Q35,45 35,50 Z"
+        android:fillColor="#E2E8F0"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="2"/>
+
+    <!-- Folder tab -->
+    <path
+        android:pathData="M40,45 L65,45 L75,55 L40,55 Q35,55 35,50 L35,50 Q35,45 40,45 Z"
+        android:fillColor="#CBD5E1"/>
+
+    <!-- Folder front flap -->
+    <path
+        android:pathData="M35,65 L125,65 L125,120 Q125,125 120,125 L40,125 Q35,125 35,120 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"/>
+
+    <!-- Dashed outline inside folder -->
+    <path
+        android:pathData="M55,80 L105,80 L105,110 L55,110 Z"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.5"
+        android:fillColor="@android:color/transparent"
+        android:strokeDashArray="6,4"/>
+
+    <!-- Plus icon in center -->
+    <path
+        android:pathData="M80,88 L80,102 M73,95 L87,95"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"/>
+
+    <!-- Decorative elements -->
+    <path
+        android:pathData="M45,75m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.3"/>
+
+    <path
+        android:pathData="M115,75m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.3"/>
+
+</vector>

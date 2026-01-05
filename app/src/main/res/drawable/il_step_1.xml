@@ -1,0 +1,72 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <!-- Background circle -->
+    <path
+        android:pathData="M80,80m-60,0a60,60 0,1 1,120 0a60,60 0,1 1,-120 0"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.06"/>
+
+    <!-- App grid - 4 rectangles (2x2) -->
+
+    <!-- Top-left app (unchecked) -->
+    <path
+        android:pathData="M40,40 L70,40 Q75,40 75,45 L75,70 Q75,75 70,75 L45,75 Q40,75 40,70 L40,45 Q40,40 45,40 Z"
+        android:fillColor="#E2E8F0"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"/>
+
+    <!-- Top-right app (checked) -->
+    <path
+        android:pathData="M85,40 L115,40 Q120,40 120,45 L120,70 Q120,75 115,75 L90,75 Q85,75 85,70 L85,45 Q85,40 90,40 Z"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.15"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="1.5"/>
+    <!-- Checkmark for top-right -->
+    <path
+        android:pathData="M95,57 L100,62 L110,52"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+
+    <!-- Bottom-left app (checked) -->
+    <path
+        android:pathData="M40,85 L70,85 Q75,85 75,90 L75,115 Q75,120 70,120 L45,120 Q40,120 40,115 L40,90 Q40,85 45,85 Z"
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.15"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="1.5"/>
+    <!-- Checkmark for bottom-left -->
+    <path
+        android:pathData="M50,102 L55,107 L65,97"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+
+    <!-- Bottom-right app (unchecked) -->
+    <path
+        android:pathData="M85,85 L115,85 Q120,85 120,90 L120,115 Q120,120 115,120 L90,120 Q85,120 85,115 L85,90 Q85,85 90,85 Z"
+        android:fillColor="#E2E8F0"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"/>
+
+    <!-- Selection indicator dots -->
+    <path
+        android:pathData="M80,135m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M90,135m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+        android:fillColor="#94A3B8"/>
+    <path
+        android:pathData="M70,135m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+        android:fillColor="#94A3B8"/>
+
+</vector>

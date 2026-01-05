@@ -1,0 +1,101 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Background glow -->
+    <path
+        android:pathData="M100,100m-70,0a70,70 0,1 1,140 0a70,70 0,1 1,-140 0"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.08"/>
+
+    <!-- Inner glow -->
+    <path
+        android:pathData="M100,100m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.12"/>
+
+    <!-- Main circle -->
+    <path
+        android:pathData="M100,100m-35,0a35,35 0,1 1,70 0a35,35 0,1 1,-70 0"
+        android:fillColor="#10B981"/>
+
+    <!-- Checkmark -->
+    <path
+        android:pathData="M82,100 L95,113 L120,85"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+
+    <!-- Confetti elements - circles -->
+    <path
+        android:pathData="M45,55m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+        android:fillColor="#6366F1"/>
+
+    <path
+        android:pathData="M155,60m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#8B5CF6"/>
+
+    <path
+        android:pathData="M50,140m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#F59E0B"/>
+
+    <path
+        android:pathData="M150,145m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#6366F1"/>
+
+    <!-- Confetti elements - squares -->
+    <path
+        android:pathData="M165,95 L172,95 L172,102 L165,102 Z"
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.8"/>
+
+    <path
+        android:pathData="M28,105 L34,105 L34,111 L28,111 Z"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.8"/>
+
+    <!-- Confetti elements - triangles -->
+    <path
+        android:pathData="M65,45 L70,35 L75,45 Z"
+        android:fillColor="#F59E0B"
+        android:fillAlpha="0.8"/>
+
+    <path
+        android:pathData="M135,40 L140,30 L145,40 Z"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.8"/>
+
+    <path
+        android:pathData="M75,155 L80,165 L85,155 Z"
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.8"/>
+
+    <path
+        android:pathData="M120,160 L125,170 L130,160 Z"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.8"/>
+
+    <!-- Sparkle elements -->
+    <path
+        android:pathData="M40,80 L45,80 M42.5,77.5 L42.5,82.5"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M158,120 L163,120 M160.5,117.5 L160.5,122.5"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M95,35 L100,35 M97.5,32.5 L97.5,37.5"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+</vector>

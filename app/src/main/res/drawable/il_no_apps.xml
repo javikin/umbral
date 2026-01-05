@@ -1,0 +1,86 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <!-- Background circle -->
+    <path
+        android:pathData="M80,80m-55,0a55,55 0,1 1,110 0a55,55 0,1 1,-110 0"
+        android:fillColor="#94A3B8"
+        android:fillAlpha="0.08"/>
+
+    <!-- Grid of empty app slots (3x3) -->
+
+    <!-- Row 1 -->
+    <path
+        android:pathData="M35,35 L55,35 Q60,35 60,40 L60,55 Q60,60 55,60 L40,60 Q35,60 35,55 L35,40 Q35,35 40,35 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+    <path
+        android:pathData="M67,35 L87,35 Q92,35 92,40 L92,55 Q92,60 87,60 L72,60 Q67,60 67,55 L67,40 Q67,35 72,35 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+    <path
+        android:pathData="M99,35 L119,35 Q124,35 124,40 L124,55 Q124,60 119,60 L104,60 Q99,60 99,55 L99,40 Q99,35 104,35 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+    <!-- Row 2 -->
+    <path
+        android:pathData="M35,67 L55,67 Q60,67 60,72 L60,87 Q60,92 55,92 L40,92 Q35,92 35,87 L35,72 Q35,67 40,67 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+    <!-- Center slot with plus icon -->
+    <path
+        android:pathData="M67,67 L87,67 Q92,67 92,72 L92,87 Q92,92 87,92 L72,92 Q67,92 67,87 L67,72 Q67,67 72,67 Z"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"/>
+    <path
+        android:pathData="M79.5,74 L79.5,86 M73.5,80 L85.5,80"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M99,67 L119,67 Q124,67 124,72 L124,87 Q124,92 119,92 L104,92 Q99,92 99,87 L99,72 Q99,67 104,67 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+    <!-- Row 3 -->
+    <path
+        android:pathData="M35,99 L55,99 Q60,99 60,104 L60,119 Q60,124 55,124 L40,124 Q35,124 35,119 L35,104 Q35,99 40,99 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+    <path
+        android:pathData="M67,99 L87,99 Q92,99 92,104 L92,119 Q92,124 87,124 L72,124 Q67,124 67,119 L67,104 Q67,99 72,99 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+    <path
+        android:pathData="M99,99 L119,99 Q124,99 124,104 L124,119 Q124,124 119,124 L104,124 Q99,124 99,119 L99,104 Q99,99 104,99 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="4,3"/>
+
+</vector>

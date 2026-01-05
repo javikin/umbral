@@ -1,0 +1,95 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <!-- Background circle -->
+    <path
+        android:pathData="M80,80m-55,0a55,55 0,1 1,110 0a55,55 0,1 1,-110 0"
+        android:fillColor="#94A3B8"
+        android:fillAlpha="0.08"/>
+
+    <!-- Chart area background -->
+    <path
+        android:pathData="M30,40 L130,40 L130,120 L30,120 Z"
+        android:fillColor="#F1F5F9"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1.5"/>
+
+    <!-- Y-axis -->
+    <path
+        android:pathData="M40,50 L40,110"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"/>
+
+    <!-- X-axis -->
+    <path
+        android:pathData="M40,110 L120,110"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"/>
+
+    <!-- Grid lines horizontal -->
+    <path
+        android:pathData="M40,70 L120,70"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1"
+        android:strokeDashArray="4,4"/>
+    <path
+        android:pathData="M40,90 L120,90"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="1"
+        android:strokeDashArray="4,4"/>
+
+    <!-- Placeholder data points (empty circles) -->
+    <path
+        android:pathData="M55,95m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="3,2"/>
+
+    <path
+        android:pathData="M75,85m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="3,2"/>
+
+    <path
+        android:pathData="M95,75m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="3,2"/>
+
+    <path
+        android:pathData="M115,65m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.5"
+        android:strokeDashArray="3,2"/>
+
+    <!-- Dashed trend line -->
+    <path
+        android:pathData="M55,95 L75,85 L95,75 L115,65"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.3"
+        android:strokeDashArray="6,4"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- Question mark or hint -->
+    <path
+        android:pathData="M85,80 Q90,70 95,80"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.5"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+</vector>
