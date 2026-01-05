@@ -89,8 +89,12 @@
     <string name="blocking_notification_text">Perfil activo: %1$s</string>
     <string name="blocking_screen_title">Esta app esta bloqueada</string>
     <string name="blocking_screen_message">Has configurado bloquear esta app para mantener tu enfoque.</string>
+    <string name="blocking_screen_supportive_title">Estás protegiendo tu enfoque</string>
+    <string name="blocking_screen_supportive_message">Estás tomando el control de tu tiempo</string>
     <string name="blocking_strict_mode_message">Escanea tu tag NFC para desbloquear.</string>
+    <string name="blocking_strict_mode_hint">Modo estricto: requiere NFC para desbloquear</string>
     <string name="go_back">Volver al inicio</string>
+    <string name="go_home">Volver al inicio</string>
     <string name="disable_blocking">Desactivar bloqueo</string>
 
     <!-- Quick Settings Tile -->
