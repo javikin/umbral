@@ -2,12 +2,12 @@
 name: onboarding-ux-fixes
 prd: onboarding-ux-fixes
 description: Corregir bugs críticos de UX en onboarding y selector de apps
-status: open
+status: completed
 priority: critical
 github: https://github.com/javikin/umbral/issues/20
 created: 2026-01-04T23:34:58Z
-updated: 2026-01-04T23:34:58Z
-progress: 0%
+updated: 2026-01-05T05:30:00Z
+progress: 100%
 ---
 
 # Epic: Onboarding & UX Fixes
@@ -165,13 +165,14 @@ Todas las tasks son paralelas excepto QA final.
 
 ## Tasks Created
 
-- [ ] #23 - fix-apps-list-empty (parallel: true) 🔴 Crítico
-- [ ] #24 - fix-navigation-backstack (parallel: true) 🔴 Crítico
-- [ ] #21 - add-unlock-step-onboarding (parallel: true)
-- [ ] #22 - improve-category-ux (parallel: true)
+- [x] #23 - fix-apps-list-empty (parallel: true) 🔴 Crítico ✅
+- [x] #24 - fix-navigation-backstack (parallel: true) 🔴 Crítico ✅
+- [x] #21 - add-unlock-step-onboarding (parallel: true) ✅
+- [x] #22 - improve-category-ux (parallel: true) ✅
 
 Total tasks: 4
+Completed tasks: 4
 Parallel tasks: 4
 Sequential tasks: 0
 
-Synced: 2026-01-04T23:40:00Z
+Completed: 2026-01-05T05:30:00Z
