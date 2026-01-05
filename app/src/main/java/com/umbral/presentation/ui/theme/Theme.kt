@@ -58,9 +58,20 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = LightSurfaceVariant,
     onSurfaceVariant = LightOnSurfaceVariant,
 
+    // Surface containers (Material 3 elevation system)
+    surfaceContainer = LightSurfaceContainer,
+    surfaceContainerLow = LightSurfaceContainerLow,
+    surfaceContainerHigh = LightSurfaceContainerHigh,
+    surfaceContainerHighest = LightSurfaceContainerHighest,
+    surfaceBright = LightSurface,
+    surfaceDim = LightSurfaceVariant,
+
     // Outline
     outline = LightOutline,
     outlineVariant = LightOutlineVariant,
+
+    // Scrim
+    scrim = ScrimLight,
 
     // Inverse (for snackbars, etc.)
     inverseSurface = DarkSurface,
@@ -104,9 +115,20 @@ private val DarkColorScheme = darkColorScheme(
     surfaceVariant = DarkSurfaceVariant,
     onSurfaceVariant = DarkOnSurfaceVariant,
 
+    // Surface containers (Material 3 tonal elevation - brighter = higher)
+    surfaceContainer = DarkSurfaceContainer,
+    surfaceContainerLow = DarkSurfaceContainerLow,
+    surfaceContainerHigh = DarkSurfaceContainerHigh,
+    surfaceContainerHighest = DarkSurfaceContainerHighest,
+    surfaceBright = DarkSurfaceContainerHighest,
+    surfaceDim = DarkBackground,
+
     // Outline
     outline = DarkOutline,
     outlineVariant = DarkOutlineVariant,
+
+    // Scrim
+    scrim = ScrimDark,
 
     // Inverse
     inverseSurface = LightSurface,

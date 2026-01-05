@@ -69,16 +69,54 @@ val DarkOutline = Color(0xFF475569)            // Bordes sutiles
 val DarkOutlineVariant = Color(0xFF334155)     // Bordes más visibles
 
 // =============================================================================
+// SURFACE CONTAINER COLORS (Material 3 elevation system)
+// =============================================================================
+
+// Light theme surface containers (subtle elevation differentiation)
+val LightSurfaceContainer = Color(0xFFF5F5F5)      // Slightly elevated
+val LightSurfaceContainerLow = Color(0xFFFAFAFA)   // Minimal elevation
+val LightSurfaceContainerHigh = Color(0xFFEEEEEE)  // Higher elevation
+val LightSurfaceContainerHighest = Color(0xFFE8E8E8)
+
+// Dark theme surface containers (tonal elevation - brighter = higher)
+val DarkSurfaceContainer = Color(0xFF243447)       // Slightly elevated
+val DarkSurfaceContainerLow = Color(0xFF1A2A3D)    // Minimal elevation
+val DarkSurfaceContainerHigh = Color(0xFF2D3F52)   // Higher elevation
+val DarkSurfaceContainerHighest = Color(0xFF364A5F)
+
+// =============================================================================
 // SPECIAL COLORS (for specific use cases)
 // =============================================================================
 
-// Blocking screen - using calming gradients instead of aggressive red
+// Blocking screen - Light theme gradients
 val BlockingGradientStart = Color(0xFF6366F1)  // Primary
 val BlockingGradientEnd = Color(0xFF8B5CF6)    // Secondary
+
+// Blocking screen - Dark theme gradients (deeper, less saturated)
+val BlockingGradientStartDark = Color(0xFF4F46E5)  // Darker primary
+val BlockingGradientEndDark = Color(0xFF7C3AED)    // Darker secondary
+
+// Success gradient
+val SuccessGradientStart = Color(0xFF10B981)
+val SuccessGradientEnd = Color(0xFF34D399)
+val SuccessGradientStartDark = Color(0xFF059669)
+val SuccessGradientEndDark = Color(0xFF10B981)
+
+// Stats/Achievement gradients
+val AchievementGradientStart = Color(0xFFF59E0B)
+val AchievementGradientEnd = Color(0xFFF97316)
+val AchievementGradientStartDark = Color(0xFFD97706)
+val AchievementGradientEndDark = Color(0xFFEA580C)
 
 // Streak fire
 val StreakFire = Color(0xFFF97316)             // Orange for fire emoji effect
 val StreakFireGlow = Color(0xFFFED7AA)         // Glow effect
+val StreakFireDark = Color(0xFFEA580C)
+val StreakFireGlowDark = Color(0xFFFDBA74)
+
+// Scrim colors (for overlays and modals)
+val ScrimLight = Color(0x80000000)             // 50% black
+val ScrimDark = Color(0x99000000)              // 60% black (darker scrim for dark mode)
 
 // Legacy compatibility (gradual migration)
 @Deprecated("Use UmbralPrimary instead", ReplaceWith("UmbralPrimary"))

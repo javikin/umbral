@@ -2,8 +2,11 @@ package com.umbral.presentation.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,16 +25,38 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.umbral.presentation.ui.theme.UmbralSpacing
 import com.umbral.presentation.ui.theme.UmbralTheme
+import com.umbral.presentation.ui.theme.surfaceColorAtElevation
+import com.umbral.presentation.ui.theme.SurfaceElevation
 
 /**
  * Elevation levels for UmbralCard
+ *
+ * In light mode, uses shadow-based elevation.
+ * In dark mode, uses reduced shadows with tonal elevation (lighter surface = higher).
  */
-enum class UmbralElevation(val default: Dp, val pressed: Dp) {
-    None(0.dp, 0.dp),
-    Subtle(1.dp, 0.dp),
-    Medium(4.dp, 2.dp),
-    High(8.dp, 4.dp)
+enum class UmbralElevation(
+    val lightDefault: Dp,
+    val lightPressed: Dp,
+    val darkDefault: Dp,
+    val darkPressed: Dp,
+    val surfaceLevel: SurfaceElevation
+) {
+    None(0.dp, 0.dp, 0.dp, 0.dp, SurfaceElevation.Level0),
+    Subtle(1.dp, 0.dp, 0.dp, 0.dp, SurfaceElevation.Level1),
+    Medium(4.dp, 2.dp, 1.dp, 0.dp, SurfaceElevation.Level2),
+    High(8.dp, 4.dp, 2.dp, 1.dp, SurfaceElevation.Level3)
 }
+
+/**
+ * Legacy elevation values for backwards compatibility
+ */
+@Suppress("unused")
+val UmbralElevation.default: Dp
+    get() = lightDefault
+
+@Suppress("unused")
+val UmbralElevation.pressed: Dp
+    get() = lightPressed
 
 /**
  * Umbral Design System Card
@@ -55,9 +80,14 @@ fun UmbralCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val isDarkTheme = isSystemInDarkTheme()
+
+    // Use different elevation values for light and dark themes
+    val defaultElevation = if (isDarkTheme) elevation.darkDefault else elevation.lightDefault
+    val pressedElevation = if (isDarkTheme) elevation.darkPressed else elevation.lightPressed
 
     val animatedElevation by animateDpAsState(
-        targetValue = if (isPressed && onClick != null) elevation.pressed else elevation.default,
+        targetValue = if (isPressed && onClick != null) pressedElevation else defaultElevation,
         animationSpec = spring(
             dampingRatio = 0.6f,
             stiffness = 400f
@@ -65,17 +95,24 @@ fun UmbralCard(
         label = "cardElevation"
     )
 
+    // In dark mode, use tonal surface color for elevation instead of shadows
+    val containerColor = if (isDarkTheme) {
+        surfaceColorAtElevation(elevation.surfaceLevel)
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+
     if (onClick != null) {
         Card(
             onClick = onClick,
             modifier = modifier,
             shape = shape,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = containerColor
             ),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = animatedElevation,
-                pressedElevation = elevation.pressed
+                pressedElevation = pressedElevation
             ),
             interactionSource = interactionSource
         ) {
@@ -89,10 +126,10 @@ fun UmbralCard(
             modifier = modifier,
             shape = shape,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = containerColor
             ),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = elevation.default
+                defaultElevation = defaultElevation
             )
         ) {
             Column(
@@ -105,6 +142,8 @@ fun UmbralCard(
 
 /**
  * Outlined variant of UmbralCard
+ *
+ * Uses theme-aware border and container colors.
  */
 @Composable
 fun UmbralOutlinedCard(
@@ -114,6 +153,14 @@ fun UmbralOutlinedCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val isDarkTheme = isSystemInDarkTheme()
+
+    // In dark mode, use a slightly elevated surface for better contrast
+    val containerColor = if (isDarkTheme) {
+        surfaceColorAtElevation(SurfaceElevation.Level1)
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
 
     if (onClick != null) {
         androidx.compose.material3.OutlinedCard(
@@ -121,7 +168,7 @@ fun UmbralOutlinedCard(
             modifier = modifier,
             shape = shape,
             colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = containerColor
             ),
             interactionSource = interactionSource
         ) {
@@ -135,7 +182,7 @@ fun UmbralOutlinedCard(
             modifier = modifier,
             shape = shape,
             colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = containerColor
             )
         ) {
             Column(
@@ -235,21 +282,26 @@ private fun UmbralOutlinedCardPreview() {
 @Composable
 private fun UmbralCardDarkPreview() {
     UmbralTheme(darkTheme = true) {
-        UmbralCard(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            elevation = UmbralElevation.Medium
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
         ) {
-            Text(
-                text = "Dark Theme Card",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Content in dark mode",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            UmbralCard(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = UmbralElevation.Medium
+            ) {
+                Text(
+                    text = "Dark Theme Card",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Content in dark mode - uses tonal elevation",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
