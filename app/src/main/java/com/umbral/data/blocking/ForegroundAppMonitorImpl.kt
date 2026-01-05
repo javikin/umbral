@@ -32,8 +32,8 @@ class ForegroundAppMonitorImpl @Inject constructor(
     }
 
     companion object {
-        private const val POLL_INTERVAL_MS = 500L
-        private const val USAGE_QUERY_INTERVAL_MS = 1000L
+        private const val POLL_INTERVAL_MS = 200L
+        private const val USAGE_QUERY_INTERVAL_MS = 2000L  // Query last 2 seconds of events
     }
 
     override val foregroundApp: Flow<String?> = flow {

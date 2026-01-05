@@ -1,0 +1,42 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Tag body -->
+    <path
+        android:pathData="M4,6 L20,6 Q22,6 22,8 L22,18 Q22,20 20,20 L4,20 Q2,20 2,18 L2,8 Q2,6 4,6 Z"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="1.5"/>
+
+    <!-- Tag hole -->
+    <path
+        android:pathData="M5,7.5 L5,9.5"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <!-- NFC waves - small -->
+    <path
+        android:pathData="M12,13m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+        android:fillColor="@android:color/black"/>
+
+    <!-- NFC waves - medium -->
+    <path
+        android:pathData="M12,13m-4,0a4,4 0,0 0,4 4"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="1.5"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- NFC waves - large -->
+    <path
+        android:pathData="M12,13m-6,0a6,6 0,0 0,6 6"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="1.5"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+</vector>

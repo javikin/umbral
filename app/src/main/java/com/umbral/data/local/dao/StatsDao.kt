@@ -6,6 +6,7 @@ import androidx.room.Query
 import com.umbral.data.local.entity.BlockedAttemptEntity
 import com.umbral.data.local.entity.BlockingSessionEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 @Dao
 interface StatsDao {
@@ -17,13 +18,16 @@ interface StatsDao {
     @Query("SELECT * FROM blocked_attempts ORDER BY timestamp DESC LIMIT :limit")
     fun getRecentAttempts(limit: Int = 50): Flow<List<BlockedAttemptEntity>>
 
-    @Query("SELECT COUNT(*) FROM blocked_attempts WHERE timestamp >= :since")
+    @Query("""
+        SELECT COUNT(*) FROM blocked_attempts
+        WHERE timestamp >= datetime(:since, 'unixepoch')
+    """)
     suspend fun getAttemptCountSince(since: Long): Int
 
     @Query("""
         SELECT packageName, COUNT(*) as count
         FROM blocked_attempts
-        WHERE timestamp >= :since
+        WHERE timestamp >= datetime(:since, 'unixepoch')
         GROUP BY packageName
         ORDER BY count DESC
         LIMIT :limit
@@ -34,17 +38,26 @@ interface StatsDao {
     @Insert
     suspend fun insertSession(session: BlockingSessionEntity): Long
 
-    @Query("UPDATE blocking_sessions SET endedAt = :endTime, blockedAttempts = :attempts, unlockMethod = :method WHERE id = :sessionId")
+    @Query("""
+        UPDATE blocking_sessions
+        SET endedAt = datetime(:endTime, 'unixepoch'),
+            blockedAttempts = :attempts,
+            unlockMethod = :method
+        WHERE id = :sessionId
+    """)
     suspend fun endSession(sessionId: Long, endTime: Long, attempts: Int, method: String?)
 
     @Query("SELECT * FROM blocking_sessions WHERE endedAt IS NULL LIMIT 1")
     suspend fun getActiveSession(): BlockingSessionEntity?
 
-    @Query("SELECT SUM(blockedAttempts) FROM blocking_sessions WHERE startedAt >= :since")
+    @Query("""
+        SELECT SUM(blockedAttempts) FROM blocking_sessions
+        WHERE startedAt >= datetime(:since, 'unixepoch')
+    """)
     suspend fun getTotalBlockedSince(since: Long): Int?
 
     // Cleanup
-    @Query("DELETE FROM blocked_attempts WHERE timestamp < :before")
+    @Query("DELETE FROM blocked_attempts WHERE timestamp < datetime(:before, 'unixepoch')")
     suspend fun deleteOldAttempts(before: Long)
 }
 

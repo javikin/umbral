@@ -1,0 +1,71 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <!-- Background circle -->
+    <path
+        android:pathData="M80,80m-60,0a60,60 0,1 1,120 0a60,60 0,1 1,-120 0"
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.06"/>
+
+    <!-- NFC Tag base -->
+    <path
+        android:pathData="M50,55 L110,55 Q120,55 120,65 L120,105 Q120,115 110,115 L50,115 Q40,115 40,105 L40,65 Q40,55 50,55 Z"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2.5"/>
+
+    <!-- Tag hole -->
+    <path
+        android:pathData="M55,60 L55,70"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"/>
+
+    <!-- NFC symbol in center -->
+    <path
+        android:pathData="M80,75m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+        android:fillColor="#6366F1"/>
+
+    <!-- Signal waves - inner -->
+    <path
+        android:pathData="M80,75m-15,0a15,15 0,0 0,15 15"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.7"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- Signal waves - middle -->
+    <path
+        android:pathData="M80,75m-22,0a22,22 0,0 0,22 22"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.5"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- Signal waves - outer -->
+    <path
+        android:pathData="M80,75m-29,0a29,29 0,0 0,29 29"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.3"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- Small status indicator -->
+    <path
+        android:pathData="M105,65m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+        android:fillColor="#10B981"/>
+
+    <!-- Label line (visual placeholder for text) -->
+    <path
+        android:pathData="M60,105 L100,105"
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+
+</vector>

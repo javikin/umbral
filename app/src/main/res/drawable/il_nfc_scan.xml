@@ -1,0 +1,83 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="140dp"
+    android:viewportWidth="180"
+    android:viewportHeight="140">
+
+    <!-- NFC Tag on the left -->
+    <path
+        android:pathData="M20,40 L65,40 Q75,40 75,50 L75,100 Q75,110 65,110 L20,110 Q10,110 10,100 L10,50 Q10,40 20,40 Z"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"/>
+
+    <!-- Tag hole -->
+    <path
+        android:pathData="M22,47 L22,55"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"/>
+
+    <!-- NFC symbol on tag -->
+    <path
+        android:pathData="M42,75m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"
+        android:fillColor="#6366F1"/>
+
+    <!-- Connection waves between tag and phone (solid with alpha) -->
+    <path
+        android:pathData="M80,70 L95,70"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.8"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M80,60 Q90,70 80,80"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.5"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M85,55 Q100,70 85,85"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.3"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- Phone outline on the right -->
+    <path
+        android:pathData="M110,20 L160,20 Q170,20 170,30 L170,110 Q170,120 160,120 L110,120 Q100,120 100,110 L100,30 Q100,20 110,20 Z"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"/>
+
+    <!-- Phone screen -->
+    <path
+        android:pathData="M107,35 L163,35 L163,105 L107,105 Z"
+        android:fillColor="#E2E8F0"/>
+
+    <!-- NFC icon on phone screen -->
+    <path
+        android:pathData="M135,70m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.2"/>
+    <path
+        android:pathData="M135,70m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+        android:fillColor="#6366F1"/>
+
+    <!-- Phone notch/camera -->
+    <path
+        android:pathData="M135,25m-3,0a3,3 0,1 1,6 0a3,6 0,1 1,-6 0"
+        android:fillColor="#94A3B8"/>
+
+    <!-- Phone home indicator -->
+    <path
+        android:pathData="M125,115 L145,115"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"/>
+
+</vector>

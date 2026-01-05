@@ -1,7 +1,15 @@
 package com.umbral.presentation.ui.screens.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,43 +23,56 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
-import androidx.compose.material.icons.filled.Nfc
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.outlined.Nfc
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umbral.R
-import com.umbral.presentation.ui.theme.BlockingActive
-import com.umbral.presentation.ui.theme.BlockingInactive
+import com.umbral.presentation.ui.components.LoadingIndicator
+import com.umbral.presentation.ui.components.StatsGraph
+import com.umbral.presentation.ui.components.StreakDisplay
+import com.umbral.presentation.ui.components.UmbralCard
+import com.umbral.presentation.ui.components.UmbralElevation
+import com.umbral.presentation.ui.theme.UmbralSpacing
+import com.umbral.presentation.ui.theme.UmbralTheme
 import com.umbral.presentation.viewmodel.HomeUiState
 import com.umbral.presentation.viewmodel.HomeViewModel
+import kotlinx.coroutines.delay
+import java.time.LocalDate
 
 @Composable
 fun HomeScreen(
     onNavigateToNfcScan: () -> Unit = {},
     onNavigateToQrScan: () -> Unit = {},
+    onNavigateToStats: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -62,6 +83,7 @@ fun HomeScreen(
         onToggleBlocking = viewModel::toggleBlocking,
         onNfcScanClick = onNavigateToNfcScan,
         onQrScanClick = onNavigateToQrScan,
+        onStatsClick = onNavigateToStats,
         modifier = modifier
     )
 }
@@ -72,14 +94,33 @@ private fun HomeScreenContent(
     onToggleBlocking: () -> Unit,
     onNfcScanClick: () -> Unit,
     onQrScanClick: () -> Unit,
+    onStatsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Animation states
+    var showStatusCard by remember { mutableStateOf(false) }
+    var showStreakCard by remember { mutableStateOf(false) }
+    var showQuickActions by remember { mutableStateOf(false) }
+    var showStatsPreview by remember { mutableStateOf(false) }
+
+    // Staggered animation
+    LaunchedEffect(Unit) {
+        delay(100)
+        showStatusCard = true
+        delay(150)
+        showStreakCard = true
+        delay(150)
+        showQuickActions = true
+        delay(200)
+        showStatsPreview = true
+    }
+
     if (uiState.isLoading) {
         Box(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+            LoadingIndicator()
         }
         return
     }
@@ -87,195 +128,298 @@ private fun HomeScreenContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = UmbralSpacing.screenHorizontal)
+            .padding(vertical = UmbralSpacing.screenVertical),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-        // Main blocking status card
-        BlockingStatusCard(
-            isBlocking = uiState.isBlockingEnabled,
-            profileName = uiState.activeProfile?.name,
-            onClick = onToggleBlocking
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Streak indicator
-        if (uiState.currentStreak > 0) {
-            StreakCard(streak = uiState.currentStreak)
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        // Quick actions
-        Text(
-            text = "Desbloquear con",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        // Main blocking status card with gradient
+        AnimatedVisibility(
+            visible = showStatusCard,
+            enter = fadeIn(animationSpec = tween(400)) +
+                    slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        ),
+                        initialOffsetY = { -50 }
+                    )
         ) {
-            QuickActionCard(
-                icon = Icons.Default.Nfc,
-                label = "NFC",
-                onClick = onNfcScanClick,
-                modifier = Modifier.weight(1f)
-            )
-            QuickActionCard(
-                icon = Icons.Default.QrCodeScanner,
-                label = "QR Code",
-                onClick = onQrScanClick,
-                modifier = Modifier.weight(1f)
+            StatusCard(
+                isActive = uiState.isBlockingEnabled,
+                profileName = uiState.activeProfile?.name,
+                blockedAppsCount = uiState.activeProfile?.blockedApps?.size ?: 0,
+                onToggle = onToggleBlocking
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-        // Active profile info
-        uiState.activeProfile?.let { profile ->
-            Text(
-                text = "Perfil activo: ${profile.name}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = "${profile.blockedApps.size} apps bloqueadas",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        } ?: run {
-            Text(
-                text = "Sin perfil activo",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+        // Streak card with mini calendar
+        AnimatedVisibility(
+            visible = showStreakCard,
+            enter = fadeIn(animationSpec = tween(400)) +
+                    slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        ),
+                        initialOffsetY = { 50 }
+                    )
+        ) {
+            StreakCard(
+                currentStreak = uiState.currentStreak,
+                modifier = Modifier.fillMaxWidth()
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+
+        // Quick actions for NFC/QR
+        AnimatedVisibility(
+            visible = showQuickActions,
+            enter = fadeIn(animationSpec = tween(400)) +
+                    slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        ),
+                        initialOffsetY = { 50 }
+                    )
+        ) {
+            QuickActionsRow(
+                onNfcClick = onNfcScanClick,
+                onQrClick = onQrScanClick
+            )
+        }
+
+        Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+
+        // Stats preview card
+        AnimatedVisibility(
+            visible = showStatsPreview,
+            enter = fadeIn(animationSpec = tween(400)) +
+                    slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        ),
+                        initialOffsetY = { 100 }
+                    )
+        ) {
+            StatsPreviewCard(
+                weeklyData = listOf(0.3f, 0.5f, 0.4f, 0.8f, 0.6f, 0.9f, 0.7f),
+                onClick = onStatsClick
+            )
+        }
+
+        Spacer(modifier = Modifier.height(UmbralSpacing.xl))
     }
 }
 
+// =============================================================================
+// STATUS CARD
+// =============================================================================
+
 @Composable
-private fun BlockingStatusCard(
-    isBlocking: Boolean,
+private fun StatusCard(
+    isActive: Boolean,
     profileName: String?,
-    onClick: () -> Unit,
+    blockedAppsCount: Int,
+    onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isBlocking) BlockingActive else BlockingInactive,
-        label = "backgroundColor"
-    )
-
     val scale by animateFloatAsState(
-        targetValue = if (isBlocking) 1f else 0.95f,
-        label = "scale"
+        targetValue = if (isActive) 1f else 0.98f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "statusScale"
     )
 
-    Card(
+    val gradientColors = if (isActive) {
+        listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.tertiary
+        )
+    } else {
+        listOf(
+            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.surfaceVariant
+        )
+    }
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .scale(scale)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(brush = Brush.linearGradient(gradientColors))
+            .clickable(onClick = onToggle)
+            .padding(UmbralSpacing.xl)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.2f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (isBlocking) Icons.Default.Lock else Icons.Default.LockOpen,
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.surface
-                )
+            val contentColor = if (isActive) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Animated lock icon
+            AnimatedLockIcon(
+                isLocked = isActive,
+                tint = contentColor
+            )
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.md))
 
             Text(
-                text = if (isBlocking)
+                text = if (isActive)
                     stringResource(R.string.blocking_active)
                 else
                     stringResource(R.string.blocking_inactive),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.surface
+                color = contentColor
             )
 
-            if (profileName != null && isBlocking) {
-                Spacer(modifier = Modifier.height(4.dp))
+            if (profileName != null && isActive) {
+                Spacer(modifier = Modifier.height(UmbralSpacing.xs))
                 Text(
-                    text = profileName,
+                    text = "Perfil: $profileName",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                    color = contentColor.copy(alpha = 0.9f)
+                )
+
+                Spacer(modifier = Modifier.height(UmbralSpacing.xs))
+                Text(
+                    text = "$blockedAppsCount apps bloqueadas",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = contentColor.copy(alpha = 0.7f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(UmbralSpacing.md))
 
             Text(
-                text = if (isBlocking) "Toca para desactivar" else "Toca para activar",
+                text = if (isActive) "Toca para desactivar" else "Toca para activar",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                color = contentColor.copy(alpha = 0.6f)
             )
         }
     }
 }
 
 @Composable
-private fun StreakCard(
-    streak: Int,
+private fun AnimatedLockIcon(
+    isLocked: Boolean,
+    tint: androidx.compose.ui.graphics.Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+    val rotation = remember { Animatable(0f) }
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(isLocked) {
+        // Bounce and rotate animation
+        scale.animateTo(
+            targetValue = 0.8f,
+            animationSpec = tween(100)
         )
+        rotation.animateTo(
+            targetValue = if (isLocked) 0f else 15f,
+            animationSpec = tween(150, easing = LinearEasing)
+        )
+        scale.animateTo(
+            targetValue = 1.1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        )
+        scale.animateTo(
+            targetValue = 1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy
+            )
+        )
+    }
+
+    Box(
+        modifier = modifier
+            .size(88.dp)
+            .clip(CircleShape)
+            .background(tint.copy(alpha = 0.2f)),
+        contentAlignment = Alignment.Center
     ) {
-        Row(
+        Icon(
+            imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.LockOpen,
+            contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.LocalFireDepartment,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.size(28.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "$streak",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = stringResource(R.string.days),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-        }
+                .size(44.dp)
+                .scale(scale.value)
+                .rotate(rotation.value),
+            tint = tint
+        )
+    }
+}
+
+// =============================================================================
+// STREAK CARD
+// =============================================================================
+
+@Composable
+private fun StreakCard(
+    currentStreak: Int,
+    modifier: Modifier = Modifier
+) {
+    UmbralCard(
+        modifier = modifier,
+        elevation = UmbralElevation.Subtle
+    ) {
+        StreakDisplay(
+            currentStreak = currentStreak,
+            showMiniCalendar = true,
+            completedDays = (0 until minOf(currentStreak, 7)).map {
+                LocalDate.now().minusDays(it.toLong())
+            }.toSet(),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+// =============================================================================
+// QUICK ACTIONS
+// =============================================================================
+
+@Composable
+private fun QuickActionsRow(
+    onNfcClick: () -> Unit,
+    onQrClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(UmbralSpacing.md)
+    ) {
+        QuickActionCard(
+            icon = Icons.Outlined.Nfc,
+            label = "Escanear NFC",
+            onClick = onNfcClick,
+            modifier = Modifier.weight(1f)
+        )
+        QuickActionCard(
+            icon = Icons.Outlined.QrCodeScanner,
+            label = "Escanear QR",
+            onClick = onQrClick,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
@@ -286,31 +430,207 @@ private fun QuickActionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+    UmbralCard(
+        modifier = modifier,
+        elevation = UmbralElevation.Subtle,
+        onClick = onClick
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                modifier = Modifier.size(32.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
+    }
+}
+
+// =============================================================================
+// STATS PREVIEW
+// =============================================================================
+
+@Composable
+private fun StatsPreviewCard(
+    weeklyData: List<Float>,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    UmbralCard(
+        modifier = modifier.fillMaxWidth(),
+        elevation = UmbralElevation.Subtle,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Estadísticas",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Ver más",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Spacer(modifier = Modifier.height(UmbralSpacing.md))
+
+        StatsGraph(
+            data = weeklyData,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            labels = listOf("L", "M", "X", "J", "V", "S", "D"),
+            showLabels = true
+        )
+
+        Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+
+        Text(
+            text = "Últimos 7 días",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+// =============================================================================
+// PREVIEWS
+// =============================================================================
+
+@Preview(name = "Home Screen - Active", showBackground = true)
+@Composable
+private fun HomeScreenActivePreview() {
+    UmbralTheme {
+        HomeScreenContent(
+            uiState = HomeUiState(
+                isLoading = false,
+                isBlockingEnabled = true,
+                activeProfile = null,
+                currentStreak = 12
+            ),
+            onToggleBlocking = {},
+            onNfcScanClick = {},
+            onQrScanClick = {},
+            onStatsClick = {}
+        )
+    }
+}
+
+@Preview(name = "Home Screen - Inactive", showBackground = true)
+@Composable
+private fun HomeScreenInactivePreview() {
+    UmbralTheme {
+        HomeScreenContent(
+            uiState = HomeUiState(
+                isLoading = false,
+                isBlockingEnabled = false,
+                activeProfile = null,
+                currentStreak = 5
+            ),
+            onToggleBlocking = {},
+            onNfcScanClick = {},
+            onQrScanClick = {},
+            onStatsClick = {}
+        )
+    }
+}
+
+@Preview(name = "Home Screen - Dark Theme", showBackground = true)
+@Composable
+private fun HomeScreenDarkPreview() {
+    UmbralTheme(darkTheme = true) {
+        HomeScreenContent(
+            uiState = HomeUiState(
+                isLoading = false,
+                isBlockingEnabled = true,
+                activeProfile = null,
+                currentStreak = 7
+            ),
+            onToggleBlocking = {},
+            onNfcScanClick = {},
+            onQrScanClick = {},
+            onStatsClick = {}
+        )
+    }
+}
+
+@Preview(name = "Home Screen - Loading", showBackground = true)
+@Composable
+private fun HomeScreenLoadingPreview() {
+    UmbralTheme {
+        HomeScreenContent(
+            uiState = HomeUiState(isLoading = true),
+            onToggleBlocking = {},
+            onNfcScanClick = {},
+            onQrScanClick = {},
+            onStatsClick = {}
+        )
+    }
+}
+
+@Preview(name = "Status Card - Active", showBackground = true)
+@Composable
+private fun StatusCardActivePreview() {
+    UmbralTheme {
+        StatusCard(
+            isActive = true,
+            profileName = "Productividad",
+            blockedAppsCount = 15,
+            onToggle = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(name = "Status Card - Inactive", showBackground = true)
+@Composable
+private fun StatusCardInactivePreview() {
+    UmbralTheme {
+        StatusCard(
+            isActive = false,
+            profileName = null,
+            blockedAppsCount = 0,
+            onToggle = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(name = "Quick Actions", showBackground = true)
+@Composable
+private fun QuickActionsPreview() {
+    UmbralTheme {
+        QuickActionsRow(
+            onNfcClick = {},
+            onQrClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

@@ -9,7 +9,7 @@ data class InstalledApp(
     val packageName: String,
     val name: String,
     val icon: Drawable? = null,
-    val category: String? = null,
+    val category: AppCategory = AppCategory.OTHER,
     val isSystemApp: Boolean = false
 )
 

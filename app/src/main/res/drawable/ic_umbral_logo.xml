@@ -1,0 +1,45 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Outer archway -->
+    <path
+        android:pathData="M10,42 L10,18 Q24,4 38,18 L38,42"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="3"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- Inner archway -->
+    <path
+        android:pathData="M16,42 L16,21 Q24,10 32,21 L32,42"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- Light ray center -->
+    <path
+        android:pathData="M24,28 L24,38"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.6"
+        android:strokeLineCap="round"/>
+
+    <!-- Light dot -->
+    <path
+        android:pathData="M24,24m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+        android:fillColor="#6366F1"/>
+
+    <!-- Base line -->
+    <path
+        android:pathData="M6,42 L42,42"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"/>
+
+</vector>

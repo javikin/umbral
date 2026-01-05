@@ -1,6 +1,7 @@
 package com.umbral.di
 
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -68,5 +69,13 @@ object AppModule {
         database: UmbralDatabase
     ): StatsDao {
         return database.statsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providePackageManager(
+        @ApplicationContext context: Context
+    ): PackageManager {
+        return context.packageManager
     }
 }

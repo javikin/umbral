@@ -1,0 +1,128 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="140dp"
+    android:viewportWidth="180"
+    android:viewportHeight="140">
+
+    <!-- QR Code on left -->
+    <path
+        android:pathData="M10,35 L70,35 L70,105 L10,105 Z"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"/>
+
+    <!-- QR Pattern - Top-left corner -->
+    <path
+        android:pathData="M15,40 L35,40 L35,60 L15,60 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M20,45 L30,45 L30,55 L20,55 Z"
+        android:fillColor="#FFFFFF"/>
+    <path
+        android:pathData="M23,48 L27,48 L27,52 L23,52 Z"
+        android:fillColor="#6366F1"/>
+
+    <!-- QR Pattern - Top-right corner -->
+    <path
+        android:pathData="M45,40 L65,40 L65,60 L45,60 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M50,45 L60,45 L60,55 L50,55 Z"
+        android:fillColor="#FFFFFF"/>
+    <path
+        android:pathData="M53,48 L57,48 L57,52 L53,52 Z"
+        android:fillColor="#6366F1"/>
+
+    <!-- QR Pattern - Bottom-left corner -->
+    <path
+        android:pathData="M15,80 L35,80 L35,100 L15,100 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M20,85 L30,85 L30,95 L20,95 Z"
+        android:fillColor="#FFFFFF"/>
+    <path
+        android:pathData="M23,88 L27,88 L27,92 L23,92 Z"
+        android:fillColor="#6366F1"/>
+
+    <!-- QR random pattern -->
+    <path
+        android:pathData="M40,65 L45,65 L45,70 L40,70 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M50,65 L55,65 L55,70 L50,70 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M60,70 L65,70 L65,75 L60,75 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M45,75 L50,75 L50,80 L45,80 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M55,85 L60,85 L60,90 L55,90 Z"
+        android:fillColor="#6366F1"/>
+    <path
+        android:pathData="M45,90 L50,90 L50,95 L45,95 Z"
+        android:fillColor="#6366F1"/>
+
+    <!-- Scan lines animation indicator -->
+    <path
+        android:pathData="M75,55 L90,70 M75,85 L90,70"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.6"
+        android:strokeLineCap="round"/>
+
+    <!-- Phone outline -->
+    <path
+        android:pathData="M110,20 L160,20 Q170,20 170,30 L170,110 Q170,120 160,120 L110,120 Q100,120 100,110 L100,30 Q100,20 110,20 Z"
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"/>
+
+    <!-- Phone screen with camera view -->
+    <path
+        android:pathData="M107,35 L163,35 L163,105 L107,105 Z"
+        android:fillColor="#1F2937"/>
+
+    <!-- Camera viewfinder corners -->
+    <path
+        android:pathData="M115,45 L115,55 M115,45 L125,45"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M155,45 L155,55 M155,45 L145,45"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M115,95 L115,85 M115,95 L125,95"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M155,95 L155,85 M155,95 L145,95"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <!-- Scan line indicator -->
+    <path
+        android:pathData="M120,70 L150,70"
+        android:strokeColor="#10B981"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <!-- Phone camera notch -->
+    <path
+        android:pathData="M135,25m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#94A3B8"/>
+
+    <!-- Phone home indicator -->
+    <path
+        android:pathData="M125,115 L145,115"
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"/>
+
+</vector>

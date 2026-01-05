@@ -1,0 +1,95 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Outer glow ring -->
+    <path
+        android:pathData="M100,100m-80,0a80,80 0,1 1,160 0a80,80 0,1 1,-160 0"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.05"/>
+
+    <!-- Middle glow ring -->
+    <path
+        android:pathData="M100,100m-65,0a65,65 0,1 1,130 0a65,65 0,1 1,-130 0"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.08"/>
+
+    <!-- Inner glow ring -->
+    <path
+        android:pathData="M100,100m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0"
+        android:fillColor="#6366F1"
+        android:fillAlpha="0.12"/>
+
+    <!-- Shield gradient background -->
+    <path
+        android:pathData="M100,25 L155,50 L155,100 Q155,140 100,170 Q45,140 45,100 L45,50 Z"
+        android:fillColor="#6366F1"/>
+
+    <!-- Shield inner highlight -->
+    <path
+        android:pathData="M100,40 L140,60 L140,95 Q140,125 100,150 Q60,125 60,95 L60,60 Z"
+        android:fillColor="#818CF8"/>
+
+    <!-- Shield center area -->
+    <path
+        android:pathData="M100,55 L125,70 L125,90 Q125,110 100,130 Q75,110 75,90 L75,70 Z"
+        android:fillColor="#A5B4FC"
+        android:fillAlpha="0.5"/>
+
+    <!-- Lock icon on shield -->
+    <path
+        android:pathData="M90,85 L110,85 Q115,85 115,90 L115,105 Q115,110 110,110 L90,110 Q85,110 85,105 L85,90 Q85,85 90,85 Z"
+        android:fillColor="#4F46E5"/>
+
+    <!-- Lock shackle -->
+    <path
+        android:pathData="M92,85 L92,78 Q92,70 100,70 Q108,70 108,78 L108,85"
+        android:strokeColor="#4F46E5"
+        android:strokeWidth="4"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- Lock keyhole -->
+    <path
+        android:pathData="M100,93m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#FFFFFF"/>
+    <path
+        android:pathData="M100,95 L100,102"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <!-- Pulse rings (animated in code) -->
+    <path
+        android:pathData="M100,100m-90,0a90,90 0,1 1,180 0a90,90 0,1 1,-180 0"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="1"
+        android:strokeAlpha="0.2"
+        android:fillColor="@android:color/transparent"/>
+
+    <!-- Small sparkle elements -->
+    <path
+        android:pathData="M35,50 L40,50 M37.5,47.5 L37.5,52.5"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M160,55 L165,55 M162.5,52.5 L162.5,57.5"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M55,150m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.6"/>
+
+    <path
+        android:pathData="M145,145m-2,0a2,2 0,1 1,4 0a2,4 0,1 1,-4 0"
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.6"/>
+
+</vector>

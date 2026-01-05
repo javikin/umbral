@@ -43,7 +43,7 @@ class BlockingService : Service() {
 
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "umbral_blocking_channel"
-        private const val MONITOR_INTERVAL_MS = 500L
+        private const val MONITOR_INTERVAL_MS = 200L  // More aggressive monitoring
     }
 
     override fun onCreate() {
@@ -137,21 +137,21 @@ class BlockingService : Service() {
 
         Timber.d("Starting app monitoring")
         monitoringJob = serviceScope.launch {
-            var lastBlockedApp: String? = null
+            var lastBlockedTime = 0L
+            val minBlockingInterval = 300L // Min time between showing blocking screens
 
             while (isActive && blockingManager.isBlocking) {
                 try {
                     val currentApp = foregroundAppMonitor.getCurrentForegroundApp()
+                    val now = System.currentTimeMillis()
 
                     if (currentApp != null && blockingManager.isAppBlocked(currentApp)) {
-                        // Only show blocking screen if it's a different app or first time
-                        if (currentApp != lastBlockedApp) {
+                        // Always show blocking screen, but with a small cooldown to prevent flicker
+                        if (now - lastBlockedTime > minBlockingInterval) {
                             Timber.d("Blocked app detected: $currentApp")
                             showBlockingScreen(currentApp)
-                            lastBlockedApp = currentApp
+                            lastBlockedTime = now
                         }
-                    } else {
-                        lastBlockedApp = null
                     }
                 } catch (e: Exception) {
                     Timber.e(e, "Error during app monitoring")
@@ -172,7 +172,9 @@ class BlockingService : Service() {
         val intent = Intent(this, BlockingActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_NO_ANIMATION or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
             putExtra(BlockingActivity.EXTRA_BLOCKED_PACKAGE, blockedPackage)
         }
         startActivity(intent)

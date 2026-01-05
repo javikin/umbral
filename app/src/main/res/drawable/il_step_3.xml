@@ -1,0 +1,62 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <!-- Outer glow circle -->
+    <path
+        android:pathData="M80,80m-55,0a55,55 0,1 1,110 0a55,55 0,1 1,-110 0"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.08"/>
+
+    <!-- Inner glow circle -->
+    <path
+        android:pathData="M80,80m-40,0a40,40 0,1 1,80 0a40,80 0,1 1,-80 0"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.12"/>
+
+    <!-- Shield shape -->
+    <path
+        android:pathData="M80,30 L125,50 L125,90 Q125,120 80,140 Q35,120 35,90 L35,50 Z"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.15"
+        android:strokeColor="#10B981"
+        android:strokeWidth="3"/>
+
+    <!-- Inner shield highlight -->
+    <path
+        android:pathData="M80,45 L110,60 L110,85 Q110,105 80,120 Q50,105 50,85 L50,60 Z"
+        android:strokeColor="#10B981"
+        android:strokeWidth="1.5"
+        android:strokeAlpha="0.5"
+        android:fillColor="@android:color/transparent"/>
+
+    <!-- Large checkmark -->
+    <path
+        android:pathData="M60,85 L75,100 L102,68"
+        android:strokeColor="#10B981"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+
+    <!-- Sparkle elements -->
+    <path
+        android:pathData="M130,45 L135,45 M132.5,42.5 L132.5,47.5"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M28,65 L32,65 M30,63 L30,67"
+        android:strokeColor="#6366F1"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M125,110m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+        android:fillColor="#10B981"
+        android:fillAlpha="0.6"/>
+
+</vector>

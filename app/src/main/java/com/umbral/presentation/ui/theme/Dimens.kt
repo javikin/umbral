@@ -2,6 +2,11 @@ package com.umbral.presentation.ui.theme
 
 import androidx.compose.ui.unit.dp
 
+/**
+ * @deprecated Use [UmbralSpacing] instead for spacing tokens.
+ * This file is kept for backwards compatibility during migration.
+ */
+@Deprecated("Use UmbralSpacing instead", ReplaceWith("UmbralSpacing"))
 object UmbralDimens {
     // Spacing
     val spaceXxs = 2.dp

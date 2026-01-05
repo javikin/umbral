@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.umbral.data.local.dao.BlockingProfileDao
 import com.umbral.data.local.entity.BlockingProfileEntity
 import com.umbral.data.local.preferences.UmbralPreferences
+import com.umbral.domain.blocking.BlockingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -25,7 +28,8 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val preferences: UmbralPreferences,
-    private val profileDao: BlockingProfileDao
+    private val profileDao: BlockingProfileDao,
+    private val blockingManager: BlockingManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -38,14 +42,14 @@ class HomeViewModel @Inject constructor(
     private fun loadState() {
         viewModelScope.launch {
             combine(
-                preferences.blockingEnabled,
+                blockingManager.blockingState,
                 preferences.currentStreak,
                 preferences.onboardingCompleted,
                 profileDao.getActiveProfile()
-            ) { blockingEnabled, streak, onboardingCompleted, activeProfile ->
+            ) { blockingState, streak, onboardingCompleted, activeProfile ->
                 HomeUiState(
                     isLoading = false,
-                    isBlockingEnabled = blockingEnabled,
+                    isBlockingEnabled = blockingState.isActive,
                     activeProfile = activeProfile,
                     currentStreak = streak,
                     onboardingCompleted = onboardingCompleted
@@ -58,16 +62,36 @@ class HomeViewModel @Inject constructor(
 
     fun toggleBlocking() {
         viewModelScope.launch {
-            val newState = !_uiState.value.isBlockingEnabled
-            preferences.setBlockingEnabled(newState)
+            val activeProfile = _uiState.value.activeProfile
+
+            if (activeProfile != null) {
+                // Use BlockingManager to toggle
+                val result = blockingManager.toggleBlocking(activeProfile.id)
+                result.onFailure { e ->
+                    Timber.e(e, "Failed to toggle blocking")
+                }
+            } else {
+                // No active profile, try to get the first available profile
+                val profiles = profileDao.getAllProfilesSync()
+                if (profiles.isNotEmpty()) {
+                    val firstProfile = profiles.first()
+                    val result = blockingManager.startBlocking(firstProfile.id)
+                    result.onFailure { e ->
+                        Timber.e(e, "Failed to start blocking")
+                    }
+                } else {
+                    Timber.w("No profiles available to activate")
+                }
+            }
         }
     }
 
     fun selectProfile(profileId: String) {
         viewModelScope.launch {
-            profileDao.deactivateAllProfiles()
-            profileDao.activateProfile(profileId)
-            preferences.setActiveProfileId(profileId)
+            val result = blockingManager.startBlocking(profileId)
+            result.onFailure { e ->
+                Timber.e(e, "Failed to select profile")
+            }
         }
     }
 }

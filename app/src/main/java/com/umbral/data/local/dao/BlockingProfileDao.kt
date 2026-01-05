@@ -15,6 +15,9 @@ interface BlockingProfileDao {
     @Query("SELECT * FROM blocking_profiles ORDER BY updatedAt DESC")
     fun getAllProfiles(): Flow<List<BlockingProfileEntity>>
 
+    @Query("SELECT * FROM blocking_profiles ORDER BY updatedAt DESC")
+    suspend fun getAllProfilesSync(): List<BlockingProfileEntity>
+
     @Query("SELECT * FROM blocking_profiles WHERE id = :id")
     suspend fun getProfileById(id: String): BlockingProfileEntity?
 

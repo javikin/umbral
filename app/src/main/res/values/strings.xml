@@ -89,8 +89,12 @@
     <string name="blocking_notification_text">Perfil activo: %1$s</string>
     <string name="blocking_screen_title">Esta app esta bloqueada</string>
     <string name="blocking_screen_message">Has configurado bloquear esta app para mantener tu enfoque.</string>
+    <string name="blocking_screen_supportive_title">Estás protegiendo tu enfoque</string>
+    <string name="blocking_screen_supportive_message">Estás tomando el control de tu tiempo</string>
     <string name="blocking_strict_mode_message">Escanea tu tag NFC para desbloquear.</string>
+    <string name="blocking_strict_mode_hint">Modo estricto: requiere NFC para desbloquear</string>
     <string name="go_back">Volver al inicio</string>
+    <string name="go_home">Volver al inicio</string>
     <string name="disable_blocking">Desactivar bloqueo</string>
 
     <!-- Quick Settings Tile -->
@@ -106,12 +110,31 @@
     <!-- Onboarding -->
     <string name="onboarding_welcome">Bienvenido</string>
     <string name="onboarding_how_it_works">Como funciona</string>
+    <string name="onboarding_unlock_title">¿Como desbloquear tus apps?</string>
+    <string name="onboarding_unlock_subtitle">Cuando tus apps esten bloqueadas, podras desbloquearlas de dos formas:</string>
+    <string name="onboarding_unlock_nfc_title">Tag NFC</string>
+    <string name="onboarding_unlock_nfc_desc">Acerca tu telefono a un tag NFC programado</string>
+    <string name="onboarding_unlock_qr_title">Codigo QR</string>
+    <string name="onboarding_unlock_qr_desc">Escanea un codigo QR de desbloqueo</string>
+    <string name="onboarding_unlock_button">Entendido</string>
     <string name="onboarding_permissions">Permisos necesarios</string>
     <string name="onboarding_select_apps">Selecciona apps</string>
     <string name="onboarding_done">Listo!</string>
     <string name="next">Siguiente</string>
     <string name="skip">Saltar</string>
     <string name="get_started">Comenzar</string>
+
+    <!-- App Categories -->
+    <string name="category_all">Todas</string>
+    <string name="category_social">Redes Sociales</string>
+    <string name="category_communication">Comunicación</string>
+    <string name="category_games">Juegos</string>
+    <string name="category_entertainment">Entretenimiento</string>
+    <string name="category_productivity">Productividad</string>
+    <string name="category_shopping">Compras</string>
+    <string name="category_news">Noticias</string>
+    <string name="category_system">Sistema</string>
+    <string name="category_other">Otras</string>
 
     <!-- Common -->
     <string name="save">Guardar</string>

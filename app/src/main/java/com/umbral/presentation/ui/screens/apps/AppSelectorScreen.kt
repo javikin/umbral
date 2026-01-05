@@ -1,8 +1,6 @@
 package com.umbral.presentation.ui.screens.apps
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,19 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -45,14 +39,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.umbral.domain.apps.AppCategory
 import com.umbral.domain.apps.InstalledApp
+import com.umbral.presentation.ui.components.AppListItem
 import com.umbral.presentation.viewmodel.AppSelectorViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,6 +126,15 @@ fun AppSelectorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            // Category Filter
+            CategoryFilter(
+                selectedCategory = uiState.selectedCategory,
+                onCategorySelected = viewModel::selectCategory,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
             )
 
             // System Apps Toggle
@@ -240,108 +242,10 @@ private fun AppsList(
             items = apps,
             key = { it.packageName }
         ) { app ->
-            AppItem(
+            AppListItem(
                 app = app,
                 isSelected = app.packageName in selectedPackages,
                 onToggle = { onToggleApp(app.packageName) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun AppItem(
-    app: InstalledApp,
-    isSelected: Boolean,
-    onToggle: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clickable(onClick = onToggle),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-            } else {
-                MaterialTheme.colorScheme.surface
-            }
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 2.dp else 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // App Icon
-            AppIcon(
-                app = app,
-                modifier = Modifier.size(48.dp)
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // App Info
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = app.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = app.packageName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (app.isSystemApp) {
-                    Text(
-                        text = "Sistema",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-            }
-
-            // Selection Checkbox
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = { onToggle() }
-            )
-        }
-    }
-}
-
-@Composable
-private fun AppIcon(
-    app: InstalledApp,
-    modifier: Modifier = Modifier
-) {
-    if (app.icon != null) {
-        val bitmap = app.icon.toBitmap()
-        Image(
-            bitmap = bitmap.asImageBitmap(),
-            contentDescription = app.name,
-            modifier = modifier.clip(RoundedCornerShape(8.dp))
-        )
-    } else {
-        Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Block,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -398,6 +302,37 @@ private fun EmptyContent(
                 },
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun CategoryFilter(
+    selectedCategory: AppCategory,
+    onCategorySelected: (AppCategory) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        AppCategory.entries.forEach { category ->
+            FilterChip(
+                selected = selectedCategory == category,
+                onClick = { onCategorySelected(category) },
+                label = {
+                    Text(stringResource(category.displayName))
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = category.icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             )
         }
     }
