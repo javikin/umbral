@@ -42,15 +42,9 @@ App Android open-source que permite bloquear aplicaciones automáticamente media
 
 - **Semana actual:** 11-12 (Feature Complete)
 - **Archivos Kotlin:** 106
-- **Tests implementados:** 8 archivos (~150 casos)
-- **Estado de compilación:** ❌ Errores pendientes
-
-### Errores de Compilación Conocidos
-
-1. `domain.apps.InstalledApp` - modelo no existe
-2. `domain.qr.Profile` - debería ser `domain.blocking.BlockingProfile`
-3. `QrScanViewModel` - métodos inexistentes
-4. Screens de UI - tipos incorrectos
+- **Tests implementados:** 8 archivos (170 tests)
+- **Estado de compilación:** ✅ Build exitoso
+- **Tests:** ✅ 170 tests pasando
 
 ## Documentación Existente
 
@@ -63,9 +57,9 @@ App Android open-source que permite bloquear aplicaciones automáticamente media
 
 ## Épicos
 
-1. **fix-compilation** - Corregir errores de compilación
-2. **testing-qa** - Completar testing y QA (Semana 13)
-3. **launch-prep** - Preparación para Play Store (Semana 14)
+1. **fix-compilation** - ✅ Completado (5/5 tasks)
+2. **testing-qa** - ⏳ Pendiente - Completar testing y QA (Semana 13)
+3. **launch-prep** - ⏳ Pendiente - Preparación para Play Store (Semana 14)
 
 ## Enlaces
 

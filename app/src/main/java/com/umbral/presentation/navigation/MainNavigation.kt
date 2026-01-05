@@ -1,6 +1,8 @@
 package com.umbral.presentation.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -21,6 +23,10 @@ fun MainNavigation(
 ) {
     val onboardingCompleted by viewModel.preferences.onboardingCompleted
         .collectAsStateWithLifecycle(initialValue = false)
+
+    LaunchedEffect(onboardingCompleted) {
+        Log.d("MainNavigation", "onboardingCompleted = $onboardingCompleted")
+    }
 
     if (!onboardingCompleted) {
         // Show onboarding flow

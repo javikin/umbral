@@ -1,0 +1,154 @@
+/**
+ * JaCoCo Configuration for Umbral Android Project
+ *
+ * This file configures code coverage reporting for unit tests.
+ *
+ * Usage:
+ *   ./gradlew jacocoTestReport
+ *
+ * Reports are generated in:
+ *   app/build/reports/jacoco/jacocoTestReport/
+ *     - html/index.html (Human-readable report)
+ *     - jacocoTestReport.xml (For CI/CD integration)
+ */
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+// Enable coverage for debug builds
+android {
+    buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
+    }
+}
+
+// Files to exclude from coverage analysis
+def excludedFiles = [
+    // Android generated
+    '**/R.class',
+    '**/R$*.class',
+    '**/BuildConfig.*',
+    '**/Manifest*.*',
+
+    // Hilt/Dagger generated
+    '**/*_HiltModules*.*',
+    '**/*_Factory.*',
+    '**/*_MembersInjector.*',
+    '**/*Module_*Factory.*',
+    '**/Hilt_*.*',
+    '**/*_GeneratedInjector.*',
+    '**/dagger/**',
+    '**/hilt_aggregated_deps/**',
+
+    // Room generated
+    '**/*_Impl.*',
+    '**/*_Impl$*.*',
+
+    // Compose generated
+    '**/*ComposableSingletons*.*',
+
+    // UI Components (tested via instrumentation tests, not unit tests)
+    '**/ui/components/**',
+    '**/ui/screens/**',
+    '**/ui/theme/**',
+
+    // Application and Activity classes
+    '**/*Application.*',
+    '**/*Activity.*',
+    '**/*Fragment.*',
+
+    // Test classes
+    '**/test/**',
+    '**/androidTest/**',
+    '**/*Test.*',
+    '**/*Tests.*'
+]
+
+// Main JaCoCo report task
+tasks.register("jacocoTestReport", JacocoReport) {
+    dependsOn 'testDebugUnitTest'
+
+    group = "Reporting"
+    description = "Generate JaCoCo coverage reports for unit tests"
+
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+
+        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        html.outputLocation = layout.buildDirectory.dir("reports/jacoco/jacocoTestReport/html")
+    }
+
+    // Source directories - include both java and kotlin
+    def mainSrcJava = "${project.projectDir}/src/main/java"
+    def mainSrcKotlin = "${project.projectDir}/src/main/kotlin"
+    sourceDirectories.setFrom(files([mainSrcJava, mainSrcKotlin]))
+
+    // Class directories - using Kotlin compiled classes from debug variant
+    def kotlinClasses = fileTree(
+        dir: "${buildDir}/tmp/kotlin-classes/debug",
+        excludes: excludedFiles
+    )
+
+    // Alternative paths for different Gradle/AGP versions
+    def javaClasses = fileTree(
+        dir: "${buildDir}/intermediates/javac/debug/classes",
+        excludes: excludedFiles
+    )
+
+    classDirectories.setFrom(files([kotlinClasses, javaClasses]))
+
+    // Execution data from unit tests - check both possible locations
+    def execFiles = fileTree(buildDir).include(
+        "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+        "jacoco/testDebugUnitTest.exec"
+    )
+    executionData.setFrom(execFiles)
+}
+
+// Verification task to ensure minimum coverage
+tasks.register("jacocoTestCoverageVerification", JacocoCoverageVerification) {
+    dependsOn 'jacocoTestReport'
+
+    group = "Verification"
+    description = "Verify code coverage meets minimum requirements"
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.0 // Start with 0%, increase as tests are added
+            }
+        }
+
+        // Per-class rules (optional, stricter)
+        rule {
+            enabled = false // Enable when ready for stricter checks
+            element = 'CLASS'
+            excludes = excludedFiles
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.50 // 50% line coverage per class
+            }
+        }
+    }
+
+    def kotlinClasses = fileTree(
+        dir: "${buildDir}/tmp/kotlin-classes/debug",
+        excludes: excludedFiles
+    )
+
+    classDirectories.setFrom(files([kotlinClasses]))
+
+    def execFiles = fileTree(buildDir).include(
+        "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+        "jacoco/testDebugUnitTest.exec"
+    )
+    executionData.setFrom(execFiles)
+}

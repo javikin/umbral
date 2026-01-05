@@ -1,5 +1,6 @@
 package com.umbral.presentation.ui.screens.onboarding
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Layers
@@ -23,7 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,11 +51,16 @@ import com.umbral.presentation.viewmodel.OnboardingViewModel
 @Composable
 fun PermissionsScreen(
     viewModel: OnboardingViewModel = hiltViewModel(),
-    onContinue: () -> Unit,
-    onBack: () -> Unit
+    onContinue: () -> Unit
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Prevent back navigation - exit app instead
+    BackHandler {
+        (context as? android.app.Activity)?.finish()
+    }
 
     // Refresh permissions when returning to this screen
     LaunchedEffect(lifecycleOwner) {
@@ -68,12 +72,7 @@ fun PermissionsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Permisos necesarios") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
-                    }
-                }
+                title = { Text("Permisos necesarios") }
             )
         }
     ) { paddingValues ->

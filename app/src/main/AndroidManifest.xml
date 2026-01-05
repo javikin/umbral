@@ -28,6 +28,18 @@
     <!-- Boot completed (to restart service) -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- Query all packages (Android 11+) - Required for app blockers -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+    <!-- Package Visibility (Android 11+) - Fallback for package queries -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
     <application
         android:name=".UmbralApp"
         android:allowBackup="true"

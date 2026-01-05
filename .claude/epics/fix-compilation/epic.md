@@ -33,8 +33,8 @@ Completadas: 5
 ## Criterio de Éxito
 
 - [x] `./gradlew assembleDebug` compila sin errores
-- [ ] `./gradlew :app:testDebugUnitTest` ejecuta los tests
-- [ ] App instala en emulador
+- [x] `./gradlew :app:testDebugUnitTest` ejecuta los tests (170 tests)
+- [ ] App instala en emulador (pendiente testing manual)
 
 ## Resumen de Cambios
 

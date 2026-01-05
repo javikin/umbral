@@ -1,5 +1,6 @@
 package com.umbral.presentation.ui.screens.onboarding
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umbral.presentation.ui.theme.UmbralDimens
@@ -48,6 +50,13 @@ fun SuccessScreen(
     onStartBlocking: () -> Unit,
     onLater: () -> Unit
 ) {
+    val context = LocalContext.current
+
+    // Prevent going back after completing onboarding
+    BackHandler {
+        // Exit app instead of going back
+        (context as? android.app.Activity)?.finish()
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier

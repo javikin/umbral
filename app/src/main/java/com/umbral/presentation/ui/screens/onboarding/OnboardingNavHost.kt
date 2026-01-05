@@ -1,5 +1,6 @@
 package com.umbral.presentation.ui.screens.onboarding
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -61,6 +62,19 @@ fun OnboardingNavHost(
             HowItWorksScreen(
                 onContinue = {
                     viewModel.nextStep()
+                    navController.navigate("how_to_unlock")
+                },
+                onBack = {
+                    viewModel.previousStep()
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable("how_to_unlock") {
+            HowToUnblockScreen(
+                onContinue = {
+                    viewModel.nextStep()
                     navController.navigate("permissions")
                 },
                 onBack = {
@@ -75,11 +89,10 @@ fun OnboardingNavHost(
                 viewModel = viewModel,
                 onContinue = {
                     viewModel.nextStep()
-                    navController.navigate("select_apps")
-                },
-                onBack = {
-                    viewModel.previousStep()
-                    navController.popBackStack()
+                    navController.navigate("select_apps") {
+                        // Clear backstack - no going back after permissions
+                        popUpTo("welcome") { inclusive = true }
+                    }
                 }
             )
         }
@@ -101,10 +114,6 @@ fun OnboardingNavHost(
                             // TODO: Show error message
                         }
                     )
-                },
-                onBack = {
-                    viewModel.previousStep()
-                    navController.popBackStack()
                 }
             )
         }

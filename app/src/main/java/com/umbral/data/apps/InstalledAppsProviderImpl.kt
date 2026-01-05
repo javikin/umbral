@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.content.pm.PackageManager.ResolveInfoFlags
+import android.os.Build
+import android.util.Log
+import com.umbral.domain.apps.AppCategory
 import com.umbral.domain.apps.InstalledApp
 import com.umbral.domain.apps.InstalledAppsProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,6 +16,8 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private const val TAG = "InstalledAppsProvider"
 
 @Singleton
 class InstalledAppsProviderImpl @Inject constructor(
@@ -38,13 +44,33 @@ class InstalledAppsProviderImpl @Inject constructor(
     override suspend fun getLaunchableApps(includeSystemApps: Boolean): List<InstalledApp> {
         return withContext(Dispatchers.IO) {
             try {
+                Log.d(TAG, "Starting to query installed apps (includeSystemApps: $includeSystemApps)")
+
                 val mainIntent = Intent(Intent.ACTION_MAIN, null).apply {
                     addCategory(Intent.CATEGORY_LAUNCHER)
                 }
 
-                val resolveInfos = packageManager.queryIntentActivities(mainIntent, 0)
+                // Query launchable apps - <queries> in manifest allows visibility
+                Log.d(TAG, "Calling queryIntentActivities...")
+                val resolveInfos = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    // Android 13+ (API 33+)
+                    Log.d(TAG, "Using TIRAMISU+ API")
+                    packageManager.queryIntentActivities(
+                        mainIntent,
+                        ResolveInfoFlags.of(0L)
+                    )
+                } else {
+                    // Android 11-12 (API 30-32)
+                    Log.d(TAG, "Using pre-TIRAMISU API")
+                    @Suppress("DEPRECATION")
+                    packageManager.queryIntentActivities(mainIntent, 0)
+                }
 
-                resolveInfos
+                Log.d(TAG, "queryIntentActivities returned ${resolveInfos.size} results")
+
+                Timber.d("Found ${resolveInfos.size} launchable apps")
+
+                val apps = resolveInfos
                     .asSequence()
                     .map { resolveInfo ->
                         val appInfo = resolveInfo.activityInfo.applicationInfo
@@ -57,8 +83,10 @@ class InstalledAppsProviderImpl @Inject constructor(
                             icon = try {
                                 appInfo.loadIcon(packageManager)
                             } catch (e: Exception) {
+                                Timber.w(e, "Failed to load icon for $packageName")
                                 null
                             },
+                            category = AppCategory.fromPackageName(packageName),
                             isSystemApp = isSystem
                         )
                     }
@@ -73,6 +101,9 @@ class InstalledAppsProviderImpl @Inject constructor(
                     .distinctBy { it.packageName }
                     .sortedBy { it.name.lowercase() }
                     .toList()
+
+                Timber.d("Returning ${apps.size} apps after filtering (systemEssentials excluded: ${systemEssentialPackages.size})")
+                apps
             } catch (e: Exception) {
                 Timber.e(e, "Error getting installed apps")
                 emptyList()
@@ -94,6 +125,7 @@ class InstalledAppsProviderImpl @Inject constructor(
                     } catch (e: Exception) {
                         null
                     },
+                    category = AppCategory.fromPackageName(packageName),
                     isSystemApp = isSystem
                 )
             } catch (e: PackageManager.NameNotFoundException) {

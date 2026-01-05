@@ -3,6 +3,7 @@ package com.umbral.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umbral.domain.apps.AppCategory
 import com.umbral.domain.apps.InstalledApp
 import com.umbral.domain.apps.InstalledAppsProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,7 @@ import javax.inject.Inject
 data class AppSelectorUiState(
     val isLoading: Boolean = true,
     val searchQuery: String = "",
+    val selectedCategory: AppCategory = AppCategory.ALL,
     val includeSystemApps: Boolean = false,
     val allApps: List<InstalledApp> = emptyList(),
     val filteredApps: List<InstalledApp> = emptyList(),
@@ -41,6 +43,7 @@ class AppSelectorViewModel @Inject constructor(
     private val alreadyBlockedApps: String = savedStateHandle.get<String>("blockedApps") ?: ""
 
     private val _searchQuery = MutableStateFlow("")
+    private val _selectedCategory = MutableStateFlow(AppCategory.ALL)
     private val _includeSystemApps = MutableStateFlow(false)
     private val _allApps = MutableStateFlow<List<InstalledApp>>(emptyList())
     private val _selectedPackages = MutableStateFlow<Set<String>>(emptySet())
@@ -49,15 +52,24 @@ class AppSelectorViewModel @Inject constructor(
     val uiState: StateFlow<AppSelectorUiState> = combine(
         _isLoading,
         _searchQuery,
+        _selectedCategory,
         _includeSystemApps,
         _allApps,
         _selectedPackages
-    ) { isLoading, query, includeSystem, apps, selected ->
-        val filtered = filterApps(apps, query, includeSystem)
+    ) { flows ->
+        val isLoading = flows[0] as Boolean
+        val query = flows[1] as String
+        val category = flows[2] as AppCategory
+        val includeSystem = flows[3] as Boolean
+        val apps = flows[4] as List<InstalledApp>
+        val selected = flows[5] as Set<String>
+
+        val filtered = filterApps(apps, query, category, includeSystem)
 
         AppSelectorUiState(
             isLoading = isLoading,
             searchQuery = query,
+            selectedCategory = category,
             includeSystemApps = includeSystem,
             allApps = apps,
             filteredApps = filtered,
@@ -103,9 +115,14 @@ class AppSelectorViewModel @Inject constructor(
     private fun filterApps(
         apps: List<InstalledApp>,
         query: String,
+        category: AppCategory,
         includeSystem: Boolean
     ): List<InstalledApp> {
         return apps
+            .filter { app ->
+                // Filter by category
+                category == AppCategory.ALL || app.category == category
+            }
             .filter { app ->
                 // Filter by system app setting
                 includeSystem || !app.isSystemApp
@@ -123,6 +140,10 @@ class AppSelectorViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun selectCategory(category: AppCategory) {
+        _selectedCategory.value = category
     }
 
     fun toggleSystemApps() {

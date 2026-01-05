@@ -1,5 +1,6 @@
 package com.umbral.data.onboarding
 
+import android.util.Log
 import com.umbral.data.local.preferences.UmbralPreferences
 import com.umbral.domain.blocking.BlockingProfile
 import com.umbral.domain.blocking.ProfileRepository
@@ -100,37 +101,45 @@ class OnboardingManagerImpl @Inject constructor(
     }
 
     override suspend fun completeOnboarding(): Result<String> {
+        Log.d("OnboardingManager", "completeOnboarding() called")
         return try {
             val currentState = _state.value
+            Log.d("OnboardingManager", "selectedApps: ${currentState.selectedApps.size}")
 
             // Validate minimum requirements
             if (currentState.selectedApps.isEmpty()) {
+                Log.e("OnboardingManager", "No apps selected")
                 return Result.failure(IllegalStateException("No apps selected"))
             }
 
             if (!permissionHelper.hasMinimumPermissions()) {
+                Log.e("OnboardingManager", "Missing required permissions")
                 return Result.failure(IllegalStateException("Missing required permissions"))
             }
 
-            // Create the first profile
+            // Create the first profile (active by default)
             val profileId = UUID.randomUUID().toString()
             val profile = BlockingProfile(
                 id = profileId,
                 name = currentState.profileName,
                 iconName = "shield",
                 colorHex = "#6650A4",
-                isActive = false,
+                isActive = true,  // Activate immediately
                 isStrictMode = false,
                 blockedApps = currentState.selectedApps,
                 createdAt = java.time.LocalDateTime.now(),
                 updatedAt = java.time.LocalDateTime.now()
             )
 
-            // Save profile
+            // Save profile (already active)
+            Log.d("OnboardingManager", "Saving profile with isActive=true...")
             profileRepository.saveProfile(profile)
+            Log.d("OnboardingManager", "Profile saved")
 
             // Mark onboarding as complete
+            Log.d("OnboardingManager", "Setting onboarding completed = true")
             preferences.setOnboardingCompleted(true)
+            Log.d("OnboardingManager", "Onboarding marked as complete")
 
             // Update state
             _state.update { current ->
@@ -139,6 +148,7 @@ class OnboardingManagerImpl @Inject constructor(
 
             Result.success(profileId)
         } catch (e: Exception) {
+            Log.e("OnboardingManager", "Error completing onboarding", e)
             Result.failure(e)
         }
     }

@@ -1,5 +1,6 @@
 package com.umbral.presentation.ui.screens.onboarding
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umbral.presentation.ui.theme.UmbralDimens
@@ -37,6 +39,12 @@ import com.umbral.presentation.ui.theme.UmbralDimens
 fun WelcomeScreen(
     onGetStarted: () -> Unit
 ) {
+    val context = LocalContext.current
+
+    // Handle physical back button - exit app instead of going back
+    BackHandler {
+        (context as? android.app.Activity)?.finish()
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
