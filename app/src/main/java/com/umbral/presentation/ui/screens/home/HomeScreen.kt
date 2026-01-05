@@ -43,8 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umbral.R
-import com.umbral.presentation.ui.theme.BlockingActive
-import com.umbral.presentation.ui.theme.BlockingInactive
 import com.umbral.presentation.viewmodel.HomeUiState
 import com.umbral.presentation.viewmodel.HomeViewModel
 
@@ -167,7 +165,10 @@ private fun BlockingStatusCard(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (isBlocking) BlockingActive else BlockingInactive,
+        targetValue = if (isBlocking)
+            MaterialTheme.colorScheme.primary
+        else
+            MaterialTheme.colorScheme.surfaceVariant,
         label = "backgroundColor"
     )
 
@@ -190,18 +191,23 @@ private fun BlockingStatusCard(
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val contentColor = if (isBlocking)
+                MaterialTheme.colorScheme.onPrimary
+            else
+                MaterialTheme.colorScheme.onSurfaceVariant
+
             Box(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.2f)),
+                    .background(contentColor.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (isBlocking) Icons.Default.Lock else Icons.Default.LockOpen,
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.surface
+                    tint = contentColor
                 )
             }
 
@@ -214,7 +220,7 @@ private fun BlockingStatusCard(
                     stringResource(R.string.blocking_inactive),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.surface
+                color = contentColor
             )
 
             if (profileName != null && isBlocking) {
@@ -222,7 +228,7 @@ private fun BlockingStatusCard(
                 Text(
                     text = profileName,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                    color = contentColor.copy(alpha = 0.8f)
                 )
             }
 
@@ -231,7 +237,7 @@ private fun BlockingStatusCard(
             Text(
                 text = if (isBlocking) "Toca para desactivar" else "Toca para activar",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                color = contentColor.copy(alpha = 0.6f)
             )
         }
     }
