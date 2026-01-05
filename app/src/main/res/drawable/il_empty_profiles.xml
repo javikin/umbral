@@ -29,14 +29,13 @@
         android:strokeColor="#94A3B8"
         android:strokeWidth="1.5"/>
 
-    <!-- Dashed outline inside folder -->
+    <!-- Outline inside folder (solid with low alpha) -->
     <path
         android:pathData="M55,80 L105,80 L105,110 L55,110 Z"
         android:strokeColor="#94A3B8"
         android:strokeWidth="2"
-        android:strokeAlpha="0.5"
-        android:fillColor="@android:color/transparent"
-        android:strokeDashArray="6,4"/>
+        android:strokeAlpha="0.4"
+        android:fillColor="@android:color/transparent"/>
 
     <!-- Plus icon in center -->
     <path

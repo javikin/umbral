@@ -22,7 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.AppBlocking
-import androidx.compose.material.icons.outlined.FocusAuto
+import androidx.compose.material.icons.outlined.CenterFocusStrong
 import androidx.compose.material.icons.outlined.Nfc
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -187,7 +187,7 @@ fun HowItWorksScreen(
             ) {
                 StepItem(
                     stepNumber = 3,
-                    icon = Icons.Outlined.FocusAuto,
+                    icon = Icons.Outlined.CenterFocusStrong,
                     title = "¡Listo!",
                     description = "Toca tu tag y enfócate sin distracciones"
                 )

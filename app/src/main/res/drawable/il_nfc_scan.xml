@@ -23,14 +23,13 @@
         android:pathData="M42,75m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"
         android:fillColor="#6366F1"/>
 
-    <!-- Connection waves between tag and phone -->
+    <!-- Connection waves between tag and phone (solid with alpha) -->
     <path
         android:pathData="M80,70 L95,70"
         android:strokeColor="#8B5CF6"
         android:strokeWidth="2"
         android:strokeAlpha="0.8"
-        android:strokeLineCap="round"
-        android:strokeDashArray="4,4"/>
+        android:strokeLineCap="round"/>
 
     <path
         android:pathData="M80,60 Q90,70 80,80"

@@ -191,14 +191,7 @@ fun SuccessScreen(
                         onClick = onStartBlocking,
                         fullWidth = true,
                         variant = ButtonVariant.Primary,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.PlayArrow,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(UmbralSpacing.xs))
-                        }
+                        leadingIcon = Icons.Outlined.PlayArrow
                     )
 
                     Spacer(modifier = Modifier.height(UmbralSpacing.sm))

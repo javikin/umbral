@@ -319,13 +319,7 @@ fun SelectAppsScreen(
                                 onClick = {
                                     selectedCategory = if (selectedCategory == category) null else category
                                 },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = category.icon,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
+                                leadingIcon = category.icon
                             )
                         }
                     }

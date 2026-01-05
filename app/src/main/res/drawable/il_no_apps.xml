@@ -10,7 +10,7 @@
         android:fillColor="#94A3B8"
         android:fillAlpha="0.08"/>
 
-    <!-- Grid of empty app slots (3x3) -->
+    <!-- Grid of empty app slots (3x3) with solid strokes -->
 
     <!-- Row 1 -->
     <path
@@ -18,21 +18,21 @@
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
     <path
         android:pathData="M67,35 L87,35 Q92,35 92,40 L92,55 Q92,60 87,60 L72,60 Q67,60 67,55 L67,40 Q67,35 72,35 Z"
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
     <path
         android:pathData="M99,35 L119,35 Q124,35 124,40 L124,55 Q124,60 119,60 L104,60 Q99,60 99,55 L99,40 Q99,35 104,35 Z"
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
     <!-- Row 2 -->
     <path
@@ -40,7 +40,7 @@
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
     <!-- Center slot with plus icon -->
     <path
@@ -59,7 +59,7 @@
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
     <!-- Row 3 -->
     <path
@@ -67,20 +67,20 @@
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
     <path
         android:pathData="M67,99 L87,99 Q92,99 92,104 L92,119 Q92,124 87,124 L72,124 Q67,124 67,119 L67,104 Q67,99 72,99 Z"
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
     <path
         android:pathData="M99,99 L119,99 Q124,99 124,104 L124,119 Q124,124 119,124 L104,124 Q99,124 99,119 L99,104 Q99,99 104,99 Z"
         android:fillColor="#F1F5F9"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1.5"
-        android:strokeDashArray="4,3"/>
+        android:strokeAlpha="0.7"/>
 
 </vector>

@@ -229,14 +229,7 @@ fun BlockingScreen(
                 onClick = onGoHome,
                 variant = ButtonVariant.Secondary,
                 fullWidth = true,
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(UmbralSpacing.sm))
-                }
+                leadingIcon = Icons.Default.Home
             )
 
             // Unlock option (only if not strict mode)

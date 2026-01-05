@@ -255,14 +255,7 @@ private fun EmptyProfilesContent(
             text = stringResource(R.string.create_profile),
             onClick = onCreateProfile,
             variant = ButtonVariant.Primary,
-            leadingIcon = {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(UmbralSpacing.xs))
-            }
+            leadingIcon = Icons.Default.Add
         )
     }
 }

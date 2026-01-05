@@ -31,54 +31,49 @@
         android:strokeWidth="1.5"
         android:strokeLineCap="round"/>
 
-    <!-- Grid lines horizontal -->
+    <!-- Grid lines horizontal (solid with low alpha instead of dashed) -->
     <path
         android:pathData="M40,70 L120,70"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1"
-        android:strokeDashArray="4,4"/>
+        android:strokeAlpha="0.6"/>
     <path
         android:pathData="M40,90 L120,90"
         android:strokeColor="#E2E8F0"
         android:strokeWidth="1"
-        android:strokeDashArray="4,4"/>
+        android:strokeAlpha="0.6"/>
 
-    <!-- Placeholder data points (empty circles) -->
+    <!-- Placeholder data points (empty circles with solid stroke) -->
     <path
         android:pathData="M55,95m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
         android:fillColor="#FFFFFF"
         android:strokeColor="#94A3B8"
-        android:strokeWidth="1.5"
-        android:strokeDashArray="3,2"/>
+        android:strokeWidth="1.5"/>
 
     <path
         android:pathData="M75,85m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
         android:fillColor="#FFFFFF"
         android:strokeColor="#94A3B8"
-        android:strokeWidth="1.5"
-        android:strokeDashArray="3,2"/>
+        android:strokeWidth="1.5"/>
 
     <path
         android:pathData="M95,75m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
         android:fillColor="#FFFFFF"
         android:strokeColor="#94A3B8"
-        android:strokeWidth="1.5"
-        android:strokeDashArray="3,2"/>
+        android:strokeWidth="1.5"/>
 
     <path
         android:pathData="M115,65m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
         android:fillColor="#FFFFFF"
         android:strokeColor="#94A3B8"
-        android:strokeWidth="1.5"
-        android:strokeDashArray="3,2"/>
+        android:strokeWidth="1.5"/>
 
-    <!-- Dashed trend line -->
+    <!-- Trend line (solid with low alpha instead of dashed) -->
     <path
         android:pathData="M55,95 L75,85 L95,75 L115,65"
         android:strokeColor="#6366F1"
         android:strokeWidth="2"
         android:strokeAlpha="0.3"
-        android:strokeDashArray="6,4"
         android:fillColor="@android:color/transparent"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
