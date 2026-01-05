@@ -1,12 +1,13 @@
 package com.umbral.presentation.ui.screens.onboarding
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,128 +18,239 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Nfc
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.umbral.presentation.ui.theme.UmbralDimens
+import com.umbral.presentation.ui.components.ButtonVariant
+import com.umbral.presentation.ui.components.UmbralButton
+import com.umbral.presentation.ui.theme.UmbralSpacing
+import com.umbral.presentation.ui.theme.UmbralTheme
+import kotlinx.coroutines.delay
 
+/**
+ * Welcome Screen - First impression of Umbral
+ *
+ * Clean, minimal design with animated entrance.
+ * Focus on the core value proposition: "Tu espacio de enfoque"
+ */
 @Composable
 fun WelcomeScreen(
     onGetStarted: () -> Unit
 ) {
     val context = LocalContext.current
 
+    // Animation states
+    var showLogo by remember { mutableStateOf(false) }
+    var showTitle by remember { mutableStateOf(false) }
+    var showSubtitle by remember { mutableStateOf(false) }
+    var showButton by remember { mutableStateOf(false) }
+
+    // Staggered entrance animation
+    LaunchedEffect(Unit) {
+        delay(200)
+        showLogo = true
+        delay(300)
+        showTitle = true
+        delay(200)
+        showSubtitle = true
+        delay(300)
+        showButton = true
+    }
+
     // Handle physical back button - exit app instead of going back
     BackHandler {
         (context as? android.app.Activity)?.finish()
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primaryContainer
-                    )
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(UmbralDimens.spaceXxl),
+                .padding(horizontal = UmbralSpacing.screenHorizontal)
+                .padding(vertical = UmbralSpacing.xxl),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo animado
-            AnimatedUmbralLogo(
-                modifier = Modifier.size(120.dp)
-            )
+            Spacer(modifier = Modifier.weight(1f))
 
-            Spacer(modifier = Modifier.height(UmbralDimens.spaceXxl))
+            // Hero Logo with animation
+            AnimatedVisibility(
+                visible = showLogo,
+                enter = fadeIn(animationSpec = tween(600)) +
+                        slideInVertically(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessLow
+                            ),
+                            initialOffsetY = { -100 }
+                        )
+            ) {
+                UmbralHeroLogo()
+            }
 
-            // Título
-            Text(
-                text = "Bienvenido a Umbral",
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center
-            )
+            Spacer(modifier = Modifier.height(UmbralSpacing.xl))
 
-            Spacer(modifier = Modifier.height(UmbralDimens.spaceLg))
-
-            // Subtítulo
-            Text(
-                text = "Recupera tu atención. Bloquea distracciones con un simple tap NFC.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(UmbralDimens.spaceXxxl))
-
-            // Botón de inicio
-            Button(
-                onClick = onGetStarted,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
+            // Title
+            AnimatedVisibility(
+                visible = showTitle,
+                enter = fadeIn(animationSpec = tween(500)) +
+                        slideInVertically(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessLow
+                            ),
+                            initialOffsetY = { 50 }
+                        )
             ) {
                 Text(
-                    text = "Comenzar",
-                    style = MaterialTheme.typography.labelLarge
+                    text = "Umbral",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
                 )
             }
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+
+            // Subtitle
+            AnimatedVisibility(
+                visible = showSubtitle,
+                enter = fadeIn(animationSpec = tween(500))
+            ) {
+                Text(
+                    text = "Tu espacio de enfoque",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Description
+            AnimatedVisibility(
+                visible = showSubtitle,
+                enter = fadeIn(animationSpec = tween(500))
+            ) {
+                Text(
+                    text = "Bloquea distracciones con un simple tap NFC.\nRecupera tu atención, un momento a la vez.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = UmbralSpacing.md)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.xxl))
+
+            // CTA Button
+            AnimatedVisibility(
+                visible = showButton,
+                enter = fadeIn(animationSpec = tween(400)) +
+                        slideInVertically(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            ),
+                            initialOffsetY = { 100 }
+                        )
+            ) {
+                UmbralButton(
+                    text = "Comenzar",
+                    onClick = onGetStarted,
+                    fullWidth = true,
+                    variant = ButtonVariant.Primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.lg))
         }
     }
 }
 
 @Composable
-private fun AnimatedUmbralLogo(
+private fun UmbralHeroLogo(
     modifier: Modifier = Modifier
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "logo_pulse")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.05f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000)
+    var isAnimating by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(100)
+        isAnimating = true
+    }
+
+    val scale by animateFloatAsState(
+        targetValue = if (isAnimating) 1f else 0.8f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
         ),
-        label = "scale"
+        label = "logoScale"
     )
 
     Box(
         modifier = modifier
+            .size(140.dp)
             .scale(scale)
-            .background(
-                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
-                shape = MaterialTheme.shapes.extraLarge
-            ),
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = Icons.Default.Nfc,
-            contentDescription = "Umbral Logo",
-            tint = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.size(64.dp)
-        )
+        // Inner circle
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Shield,
+                contentDescription = "Umbral Logo",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(48.dp)
+            )
+        }
+    }
+}
+
+// =============================================================================
+// PREVIEWS
+// =============================================================================
+
+@Preview(name = "Welcome Screen - Light", showBackground = true)
+@Composable
+private fun WelcomeScreenPreview() {
+    UmbralTheme {
+        WelcomeScreen(onGetStarted = {})
+    }
+}
+
+@Preview(name = "Welcome Screen - Dark", showBackground = true)
+@Composable
+private fun WelcomeScreenDarkPreview() {
+    UmbralTheme(darkTheme = true) {
+        WelcomeScreen(onGetStarted = {})
     }
 }
