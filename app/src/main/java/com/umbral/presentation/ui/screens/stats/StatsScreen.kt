@@ -48,6 +48,8 @@ import com.umbral.data.local.dao.AppAttemptCount
 import com.umbral.data.local.dao.DailyStats
 import com.umbral.presentation.ui.components.UmbralCard
 import com.umbral.presentation.ui.components.UmbralElevation
+import com.umbral.presentation.ui.screens.stats.components.TopAppsCard
+import com.umbral.presentation.ui.screens.stats.components.WeeklyChartCard
 import com.umbral.presentation.ui.theme.UmbralSpacing
 import com.umbral.presentation.ui.theme.UmbralTheme
 import kotlin.math.abs
@@ -149,7 +151,7 @@ fun StatsScreen(
                         )
                     }
 
-                    // Weekly Chart Card (placeholder for Task #46)
+                    // Weekly Chart Card
                     item {
                         WeeklyChartCard(dailyStats = uiState.dailyStats)
                     }
@@ -161,9 +163,9 @@ fun StatsScreen(
                         )
                     }
 
-                    // Top Apps Card (placeholder for Task #46)
+                    // Top Apps Card
                     item {
-                        TopAppsCard(topApps = uiState.topApps)
+                        TopAppsCard(apps = uiState.topApps)
                     }
 
                     item { Spacer(modifier = Modifier.height(UmbralSpacing.lg)) }
@@ -324,47 +326,7 @@ private fun PercentageChangeChip(
     }
 }
 
-// =============================================================================
-// WEEKLY CHART CARD (Placeholder for Task #46)
-// =============================================================================
-
-@Composable
-private fun WeeklyChartCard(
-    dailyStats: List<DailyStats>,
-    modifier: Modifier = Modifier
-) {
-    UmbralCard(
-        modifier = modifier.fillMaxWidth(),
-        elevation = UmbralElevation.Subtle
-    ) {
-        Text(
-            text = "Gráfica semanal",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.height(UmbralSpacing.md))
-
-        // Placeholder for chart - will be implemented in Task #46
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    shape = MaterialTheme.shapes.medium
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Gráfica próximamente\n(Tarea #46)",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
+// WeeklyChartCard is imported from components package
 
 // =============================================================================
 // ATTEMPTS CARD
@@ -414,68 +376,7 @@ private fun AttemptsCard(
     }
 }
 
-// =============================================================================
-// TOP APPS CARD (Placeholder for Task #46)
-// =============================================================================
-
-@Composable
-private fun TopAppsCard(
-    topApps: List<AppAttemptCount>,
-    modifier: Modifier = Modifier
-) {
-    UmbralCard(
-        modifier = modifier.fillMaxWidth(),
-        elevation = UmbralElevation.Subtle
-    ) {
-        Text(
-            text = stringResource(R.string.top_blocked_apps),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.height(UmbralSpacing.md))
-
-        // Placeholder for top apps list - will be enhanced in Task #46
-        if (topApps.isEmpty()) {
-            Text(
-                text = "Aún no hay datos",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        shape = MaterialTheme.shapes.medium
-                    )
-                    .padding(UmbralSpacing.md),
-                contentAlignment = Alignment.Center
-            ) {
-                Column {
-                    Text(
-                        text = "Top apps próximamente",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(UmbralSpacing.xs))
-                    Text(
-                        text = "${topApps.size} apps detectadas",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-        }
-    }
-}
+// TopAppsCard is imported from components package
 
 // =============================================================================
 // EMPTY STATE
@@ -725,7 +626,7 @@ private fun StatsScreenContent(
                     item { WeeklyStatsCard(uiState.weeklyBlockedMinutes, uiState.percentageChange) }
                     item { WeeklyChartCard(uiState.dailyStats) }
                     item { AttemptsCard(uiState.todayAttempts) }
-                    item { TopAppsCard(uiState.topApps) }
+                    item { TopAppsCard(apps = uiState.topApps) }
                     item { Spacer(modifier = Modifier.height(UmbralSpacing.lg)) }
                 }
             }

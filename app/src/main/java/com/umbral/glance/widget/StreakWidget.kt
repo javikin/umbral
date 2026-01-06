@@ -196,7 +196,9 @@ class StreakWidget : GlanceAppWidget() {
                                     isToday -> WidgetColors.outline
                                     else -> WidgetColors.surfaceVariant
                                 }
-                            )
+                            ),
+                        contentAlignment = Alignment.Center,
+                        content = {}
                     )
                 }
             }
