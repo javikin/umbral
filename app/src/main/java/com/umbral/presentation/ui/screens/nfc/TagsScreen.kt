@@ -77,11 +77,14 @@ fun TagsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onNavigateToScan,
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar tag")
+            // Solo mostrar FAB si ya hay tags (empty state tiene su propio botón)
+            if (uiState.tags.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = onNavigateToScan,
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Agregar tag")
+                }
             }
         },
         modifier = modifier

@@ -153,6 +153,21 @@ class OnboardingManagerImpl @Inject constructor(
         }
     }
 
+    override suspend fun completeOnboardingSimple() {
+        Log.d("OnboardingManager", "completeOnboardingSimple() called - no profile creation")
+
+        // Just mark onboarding as complete
+        // User will create profile from Home screen
+        preferences.setOnboardingCompleted(true)
+
+        // Update state
+        _state.update { current ->
+            current.copy(isComplete = true)
+        }
+
+        Log.d("OnboardingManager", "Onboarding marked as complete (simple mode)")
+    }
+
     override suspend fun resetOnboarding() {
         preferences.setOnboardingCompleted(false)
         _state.value = OnboardingState.initial()

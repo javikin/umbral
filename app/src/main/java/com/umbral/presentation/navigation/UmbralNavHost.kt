@@ -44,7 +44,9 @@ fun UmbralNavHost(
             composable(NavRoutes.HOME) {
                 HomeScreen(
                     onNavigateToNfcScan = { navController.navigate(NavRoutes.NFC_SCAN) },
-                    onNavigateToQrScan = { navController.navigate(NavRoutes.QR_SCAN) }
+                    onNavigateToQrScan = { navController.navigate(NavRoutes.QR_SCAN) },
+                    onNavigateToStats = { navController.navigate(NavRoutes.STATS) },
+                    onNavigateToCreateProfile = { navController.navigate(NavRoutes.profileDetail("new")) }
                 )
             }
 

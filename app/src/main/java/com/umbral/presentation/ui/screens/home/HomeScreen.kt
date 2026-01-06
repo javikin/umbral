@@ -28,10 +28,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.outlined.Nfc
 import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -73,6 +75,7 @@ fun HomeScreen(
     onNavigateToNfcScan: () -> Unit = {},
     onNavigateToQrScan: () -> Unit = {},
     onNavigateToStats: () -> Unit = {},
+    onNavigateToCreateProfile: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -84,6 +87,7 @@ fun HomeScreen(
         onNfcScanClick = onNavigateToNfcScan,
         onQrScanClick = onNavigateToQrScan,
         onStatsClick = onNavigateToStats,
+        onCreateProfileClick = onNavigateToCreateProfile,
         modifier = modifier
     )
 }
@@ -95,10 +99,12 @@ private fun HomeScreenContent(
     onNfcScanClick: () -> Unit,
     onQrScanClick: () -> Unit,
     onStatsClick: () -> Unit,
+    onCreateProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Animation states
     var showStatusCard by remember { mutableStateOf(false) }
+    var showFirstProfileCard by remember { mutableStateOf(false) }
     var showStreakCard by remember { mutableStateOf(false) }
     var showQuickActions by remember { mutableStateOf(false) }
     var showStatsPreview by remember { mutableStateOf(false) }
@@ -108,6 +114,10 @@ private fun HomeScreenContent(
         delay(100)
         showStatusCard = true
         delay(150)
+        if (!uiState.hasProfiles) {
+            showFirstProfileCard = true
+            delay(150)
+        }
         showStreakCard = true
         delay(150)
         showQuickActions = true
@@ -157,6 +167,28 @@ private fun HomeScreenContent(
         }
 
         Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+
+        // First profile prompt card (only when no profiles exist)
+        AnimatedVisibility(
+            visible = showFirstProfileCard && !uiState.hasProfiles,
+            enter = fadeIn(animationSpec = tween(400)) +
+                    slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        ),
+                        initialOffsetY = { 50 }
+                    )
+        ) {
+            FirstProfilePromptCard(
+                onCreateProfile = onCreateProfileClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        if (!uiState.hasProfiles) {
+            Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+        }
 
         // Streak card with mini calendar
         AnimatedVisibility(
@@ -211,7 +243,8 @@ private fun HomeScreenContent(
                     )
         ) {
             StatsPreviewCard(
-                weeklyData = listOf(0.3f, 0.5f, 0.4f, 0.8f, 0.6f, 0.9f, 0.7f),
+                weeklyData = uiState.weeklyStats,
+                hasData = uiState.hasStatsData,
                 onClick = onStatsClick
             )
         }
@@ -473,6 +506,7 @@ private fun QuickActionCard(
 @Composable
 private fun StatsPreviewCard(
     weeklyData: List<Float>,
+    hasData: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -501,22 +535,117 @@ private fun StatsPreviewCard(
 
         Spacer(modifier = Modifier.height(UmbralSpacing.md))
 
-        StatsGraph(
-            data = weeklyData,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            labels = listOf("L", "M", "X", "J", "V", "S", "D"),
-            showLabels = true
-        )
+        if (hasData) {
+            // Show graph with real data
+            StatsGraph(
+                data = weeklyData,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                labels = listOf("L", "M", "X", "J", "V", "S", "D"),
+                showLabels = true
+            )
 
-        Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+            Spacer(modifier = Modifier.height(UmbralSpacing.sm))
 
-        Text(
-            text = "Últimos 7 días",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            Text(
+                text = "Últimos 7 días",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            // Show empty state
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Sin datos todavía",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(UmbralSpacing.xs))
+                Text(
+                    text = "Activa un perfil para comenzar a trackear",
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+// =============================================================================
+// FIRST PROFILE PROMPT CARD
+// =============================================================================
+
+@Composable
+private fun FirstProfilePromptCard(
+    onCreateProfile: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    UmbralCard(
+        modifier = modifier,
+        elevation = UmbralElevation.Medium,
+        onClick = onCreateProfile
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.md))
+
+            Text(
+                text = "Crea tu primer perfil",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+
+            Text(
+                text = "Define qué apps bloquear y cómo desbloquearlas con NFC o timer",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+
+            Button(
+                onClick = onCreateProfile,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Crear perfil")
+            }
+        }
     }
 }
 
@@ -533,12 +662,14 @@ private fun HomeScreenActivePreview() {
                 isLoading = false,
                 isBlockingEnabled = true,
                 activeProfile = null,
-                currentStreak = 12
+                currentStreak = 12,
+                hasProfiles = true
             ),
             onToggleBlocking = {},
             onNfcScanClick = {},
             onQrScanClick = {},
-            onStatsClick = {}
+            onStatsClick = {},
+            onCreateProfileClick = {}
         )
     }
 }
@@ -552,12 +683,14 @@ private fun HomeScreenInactivePreview() {
                 isLoading = false,
                 isBlockingEnabled = false,
                 activeProfile = null,
-                currentStreak = 5
+                currentStreak = 5,
+                hasProfiles = true
             ),
             onToggleBlocking = {},
             onNfcScanClick = {},
             onQrScanClick = {},
-            onStatsClick = {}
+            onStatsClick = {},
+            onCreateProfileClick = {}
         )
     }
 }
@@ -571,12 +704,14 @@ private fun HomeScreenDarkPreview() {
                 isLoading = false,
                 isBlockingEnabled = true,
                 activeProfile = null,
-                currentStreak = 7
+                currentStreak = 7,
+                hasProfiles = true
             ),
             onToggleBlocking = {},
             onNfcScanClick = {},
             onQrScanClick = {},
-            onStatsClick = {}
+            onStatsClick = {},
+            onCreateProfileClick = {}
         )
     }
 }
@@ -590,7 +725,8 @@ private fun HomeScreenLoadingPreview() {
             onToggleBlocking = {},
             onNfcScanClick = {},
             onQrScanClick = {},
-            onStatsClick = {}
+            onStatsClick = {},
+            onCreateProfileClick = {}
         )
     }
 }
@@ -631,6 +767,38 @@ private fun QuickActionsPreview() {
             onNfcClick = {},
             onQrClick = {},
             modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(name = "First Profile Prompt Card", showBackground = true)
+@Composable
+private fun FirstProfilePromptCardPreview() {
+    UmbralTheme {
+        FirstProfilePromptCard(
+            onCreateProfile = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(name = "Home Screen - No Profiles", showBackground = true)
+@Composable
+private fun HomeScreenNoProfilesPreview() {
+    UmbralTheme {
+        HomeScreenContent(
+            uiState = HomeUiState(
+                isLoading = false,
+                isBlockingEnabled = false,
+                activeProfile = null,
+                currentStreak = 0,
+                hasProfiles = false
+            ),
+            onToggleBlocking = {},
+            onNfcScanClick = {},
+            onQrScanClick = {},
+            onStatsClick = {},
+            onCreateProfileClick = {}
         )
     }
 }

@@ -88,8 +88,10 @@ fun OnboardingNavHost(
             PermissionsScreen(
                 viewModel = viewModel,
                 onContinue = {
+                    // Complete onboarding simple (without creating profile)
+                    viewModel.completeOnboardingSimple()
                     viewModel.nextStep()
-                    navController.navigate("select_apps") {
+                    navController.navigate("success") {
                         // Clear backstack - no going back after permissions
                         popUpTo("welcome") { inclusive = true }
                     }
@@ -97,6 +99,9 @@ fun OnboardingNavHost(
             )
         }
 
+        // DEPRECATED: select_apps screen - kept commented for reference
+        // User will create profile from home screen instead
+        /*
         composable("select_apps") {
             SelectAppsScreen(
                 viewModel = viewModel,
@@ -117,18 +122,17 @@ fun OnboardingNavHost(
                 }
             )
         }
+        */
 
         composable("success") {
             SuccessScreen(
-                profileName = state.profileName,
-                appsCount = state.selectedApps.size,
-                onStartBlocking = {
-                    // TODO: Navigate to home and activate blocking
-                    // For now, just complete
-                    onOnboardingComplete("") // Empty string since we already created profile
+                onCreateProfile = {
+                    // User wants to create their first profile
+                    onOnboardingComplete("create_profile")
                 },
                 onLater = {
-                    onOnboardingComplete("") // Empty string since we already created profile
+                    // User will create profile later from home
+                    onOnboardingComplete("")
                 }
             )
         }

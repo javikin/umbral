@@ -2,12 +2,13 @@
 name: advanced-features
 prd: advanced-features
 description: Widgets, Quick Settings y Estadísticas mejoradas para Umbral
-status: backlog
+status: completed
 priority: high
 github: https://github.com/javikin/umbral/issues/39
 created: 2026-01-06T02:54:04Z
-updated: 2026-01-06T03:04:35Z
-progress: 0%
+updated: 2026-01-06T04:03:42Z
+completed: 2026-01-06T04:03:42Z
+progress: 100%
 ---
 
 # Epic: Advanced Features - Widgets, Quick Settings & Stats
