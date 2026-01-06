@@ -99,6 +99,10 @@
 
     <!-- Quick Settings Tile -->
     <string name="tile_label">Umbral</string>
+    <string name="tile_label_off">Umbral: Off</string>
+    <string name="tile_subtitle_active">Bloqueo activo</string>
+    <string name="tile_subtitle_inactive">Toca para activar</string>
+    <string name="tile_strict_mode_message">Requiere NFC o QR para desbloquear</string>
     <string name="tile_active">Bloqueo activo</string>
     <string name="tile_inactive">Bloqueo inactivo</string>
 
