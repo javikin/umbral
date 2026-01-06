@@ -1,22 +1,30 @@
 package com.umbral.data.stats
 
+import com.umbral.data.local.dao.BlockingEventDao
 import com.umbral.data.local.dao.StatsDao
 import com.umbral.data.local.entity.BlockedAttemptEntity
+import com.umbral.data.local.entity.BlockingEventEntity
 import com.umbral.data.local.entity.BlockingSessionEntity
+import com.umbral.data.local.entity.EventType
 import com.umbral.domain.stats.BlockedAttempt
 import com.umbral.domain.stats.BlockingSession
 import com.umbral.domain.stats.StatsRepository
+import com.umbral.domain.stats.TodayStats
+import com.umbral.domain.stats.WeeklyStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class StatsRepositoryImpl @Inject constructor(
-    private val statsDao: StatsDao
+    private val statsDao: StatsDao,
+    private val blockingEventDao: BlockingEventDao
 ) : StatsRepository {
 
     override suspend fun recordBlockedAttempt(attempt: BlockedAttempt): Result<Unit> {
@@ -118,6 +126,111 @@ class StatsRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Timber.e(e, "Error deleting old attempts")
             Result.failure(e)
+        }
+    }
+
+    // === New Unified Event Tracking Implementation ===
+
+    override suspend fun recordBlockStarted(profileId: String): Result<Unit> {
+        return try {
+            blockingEventDao.insert(
+                BlockingEventEntity(
+                    eventType = EventType.BLOCK_STARTED,
+                    profileId = profileId
+                )
+            )
+            Timber.d("Block started event recorded for profile: $profileId")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Error recording block started event")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun recordBlockEnded(profileId: String, durationMinutes: Int): Result<Unit> {
+        return try {
+            blockingEventDao.insert(
+                BlockingEventEntity(
+                    eventType = EventType.BLOCK_ENDED,
+                    profileId = profileId,
+                    durationMinutes = durationMinutes
+                )
+            )
+            Timber.d("Block ended event recorded: $durationMinutes minutes for profile: $profileId")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Error recording block ended event")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun recordAppAttempt(packageName: String): Result<Unit> {
+        return try {
+            blockingEventDao.insert(
+                BlockingEventEntity(
+                    eventType = EventType.APP_ATTEMPT,
+                    packageName = packageName
+                )
+            )
+            Timber.d("App attempt event recorded: $packageName")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Error recording app attempt event")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getTodayStats(): TodayStats {
+        return try {
+            val startOfDay = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+
+            TodayStats(
+                blockedMinutes = blockingEventDao.getTotalBlockedMinutes(startOfDay),
+                attemptCount = blockingEventDao.getAttemptCount(startOfDay)
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Error getting today's stats")
+            TodayStats(blockedMinutes = 0, attemptCount = 0)
+        }
+    }
+
+    override suspend fun getWeeklyStats(): WeeklyStats {
+        return try {
+            val startOfWeek = LocalDate.now()
+                .minusDays(6)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+
+            val startOfPreviousWeek = LocalDate.now()
+                .minusDays(13)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+
+            val thisWeekMinutes = blockingEventDao.getTotalBlockedMinutes(startOfWeek)
+            val previousWeekMinutes = blockingEventDao.getBlockedMinutesBetween(
+                startOfPreviousWeek,
+                startOfWeek
+            )
+
+            WeeklyStats(
+                totalMinutes = thisWeekMinutes,
+                previousWeekMinutes = previousWeekMinutes,
+                dailyStats = blockingEventDao.getDailyBlockedMinutes(startOfWeek),
+                topApps = blockingEventDao.getTopAttemptedApps(startOfWeek)
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Error getting weekly stats")
+            WeeklyStats(
+                totalMinutes = 0,
+                previousWeekMinutes = 0,
+                dailyStats = emptyList(),
+                topApps = emptyList()
+            )
         }
     }
 }

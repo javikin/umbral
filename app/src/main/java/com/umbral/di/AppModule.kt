@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.umbral.data.local.dao.BlockingEventDao
 import com.umbral.data.local.dao.BlockingProfileDao
 import com.umbral.data.local.dao.NfcTagDao
 import com.umbral.data.local.dao.StatsDao
@@ -69,6 +70,14 @@ object AppModule {
         database: UmbralDatabase
     ): StatsDao {
         return database.statsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBlockingEventDao(
+        database: UmbralDatabase
+    ): BlockingEventDao {
+        return database.blockingEventDao()
     }
 
     @Provides
