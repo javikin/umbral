@@ -86,12 +86,6 @@ class UmbralTileService : TileService() {
         }
     }
 
-    override fun onLongClick() {
-        // Long press opens the app
-        Timber.d("Tile long clicked, opening app")
-        openApp()
-    }
-
     private fun updateTileState() {
         serviceScope.launch {
             try {
