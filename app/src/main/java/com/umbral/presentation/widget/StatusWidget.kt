@@ -3,6 +3,7 @@ package com.umbral.presentation.widget
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -10,18 +11,22 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -34,7 +39,8 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.first
 
 /**
- * Widget de estado pequeño (2x1) que muestra si el bloqueo está activo o inactivo.
+ * Widget de estado que muestra si el bloqueo está activo o inactivo.
+ * Soporta dos tamaños: 2x1 (pequeño, horizontal) y 2x2 (grande, vertical).
  * Click: Abre la app.
  */
 class StatusWidget : GlanceAppWidget() {
@@ -44,6 +50,14 @@ class StatusWidget : GlanceAppWidget() {
     interface StatusWidgetEntryPoint {
         fun blockingManager(): com.umbral.domain.blocking.BlockingManager
     }
+
+    // Soporte para tamaños responsivos
+    override val sizeMode = SizeMode.Responsive(
+        setOf(
+            DpSize(120.dp, 40.dp),  // 2x1 pequeño
+            DpSize(120.dp, 120.dp)  // 2x2 grande
+        )
+    )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         // Obtener estado actual
@@ -68,35 +82,54 @@ class StatusWidget : GlanceAppWidget() {
         isActive: Boolean,
         profileName: String?
     ) {
+        val size = LocalSize.current
+        val isSmall = size.height < 100.dp
+
         GlanceTheme {
-            Box(
-                modifier = GlanceModifier
-                    .fillMaxSize()
-                    .background(
-                        if (isActive) Color(0xFFE53935) // BlockingActive red
-                        else Color(0xFF4CAF50) // BlockingInactive green
-                    )
-                    .clickable(OpenAppAction.action())
-                    .padding(12.dp),
-                contentAlignment = Alignment.Center
+            if (isSmall) {
+                StatusWidgetSmall(isActive, profileName)
+            } else {
+                StatusWidgetLarge(isActive, profileName)
+            }
+        }
+    }
+
+    /**
+     * Layout pequeño (2x1) - Row horizontal con icono + texto
+     */
+    @Composable
+    private fun StatusWidgetSmall(
+        isActive: Boolean,
+        profileName: String?
+    ) {
+        Box(
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .background(
+                    if (isActive) Color(0xFFE53935) // BlockingActive red
+                    else Color(0xFF4CAF50) // BlockingInactive green
+                )
+                .clickable(OpenAppAction.action())
+                .padding(8.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Icono
-                    Image(
-                        provider = ImageProvider(
-                            if (isActive) R.drawable.ic_lock
-                            else R.drawable.ic_lock_open
-                        ),
-                        contentDescription = if (isActive) "Bloqueado" else "Desbloqueado",
-                        modifier = GlanceModifier.size(28.dp)
-                    )
+                // Icono
+                Image(
+                    provider = ImageProvider(
+                        if (isActive) R.drawable.ic_lock
+                        else R.drawable.ic_lock_open
+                    ),
+                    contentDescription = if (isActive) "Bloqueado" else "Desbloqueado",
+                    modifier = GlanceModifier.size(24.dp)
+                )
 
-                    Spacer(modifier = GlanceModifier.height(4.dp))
+                Spacer(modifier = GlanceModifier.width(8.dp))
 
-                    // Texto de estado
+                // Textos
+                Column {
                     Text(
                         text = if (isActive) "Activo" else "Inactivo",
                         style = TextStyle(
@@ -116,6 +149,66 @@ class StatusWidget : GlanceAppWidget() {
                             )
                         )
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Layout grande (2x2) - Column vertical con icono grande + texto centrado
+     */
+    @Composable
+    private fun StatusWidgetLarge(
+        isActive: Boolean,
+        profileName: String?
+    ) {
+        Box(
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .background(
+                    if (isActive) Color(0xFFE53935) // BlockingActive red
+                    else Color(0xFF4CAF50) // BlockingInactive green
+                )
+                .clickable(OpenAppAction.action())
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Icono grande
+                Image(
+                    provider = ImageProvider(
+                        if (isActive) R.drawable.ic_lock
+                        else R.drawable.ic_lock_open
+                    ),
+                    contentDescription = if (isActive) "Bloqueado" else "Desbloqueado",
+                    modifier = GlanceModifier.size(48.dp)
+                )
+
+                Spacer(modifier = GlanceModifier.height(12.dp))
+
+                // Texto de estado
+                Text(
+                    text = if (isActive) "Activo" else "Inactivo",
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                // Nombre del perfil si está activo
+                if (isActive && profileName != null) {
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    Text(
+                        text = profileName,
+                        style = TextStyle(
+                            color = GlanceTheme.colors.onPrimary,
+                            fontSize = 14.sp
+                        )
+                    )
                 }
             }
         }
