@@ -36,6 +36,8 @@
     <string name="top_blocked_apps">Apps mas bloqueadas</string>
     <string name="current_streak">Racha actual</string>
     <string name="days">dias</string>
+    <string name="stats_blocked_time">bloqueado</string>
+    <string name="stats_attempts_blocked">Intentos bloqueados</string>
 
     <!-- Settings -->
     <string name="settings_placeholder">Configuracion proximamente</string>
@@ -110,6 +112,7 @@
     <string name="status_widget_description">Muestra si el bloqueo está activo o inactivo</string>
     <string name="stats_widget_description">Muestra estadísticas de apps bloqueadas y tiempo ahorrado</string>
     <string name="quick_toggle_widget_description">Botón rápido para activar/desactivar bloqueo</string>
+    <string name="widget_streak_description">Muestra tu racha de días usando Umbral</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome">Bienvenido</string>
