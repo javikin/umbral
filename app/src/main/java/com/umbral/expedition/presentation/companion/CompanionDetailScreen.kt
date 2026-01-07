@@ -57,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umbral.expedition.domain.model.Companion
 import com.umbral.expedition.domain.model.Element
+import com.umbral.expedition.presentation.animation.CompanionAnimation
+import com.umbral.expedition.presentation.animation.CompanionAnimationState
 import com.umbral.expedition.presentation.companion.components.EvolutionProgress
 import kotlinx.coroutines.launch
 
@@ -87,6 +89,8 @@ fun CompanionDetailScreen(
     val uiEvent by viewModel.uiEvent.collectAsState()
 
     var energyToInvest by remember { mutableFloatStateOf(0f) }
+    var showEvolutionDialog by remember { mutableStateOf(false) }
+    var animationState by remember { mutableStateOf(CompanionAnimationState.IDLE) }
     val maxInvestAmount = remember(progress, companion) {
         progress?.totalEnergy?.coerceAtMost(
             companion?.let { it.evolutionCost - it.energyInvested } ?: 0
@@ -103,22 +107,26 @@ fun CompanionDetailScreen(
         when (val event = uiEvent) {
             is CompanionUiEvent.EnergyInvested -> {
                 snackbarHostState.showSnackbar("¡${event.amount} energía invertida!")
+                animationState = CompanionAnimationState.HAPPY
                 energyToInvest = 0f
                 companion = viewModel.getCompanionById(companionId)
                 viewModel.clearUiEvent()
             }
             is CompanionUiEvent.CanEvolve -> {
                 snackbarHostState.showSnackbar("¡${event.companion.displayName} listo para evolucionar!")
+                animationState = CompanionAnimationState.HAPPY
                 companion = viewModel.getCompanionById(companionId)
                 viewModel.clearUiEvent()
             }
             is CompanionUiEvent.EvolutionSuccess -> {
                 snackbarHostState.showSnackbar("¡Evolucionó a Estado ${event.newState}!")
+                animationState = CompanionAnimationState.IDLE
                 companion = viewModel.getCompanionById(companionId)
                 viewModel.clearUiEvent()
             }
             is CompanionUiEvent.ActiveCompanionChanged -> {
                 snackbarHostState.showSnackbar("${event.companion.displayName} activado")
+                animationState = CompanionAnimationState.HAPPY
                 companion = viewModel.getCompanionById(companionId)
                 viewModel.clearUiEvent()
             }
@@ -180,35 +188,19 @@ fun CompanionDetailScreen(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Large companion avatar
-                Box(
-                    modifier = Modifier
-                        .size(180.dp)
-                        .clip(CircleShape)
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    elementColor.copy(alpha = 0.8f),
-                                    elementColor.copy(alpha = 0.4f)
-                                )
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        repeat(comp.evolutionState) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(48.dp)
-                            )
+                // Lottie animation display
+                CompanionAnimation(
+                    companionType = comp.type,
+                    animationState = animationState,
+                    backgroundColor = elementColor,
+                    height = 250.dp,
+                    onAnimationComplete = {
+                        // Reset to idle after happy/evolving animation completes
+                        if (animationState != CompanionAnimationState.IDLE) {
+                            animationState = CompanionAnimationState.IDLE
                         }
                     }
-                }
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -349,9 +341,7 @@ fun CompanionDetailScreen(
                 AnimatedVisibility(visible = comp.canEvolve) {
                     Button(
                         onClick = {
-                            scope.launch {
-                                viewModel.evolveCompanion(comp.id)
-                            }
+                            showEvolutionDialog = true
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -416,6 +406,23 @@ fun CompanionDetailScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
+    }
+
+    // Evolution dialog
+    if (showEvolutionDialog && companion != null) {
+        EvolutionDialog(
+            companion = companion!!,
+            elementColor = parseElementColor(companion!!.element),
+            onConfirm = {
+                scope.launch {
+                    viewModel.evolveCompanion(companion!!.id)
+                    animationState = CompanionAnimationState.EVOLVING
+                }
+            },
+            onDismiss = {
+                showEvolutionDialog = false
+            }
+        )
     }
 }
 

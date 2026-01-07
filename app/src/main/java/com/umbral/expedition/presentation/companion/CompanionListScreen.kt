@@ -28,13 +28,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.umbral.expedition.domain.model.Companion
+import com.umbral.expedition.domain.model.Element
 import com.umbral.expedition.presentation.companion.components.CompanionGridCard
 
 /**
@@ -55,12 +60,15 @@ fun CompanionListScreen(
     val companionStates by viewModel.companionStates.collectAsState()
     val uiEvent by viewModel.uiEvent.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showCaptureDialog by remember { mutableStateOf(false) }
+    var capturedCompanion by remember { mutableStateOf<Companion?>(null) }
 
     // Handle UI events
     LaunchedEffect(uiEvent) {
         when (val event = uiEvent) {
             is CompanionUiEvent.CaptureSuccess -> {
-                snackbarHostState.showSnackbar("¡${event.companion.displayName} capturado!")
+                capturedCompanion = event.companion
+                showCaptureDialog = true
                 viewModel.clearUiEvent()
             }
             is CompanionUiEvent.Error -> {
@@ -173,5 +181,28 @@ fun CompanionListScreen(
                 }
             }
         }
+    }
+
+    // Capture success dialog
+    if (showCaptureDialog && capturedCompanion != null) {
+        CaptureSuccessDialog(
+            companion = capturedCompanion!!,
+            elementColor = parseElementColor(capturedCompanion!!.element),
+            onDismiss = {
+                showCaptureDialog = false
+                capturedCompanion = null
+            }
+        )
+    }
+}
+
+/**
+ * Parse element color from hex string
+ */
+private fun parseElementColor(element: Element): Color {
+    return try {
+        Color(android.graphics.Color.parseColor(element.color))
+    } catch (e: Exception) {
+        Color.Gray
     }
 }
