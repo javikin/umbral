@@ -116,6 +116,9 @@ dependencies {
     // Lottie for animations
     implementation("com.airbnb.android:lottie-compose:6.3.0")
 
+    // Image loading
+    implementation(libs.coil.compose)
+
     // Logging
     implementation(libs.timber)
 

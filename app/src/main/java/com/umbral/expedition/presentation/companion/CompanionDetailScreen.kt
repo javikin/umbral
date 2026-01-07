@@ -51,10 +51,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.umbral.R
 import com.umbral.expedition.domain.model.Companion
 import com.umbral.expedition.domain.model.Element
 import com.umbral.expedition.presentation.animation.CompanionAnimation
@@ -383,7 +385,7 @@ fun CompanionDetailScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Compañero Activo",
+                            text = stringResource(R.string.companion_already_active),
                             color = Color(0xFF4CAF50)
                         )
                     }
@@ -399,7 +401,7 @@ fun CompanionDetailScreen(
                             containerColor = elementColor
                         )
                     ) {
-                        Text("Establecer como Activo")
+                        Text(stringResource(R.string.companion_set_active))
                     }
                 }
 

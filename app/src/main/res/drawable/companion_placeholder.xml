@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Placeholder image for companion characters.
+  Used during development until real companion artwork is created.
+  Shows a generic creature silhouette.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- Background circle -->
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M60,60m-55,0a55,55 0,1 1,110 0a55,55 0,1 1,-110 0" />
+
+    <!-- Companion silhouette (generic creature shape) -->
+    <group android:translateX="60" android:translateY="60">
+        <!-- Body (oval) -->
+        <path
+            android:fillColor="#9E9E9E"
+            android:pathData="M0,-15 Q15,-15 15,5 Q15,20 0,25 Q-15,20 -15,5 Q-15,-15 0,-15 Z" />
+
+        <!-- Head (circle) -->
+        <path
+            android:fillColor="#9E9E9E"
+            android:pathData="M0,-15 m-12,0 a12,12 0,1 0,24 0a12,12 0,1 0,-24 0" />
+
+        <!-- Ears/Horns (triangles) -->
+        <path
+            android:fillColor="#9E9E9E"
+            android:pathData="M-8,-25 L-10,-30 L-6,-28 Z" />
+        <path
+            android:fillColor="#9E9E9E"
+            android:pathData="M8,-25 L10,-30 L6,-28 Z" />
+
+        <!-- Eyes (dots) -->
+        <path
+            android:fillColor="#757575"
+            android:pathData="M-5,-18 m-2,0 a2,2 0,1 0,4 0a2,2 0,1 0,-4 0" />
+        <path
+            android:fillColor="#757575"
+            android:pathData="M5,-18 m-2,0 a2,2 0,1 0,4 0a2,2 0,1 0,-4 0" />
+
+        <!-- Tail (curved line) -->
+        <path
+            android:fillColor="#9E9E9E"
+            android:pathData="M15,10 Q25,5 25,15 Q25,20 20,20" />
+
+        <!-- Legs (small rectangles) -->
+        <path
+            android:fillColor="#9E9E9E"
+            android:pathData="M-8,20 L-6,20 L-6,28 L-8,28 Z" />
+        <path
+            android:fillColor="#9E9E9E"
+            android:pathData="M8,20 L6,20 L6,28 L8,28 Z" />
+    </group>
+
+    <!-- Question mark overlay (for unknown/locked state) -->
+    <path
+        android:fillColor="#BDBDBD"
+        android:pathData="M60,45 Q65,45 65,50 Q65,55 60,57 L60,62 M60,67 L60,72"
+        android:strokeWidth="3"
+        android:strokeColor="#BDBDBD"
+        android:strokeLineCap="round" />
+</vector>

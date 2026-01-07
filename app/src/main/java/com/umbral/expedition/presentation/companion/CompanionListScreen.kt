@@ -36,8 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.umbral.R
 import com.umbral.expedition.domain.model.Companion
 import com.umbral.expedition.domain.model.Element
 import com.umbral.expedition.presentation.companion.components.CompanionGridCard
@@ -129,7 +131,12 @@ fun CompanionListScreen(
                 val availableCount = companionStates.count { it is CompanionState.Available }
 
                 Text(
-                    text = "Capturados: $capturedCount/8 • Disponibles: $availableCount",
+                    text = stringResource(
+                        R.string.companion_list_summary,
+                        capturedCount,
+                        8,
+                        availableCount
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium,

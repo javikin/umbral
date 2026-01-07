@@ -20,14 +20,14 @@ object LottieAnimations {
      */
     fun getIdleAnimation(companionType: CompanionType): String {
         return when (companionType) {
-            CompanionType.SHADOW_WISP -> "lottie/companion_shadow_wisp_idle.json"
-            CompanionType.FOREST_SPRITE -> "lottie/companion_forest_sprite_idle.json"
-            CompanionType.FLAME_FOX -> "lottie/companion_flame_fox_idle.json"
-            CompanionType.CRYSTAL_GOLEM -> "lottie/companion_crystal_golem_idle.json"
-            CompanionType.OCEAN_TURTLE -> "lottie/companion_ocean_turtle_idle.json"
-            CompanionType.WIND_HAWK -> "lottie/companion_wind_hawk_idle.json"
+            CompanionType.LEAF_SPRITE -> "lottie/companion_leaf_sprite_idle.json"
+            CompanionType.EMBER_FOX -> "lottie/companion_ember_fox_idle.json"
+            CompanionType.AQUA_TURTLE -> "lottie/companion_aqua_turtle_idle.json"
+            CompanionType.SKY_BIRD -> "lottie/companion_sky_bird_idle.json"
+            CompanionType.STONE_GOLEM -> "lottie/companion_stone_golem_idle.json"
             CompanionType.THUNDER_WOLF -> "lottie/companion_thunder_wolf_idle.json"
-            CompanionType.LIGHT_DEER -> "lottie/companion_light_deer_idle.json"
+            CompanionType.SHADOW_CAT -> "lottie/companion_shadow_cat_idle.json"
+            CompanionType.CRYSTAL_DEER -> "lottie/companion_crystal_deer_idle.json"
         }.let { path ->
             // In development, all paths are valid placeholders
             // In production, check if file exists and fallback to generic
@@ -41,14 +41,14 @@ object LottieAnimations {
      */
     fun getHappyAnimation(companionType: CompanionType): String {
         return when (companionType) {
-            CompanionType.SHADOW_WISP -> "lottie/companion_shadow_wisp_happy.json"
-            CompanionType.FOREST_SPRITE -> "lottie/companion_forest_sprite_happy.json"
-            CompanionType.FLAME_FOX -> "lottie/companion_flame_fox_happy.json"
-            CompanionType.CRYSTAL_GOLEM -> "lottie/companion_crystal_golem_happy.json"
-            CompanionType.OCEAN_TURTLE -> "lottie/companion_ocean_turtle_happy.json"
-            CompanionType.WIND_HAWK -> "lottie/companion_wind_hawk_happy.json"
+            CompanionType.LEAF_SPRITE -> "lottie/companion_leaf_sprite_happy.json"
+            CompanionType.EMBER_FOX -> "lottie/companion_ember_fox_happy.json"
+            CompanionType.AQUA_TURTLE -> "lottie/companion_aqua_turtle_happy.json"
+            CompanionType.SKY_BIRD -> "lottie/companion_sky_bird_happy.json"
+            CompanionType.STONE_GOLEM -> "lottie/companion_stone_golem_happy.json"
             CompanionType.THUNDER_WOLF -> "lottie/companion_thunder_wolf_happy.json"
-            CompanionType.LIGHT_DEER -> "lottie/companion_light_deer_happy.json"
+            CompanionType.SHADOW_CAT -> "lottie/companion_shadow_cat_happy.json"
+            CompanionType.CRYSTAL_DEER -> "lottie/companion_crystal_deer_happy.json"
         }
     }
 
@@ -58,14 +58,14 @@ object LottieAnimations {
      */
     fun getEvolutionAnimation(companionType: CompanionType): String {
         return when (companionType) {
-            CompanionType.SHADOW_WISP -> "lottie/companion_shadow_wisp_evolve.json"
-            CompanionType.FOREST_SPRITE -> "lottie/companion_forest_sprite_evolve.json"
-            CompanionType.FLAME_FOX -> "lottie/companion_flame_fox_evolve.json"
-            CompanionType.CRYSTAL_GOLEM -> "lottie/companion_crystal_golem_evolve.json"
-            CompanionType.OCEAN_TURTLE -> "lottie/companion_ocean_turtle_evolve.json"
-            CompanionType.WIND_HAWK -> "lottie/companion_wind_hawk_evolve.json"
+            CompanionType.LEAF_SPRITE -> "lottie/companion_leaf_sprite_evolve.json"
+            CompanionType.EMBER_FOX -> "lottie/companion_ember_fox_evolve.json"
+            CompanionType.AQUA_TURTLE -> "lottie/companion_aqua_turtle_evolve.json"
+            CompanionType.SKY_BIRD -> "lottie/companion_sky_bird_evolve.json"
+            CompanionType.STONE_GOLEM -> "lottie/companion_stone_golem_evolve.json"
             CompanionType.THUNDER_WOLF -> "lottie/companion_thunder_wolf_evolve.json"
-            CompanionType.LIGHT_DEER -> "lottie/companion_light_deer_evolve.json"
+            CompanionType.SHADOW_CAT -> "lottie/companion_shadow_cat_evolve.json"
+            CompanionType.CRYSTAL_DEER -> "lottie/companion_crystal_deer_evolve.json"
         }
     }
 

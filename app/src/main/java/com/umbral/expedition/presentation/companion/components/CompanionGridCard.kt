@@ -44,7 +44,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.umbral.R
 import com.umbral.expedition.domain.model.CompanionType
 import com.umbral.expedition.domain.model.Element
 import com.umbral.expedition.presentation.companion.CompanionState
@@ -159,7 +161,7 @@ fun CompanionGridCard(
                         is CompanionState.Locked -> {
                             Icon(
                                 imageVector = Icons.Default.Lock,
-                                contentDescription = "Bloqueado",
+                                contentDescription = stringResource(R.string.companion_locked),
                                 tint = Color.White,
                                 modifier = Modifier.size(40.dp)
                             )
@@ -167,7 +169,7 @@ fun CompanionGridCard(
                         is CompanionState.Available -> {
                             Icon(
                                 imageVector = Icons.Default.Star,
-                                contentDescription = "Disponible",
+                                contentDescription = stringResource(R.string.companion_available),
                                 tint = Color.White,
                                 modifier = Modifier.size(40.dp)
                             )
@@ -226,7 +228,7 @@ fun CompanionGridCard(
                 when (state) {
                     is CompanionState.Locked -> {
                         Text(
-                            text = "Bloqueado",
+                            text = stringResource(R.string.companion_locked),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                             textAlign = TextAlign.Center
@@ -244,7 +246,7 @@ fun CompanionGridCard(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "¡Capturar!",
+                                text = stringResource(R.string.companion_capture_button),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -285,7 +287,7 @@ fun CompanionGridCard(
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Text(
-                                        text = "Evol. Máx",
+                                        text = stringResource(R.string.companion_evolution_max),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = Color(0xFF4CAF50),
                                         modifier = Modifier.padding(start = 4.dp)
@@ -310,7 +312,7 @@ fun CompanionGridCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Activo",
+                        contentDescription = stringResource(R.string.companion_active),
                         tint = Color.White,
                         modifier = Modifier.size(16.dp)
                     )

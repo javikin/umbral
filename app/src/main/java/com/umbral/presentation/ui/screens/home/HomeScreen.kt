@@ -210,6 +210,27 @@ private fun HomeScreenContent(
             Spacer(modifier = Modifier.height(UmbralSpacing.lg))
         }
 
+        // Expedition progress card
+        AnimatedVisibility(
+            visible = showExpeditionCard,
+            enter = fadeIn(animationSpec = tween(400)) +
+                    slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        ),
+                        initialOffsetY = { 50 }
+                    )
+        ) {
+            ExpeditionProgressCard(
+                state = uiState.expeditionState,
+                onClick = onExpeditionClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+
         // Streak card with mini calendar
         AnimatedVisibility(
             visible = showStreakCard,
@@ -683,13 +704,26 @@ private fun HomeScreenActivePreview() {
                 isBlockingEnabled = true,
                 activeProfile = null,
                 currentStreak = 12,
-                hasProfiles = true
+                hasProfiles = true,
+                expeditionState = ExpeditionHomeState(
+                    isLoading = false,
+                    isInitialized = true,
+                    level = 5,
+                    currentXp = 350,
+                    xpForNextLevel = 500,
+                    levelProgress = 70,
+                    totalEnergy = 1250,
+                    currentStreak = 12,
+                    streakMultiplier = "1.5x"
+                )
             ),
             onToggleBlocking = {},
             onNfcScanClick = {},
             onQrScanClick = {},
             onStatsClick = {},
-            onCreateProfileClick = {}
+            onCreateProfileClick = {},
+            onExpeditionClick = {},
+            onDismissRewardDialog = {}
         )
     }
 }

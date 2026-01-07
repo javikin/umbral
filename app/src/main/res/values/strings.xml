@@ -143,6 +143,49 @@
     <string name="category_system">Sistema</string>
     <string name="category_other">Otras</string>
 
+    <!-- Expedition / Gamification -->
+    <string name="expedition_title">Expedición</string>
+    <string name="expedition_map">Mapa</string>
+    <string name="expedition_companions">Compañeros</string>
+    <string name="expedition_achievements">Logros</string>
+    <string name="expedition_energy">Energía</string>
+    <string name="expedition_level">Nivel</string>
+    <string name="expedition_xp">XP</string>
+
+    <!-- Companions -->
+    <string name="companion_locked">Bloqueado</string>
+    <string name="companion_available">Disponible</string>
+    <string name="companion_captured">Capturado</string>
+    <string name="companion_active">Activo</string>
+    <string name="companion_capture_button">¡Capturar!</string>
+    <string name="companion_set_active">Establecer como Activo</string>
+    <string name="companion_already_active">Compañero Activo</string>
+    <string name="companion_evolution_max">Evol. Máx</string>
+    <string name="companion_stats_title">Estadísticas</string>
+    <string name="companion_passive_bonus">Bono Pasivo</string>
+    <string name="companion_evolution_progress">Progreso de Evolución</string>
+    <string name="companion_captured_count">Capturados: %1$d/%2$d</string>
+    <string name="companion_available_count">Disponibles: %1$d</string>
+    <string name="companion_list_summary">Capturados: %1$d/%2$d • Disponibles: %3$d</string>
+
+    <!-- Locations -->
+    <string name="location_discovered">Descubierta</string>
+    <string name="location_undiscovered">Sin descubrir</string>
+    <string name="location_reveal_cost">Costo: %1$d energía</string>
+    <string name="location_lore">Historia</string>
+
+    <!-- Achievements -->
+    <string name="achievement_unlocked">¡Logro desbloqueado!</string>
+    <string name="achievement_locked">Logro bloqueado</string>
+    <string name="achievement_progress">Progreso: %1$d/%2$d</string>
+    <string name="achievement_reward_stars">Estrellas: %1$d</string>
+
+    <!-- Session Rewards -->
+    <string name="session_reward_title">¡Sesión Completada!</string>
+    <string name="session_reward_energy">+%1$d Energía</string>
+    <string name="session_reward_xp">+%1$d XP</string>
+    <string name="session_reward_level_up">¡Nivel %1$d alcanzado!</string>
+
     <!-- Common -->
     <string name="save">Guardar</string>
     <string name="cancel">Cancelar</string>
