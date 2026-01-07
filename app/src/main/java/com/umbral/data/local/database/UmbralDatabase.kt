@@ -25,6 +25,8 @@ import com.umbral.expedition.data.entity.CompanionEntity
 import com.umbral.expedition.data.entity.DecorationEntity
 import com.umbral.expedition.data.entity.LocationEntity
 import com.umbral.expedition.data.entity.ProgressEntity
+import com.umbral.notifications.data.local.BlockedNotificationDao
+import com.umbral.notifications.data.local.BlockedNotificationEntity
 
 @Database(
     entities = [
@@ -38,9 +40,10 @@ import com.umbral.expedition.data.entity.ProgressEntity
         LocationEntity::class,
         ProgressEntity::class,
         AchievementEntity::class,
-        DecorationEntity::class
+        DecorationEntity::class,
+        BlockedNotificationEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -50,6 +53,7 @@ abstract class UmbralDatabase : RoomDatabase() {
     abstract fun nfcTagDao(): NfcTagDao
     abstract fun statsDao(): StatsDao
     abstract fun blockingEventDao(): BlockingEventDao
+    abstract fun blockedNotificationDao(): BlockedNotificationDao
 
     // Expedition DAOs
     abstract fun companionDao(): CompanionDao
@@ -71,7 +75,7 @@ abstract class UmbralDatabase : RoomDatabase() {
                     UmbralDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

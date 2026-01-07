@@ -11,6 +11,7 @@ import com.umbral.data.local.dao.NfcTagDao
 import com.umbral.data.local.dao.StatsDao
 import com.umbral.data.local.database.UmbralDatabase
 import com.umbral.data.local.preferences.UmbralPreferences
+import com.umbral.notifications.data.local.BlockedNotificationDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,6 +79,14 @@ object AppModule {
         database: UmbralDatabase
     ): BlockingEventDao {
         return database.blockingEventDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBlockedNotificationDao(
+        database: UmbralDatabase
+    ): BlockedNotificationDao {
+        return database.blockedNotificationDao()
     }
 
     @Provides
