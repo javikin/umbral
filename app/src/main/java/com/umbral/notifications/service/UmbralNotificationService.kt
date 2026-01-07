@@ -3,7 +3,14 @@ package com.umbral.notifications.service
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import com.umbral.notifications.domain.NotificationWhitelistChecker
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * NotificationListenerService that intercepts all system notifications.
@@ -18,6 +25,11 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class UmbralNotificationService : NotificationListenerService() {
+
+    @Inject
+    lateinit var whitelistChecker: NotificationWhitelistChecker
+
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     companion object {
         private const val TAG = "UmbralNotificationService"
@@ -45,18 +57,33 @@ class UmbralNotificationService : NotificationListenerService() {
         val id = sbn.id
         val postTime = sbn.postTime
 
-        Log.d(TAG, """
-            Notification Posted:
-            - Package: $packageName
-            - ID: $id
-            - Title: $title
-            - Text: $text
-            - PostTime: $postTime
-        """.trimIndent())
+        // Check whitelist in a coroutine
+        serviceScope.launch {
+            val isWhitelisted = whitelistChecker.shouldAllowNotification(sbn)
 
-        // TODO (Issue #64): Check if package is in whitelist
-        // TODO (Issue #65): Store notification event in database
-        // TODO (Issue #66): Optionally cancel notification if app is blocked
+            if (isWhitelisted) {
+                val reason = whitelistChecker.getAllowReason(sbn)
+                Log.d(TAG, """
+                    ✅ Notification ALLOWED (Whitelisted):
+                    - Package: $packageName
+                    - ID: $id
+                    - Title: $title
+                    - Reason: $reason
+                """.trimIndent())
+            } else {
+                Log.d(TAG, """
+                    ⚠️ Notification SUBJECT TO BLOCKING:
+                    - Package: $packageName
+                    - ID: $id
+                    - Title: $title
+                    - Text: $text
+                    - PostTime: $postTime
+                """.trimIndent())
+            }
+
+            // TODO (Issue #65): Store notification event in database
+            // TODO (Issue #66): Optionally cancel notification if app is blocked
+        }
     }
 
     /**
@@ -95,6 +122,7 @@ class UmbralNotificationService : NotificationListenerService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        serviceScope.cancel()
         Log.d(TAG, "UmbralNotificationService destroyed")
     }
 }
