@@ -3,8 +3,6 @@ package com.umbral.notifications.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.umbral.data.local.database.UmbralDatabase
-import com.umbral.notifications.data.local.BlockedNotificationDao
 import com.umbral.notifications.data.preferences.NotificationPreferences
 import com.umbral.notifications.data.repository.NotificationRepositoryImpl
 import com.umbral.notifications.domain.NotificationWhitelistChecker
@@ -45,14 +43,6 @@ abstract class NotificationsModule {
             @ApplicationContext context: Context
         ): NotificationPermissionManager {
             return NotificationPermissionManager(context)
-        }
-
-        @Provides
-        @Singleton
-        fun provideBlockedNotificationDao(
-            database: UmbralDatabase
-        ): BlockedNotificationDao {
-            return database.blockedNotificationDao()
         }
 
         @Provides

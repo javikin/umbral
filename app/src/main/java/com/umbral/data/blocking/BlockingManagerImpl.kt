@@ -4,6 +4,7 @@ import com.umbral.domain.blocking.BlockingManager
 import com.umbral.domain.blocking.BlockingState
 import com.umbral.domain.blocking.ForegroundAppMonitor
 import com.umbral.domain.blocking.ProfileRepository
+import com.umbral.domain.blocking.SessionEndedEvent
 import com.umbral.expedition.data.repository.ExpeditionRepository
 import com.umbral.expedition.domain.model.SessionReward
 import com.umbral.expedition.domain.usecase.CheckAchievementsUseCase
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -44,6 +46,9 @@ class BlockingManagerImpl @Inject constructor(
     private val _rewardEvent = MutableSharedFlow<SessionReward>(extraBufferCapacity = 1)
     override val rewardEvent: SharedFlow<SessionReward> = _rewardEvent.asSharedFlow()
 
+    private val _sessionEndedEvent = MutableSharedFlow<SessionEndedEvent>(extraBufferCapacity = 1)
+    override val sessionEndedEvent: SharedFlow<SessionEndedEvent> = _sessionEndedEvent.asSharedFlow()
+
     override val isBlocking: Boolean
         get() = _blockingState.value.isActive
 
@@ -58,10 +63,18 @@ class BlockingManagerImpl @Inject constructor(
 
                 if (profile != null) {
                     // Check if this is a new session starting
-                    val sessionStartTime = if (!previousState.isActive) {
+                    val isNewSession = !previousState.isActive
+                    val sessionStartTime = if (isNewSession) {
                         System.currentTimeMillis()
                     } else {
                         previousState.sessionStartTime
+                    }
+
+                    // Generate new sessionId for new sessions
+                    val sessionId = if (isNewSession) {
+                        UUID.randomUUID().toString()
+                    } else {
+                        previousState.sessionId
                     }
 
                     _blockingState.value = BlockingState(
@@ -70,12 +83,29 @@ class BlockingManagerImpl @Inject constructor(
                         activeProfileName = profile.name,
                         blockedApps = profile.blockedApps.toSet(),
                         isStrictMode = profile.isStrictMode,
-                        sessionStartTime = sessionStartTime
+                        sessionStartTime = sessionStartTime,
+                        sessionId = sessionId
                     )
                     startBlockingService()
                 } else {
-                    // Session ended - award rewards if there was an active session
+                    // Session ended - emit event and award rewards if there was an active session
                     if (previousState.isActive && previousState.sessionStartTime != null) {
+                        val durationMs = System.currentTimeMillis() - previousState.sessionStartTime
+                        val durationMinutes = (durationMs / 60_000).toLong()
+
+                        // Emit session ended event for notification summary
+                        if (previousState.sessionId != null && previousState.activeProfileId != null) {
+                            _sessionEndedEvent.tryEmit(
+                                SessionEndedEvent(
+                                    sessionId = previousState.sessionId,
+                                    profileId = previousState.activeProfileId,
+                                    durationMinutes = durationMinutes
+                                )
+                            )
+                            Timber.d("Session ended event emitted: ${previousState.sessionId}")
+                        }
+
+                        // Award expedition rewards
                         awardExpeditionRewards(previousState.sessionStartTime)
                     }
                     _blockingState.value = BlockingState()
