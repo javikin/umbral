@@ -52,6 +52,11 @@
     <string name="notification_desc">Para mostrar el estado de bloqueo</string>
     <string name="camera_permission">Camara</string>
     <string name="camera_desc">Necesario para escanear codigos QR</string>
+    <string name="notification_access_permission">Acceso a notificaciones</string>
+    <string name="notification_access_desc">Permite gestionar notificaciones de apps bloqueadas</string>
+    <string name="notification_access_required">Se requiere acceso a notificaciones</string>
+    <string name="notification_access_explanation">Umbral necesita acceso a tus notificaciones para detectar y opcionalmente bloquear notificaciones de apps bloqueadas. Esto ayuda a mantener tu enfoque.</string>
+    <string name="open_settings">Abrir ajustes</string>
     <string name="grant_permission">Conceder</string>
     <string name="granted">Concedido</string>
     <string name="about">Acerca de</string>
