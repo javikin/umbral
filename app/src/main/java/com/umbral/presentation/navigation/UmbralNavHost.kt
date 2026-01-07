@@ -22,6 +22,10 @@ import com.umbral.presentation.ui.screens.profiles.ProfilesScreen
 import com.umbral.presentation.ui.screens.qr.QrScanScreen
 import com.umbral.presentation.ui.screens.settings.SettingsScreen
 import com.umbral.presentation.ui.screens.stats.StatsScreen
+import com.umbral.expedition.presentation.map.ExpeditionMapScreen
+import com.umbral.expedition.presentation.companion.CompanionListScreen
+import com.umbral.expedition.presentation.companion.CompanionDetailScreen
+import com.umbral.expedition.presentation.achievements.AchievementsScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -46,7 +50,8 @@ fun UmbralNavHost(
                     onNavigateToNfcScan = { navController.navigate(NavRoutes.NFC_SCAN) },
                     onNavigateToQrScan = { navController.navigate(NavRoutes.QR_SCAN) },
                     onNavigateToStats = { navController.navigate(NavRoutes.STATS) },
-                    onNavigateToCreateProfile = { navController.navigate(NavRoutes.profileDetail("new")) }
+                    onNavigateToCreateProfile = { navController.navigate(NavRoutes.profileDetail("new")) },
+                    onNavigateToExpedition = { navController.navigate(NavRoutes.EXPEDITION_MAP) }
                 )
             }
 
@@ -85,6 +90,41 @@ fun UmbralNavHost(
             composable(NavRoutes.QR_SCAN) {
                 QrScanScreen(
                     onDismiss = { navController.popBackStack() }
+                )
+            }
+
+            // Expedition / Gamification destinations
+            composable(NavRoutes.EXPEDITION_MAP) {
+                ExpeditionMapScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToCompanions = { navController.navigate(NavRoutes.COMPANION_LIST) },
+                    onNavigateToAchievements = { navController.navigate(NavRoutes.ACHIEVEMENTS) }
+                )
+            }
+
+            composable(NavRoutes.COMPANION_LIST) {
+                CompanionListScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onCompanionClick = { companionId ->
+                        navController.navigate(NavRoutes.companionDetail(companionId))
+                    }
+                )
+            }
+
+            composable(
+                route = NavRoutes.COMPANION_DETAIL,
+                arguments = listOf(
+                    navArgument("companionId") { type = NavType.StringType }
+                )
+            ) {
+                CompanionDetailScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoutes.ACHIEVEMENTS) {
+                AchievementsScreen(
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 
@@ -151,7 +191,14 @@ object NavRoutes {
     const val APP_SELECTOR = "app_selector/{profileId}?blockedApps={blockedApps}"
     const val ONBOARDING = "onboarding"
 
+    // Expedition / Gamification
+    const val EXPEDITION_MAP = "expedition/map"
+    const val COMPANION_LIST = "expedition/companions"
+    const val COMPANION_DETAIL = "expedition/companion/{companionId}"
+    const val ACHIEVEMENTS = "expedition/achievements"
+
     fun profileDetail(profileId: String) = "profile/$profileId"
     fun appSelector(profileId: String, blockedApps: String = "") =
         "app_selector/$profileId?blockedApps=$blockedApps"
+    fun companionDetail(companionId: String) = "expedition/companion/$companionId"
 }
