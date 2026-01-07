@@ -96,9 +96,7 @@ fun UmbralNavHost(
             // Expedition / Gamification destinations
             composable(NavRoutes.EXPEDITION_MAP) {
                 ExpeditionMapScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToCompanions = { navController.navigate(NavRoutes.COMPANION_LIST) },
-                    onNavigateToAchievements = { navController.navigate(NavRoutes.ACHIEVEMENTS) }
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 
@@ -116,15 +114,17 @@ fun UmbralNavHost(
                 arguments = listOf(
                     navArgument("companionId") { type = NavType.StringType }
                 )
-            ) {
+            ) { backStackEntry ->
+                val companionId = backStackEntry.arguments?.getString("companionId") ?: ""
                 CompanionDetailScreen(
+                    companionId = companionId,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
 
             composable(NavRoutes.ACHIEVEMENTS) {
                 AchievementsScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() }
                 )
             }
 

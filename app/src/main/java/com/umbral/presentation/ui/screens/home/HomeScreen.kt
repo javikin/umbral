@@ -744,7 +744,9 @@ private fun HomeScreenInactivePreview() {
             onNfcScanClick = {},
             onQrScanClick = {},
             onStatsClick = {},
-            onCreateProfileClick = {}
+            onCreateProfileClick = {},
+            onExpeditionClick = {},
+            onDismissRewardDialog = {}
         )
     }
 }
@@ -765,7 +767,9 @@ private fun HomeScreenDarkPreview() {
             onNfcScanClick = {},
             onQrScanClick = {},
             onStatsClick = {},
-            onCreateProfileClick = {}
+            onCreateProfileClick = {},
+            onExpeditionClick = {},
+            onDismissRewardDialog = {}
         )
     }
 }
@@ -780,7 +784,9 @@ private fun HomeScreenLoadingPreview() {
             onNfcScanClick = {},
             onQrScanClick = {},
             onStatsClick = {},
-            onCreateProfileClick = {}
+            onCreateProfileClick = {},
+            onExpeditionClick = {},
+            onDismissRewardDialog = {}
         )
     }
 }
@@ -852,7 +858,9 @@ private fun HomeScreenNoProfilesPreview() {
             onNfcScanClick = {},
             onQrScanClick = {},
             onStatsClick = {},
-            onCreateProfileClick = {}
+            onCreateProfileClick = {},
+            onExpeditionClick = {},
+            onDismissRewardDialog = {}
         )
     }
 }
