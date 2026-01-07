@@ -113,6 +113,9 @@ dependencies {
     // Charts
     implementation(libs.vico.compose.m3)
 
+    // Lottie for animations
+    implementation("com.airbnb.android:lottie-compose:6.3.0")
+
     // Logging
     implementation(libs.timber)
 
