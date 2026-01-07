@@ -7,6 +7,12 @@ import com.umbral.data.local.entity.BlockingProfileEntity
 import com.umbral.data.local.preferences.UmbralPreferences
 import com.umbral.domain.blocking.BlockingManager
 import com.umbral.domain.stats.StatsRepository
+import com.umbral.expedition.data.repository.ExpeditionRepository
+import com.umbral.expedition.domain.mapper.ProgressMapper
+import com.umbral.expedition.domain.model.ActiveCompanionInfo
+import com.umbral.expedition.domain.model.CompanionType
+import com.umbral.expedition.domain.model.ExpeditionHomeState
+import com.umbral.expedition.domain.model.SessionReward
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +32,9 @@ data class HomeUiState(
     val onboardingCompleted: Boolean = true,
     val weeklyStats: List<Float> = emptyList(),
     val hasStatsData: Boolean = false,
-    val hasProfiles: Boolean = false
+    val hasProfiles: Boolean = false,
+    val expeditionState: ExpeditionHomeState = ExpeditionHomeState.Loading,
+    val showRewardDialog: SessionReward? = null
 )
 
 @HiltViewModel
@@ -34,7 +42,8 @@ class HomeViewModel @Inject constructor(
     private val preferences: UmbralPreferences,
     private val profileDao: BlockingProfileDao,
     private val blockingManager: BlockingManager,
-    private val statsRepository: StatsRepository
+    private val statsRepository: StatsRepository,
+    private val expeditionRepository: ExpeditionRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -42,6 +51,8 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadState()
+        loadExpeditionState()
+        observeRewardEvents()
     }
 
     private fun loadState() {
@@ -132,5 +143,82 @@ class HomeViewModel @Inject constructor(
                 Timber.e(e, "Failed to select profile")
             }
         }
+    }
+
+    /**
+     * Load expedition progress state for display on HomeScreen
+     */
+    private fun loadExpeditionState() {
+        viewModelScope.launch {
+            try {
+                combine(
+                    expeditionRepository.getProgress(),
+                    expeditionRepository.getActiveCompanion()
+                ) { progress, activeCompanion ->
+                    if (progress == null) {
+                        ExpeditionHomeState.NotInitialized
+                    } else {
+                        val domainProgress = ProgressMapper.toDomain(progress)
+
+                        // Map active companion to info
+                        val companionInfo = activeCompanion?.let { companion ->
+                            val type = CompanionType.fromId(companion.type)
+                            if (type != null) {
+                                ActiveCompanionInfo(
+                                    id = companion.id,
+                                    displayName = companion.name ?: type.displayName,
+                                    type = type,
+                                    evolutionState = companion.evolutionState,
+                                    passiveBonusDescription = type.passiveBonus.getDescription()
+                                )
+                            } else null
+                        }
+
+                        ExpeditionHomeState(
+                            isLoading = false,
+                            isInitialized = true,
+                            level = domainProgress.level,
+                            currentXp = domainProgress.currentXp,
+                            xpForNextLevel = domainProgress.xpForNextLevel,
+                            levelProgress = domainProgress.levelProgress,
+                            totalEnergy = domainProgress.totalEnergy,
+                            currentStreak = domainProgress.currentStreak,
+                            streakMultiplier = domainProgress.streakMultiplierText,
+                            activeCompanion = companionInfo
+                        )
+                    }
+                }.collect { expeditionState ->
+                    _uiState.value = _uiState.value.copy(expeditionState = expeditionState)
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load expedition state")
+                _uiState.value = _uiState.value.copy(
+                    expeditionState = ExpeditionHomeState.NotInitialized
+                )
+            }
+        }
+    }
+
+    /**
+     * Observe reward events from BlockingManager
+     */
+    private fun observeRewardEvents() {
+        viewModelScope.launch {
+            try {
+                blockingManager.rewardEvent.collect { reward ->
+                    Timber.d("Received session reward: energy=${reward.energyResult.totalEnergy}")
+                    _uiState.value = _uiState.value.copy(showRewardDialog = reward)
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error observing reward events")
+            }
+        }
+    }
+
+    /**
+     * Dismiss the reward dialog
+     */
+    fun dismissRewardDialog() {
+        _uiState.value = _uiState.value.copy(showRewardDialog = null)
     }
 }

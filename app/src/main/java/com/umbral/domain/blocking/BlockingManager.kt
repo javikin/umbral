@@ -1,6 +1,8 @@
 package com.umbral.domain.blocking
 
+import com.umbral.expedition.domain.model.SessionReward
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -11,7 +13,8 @@ data class BlockingState(
     val activeProfileId: String? = null,
     val activeProfileName: String? = null,
     val blockedApps: Set<String> = emptySet(),
-    val isStrictMode: Boolean = false
+    val isStrictMode: Boolean = false,
+    val sessionStartTime: Long? = null
 )
 
 /**
@@ -28,6 +31,12 @@ interface BlockingManager {
      * Whether blocking is currently active.
      */
     val isBlocking: Boolean
+
+    /**
+     * One-time event flow for session rewards.
+     * Emitted when a blocking session completes successfully.
+     */
+    val rewardEvent: SharedFlow<SessionReward>
 
     /**
      * Start blocking with the specified profile.

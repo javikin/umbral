@@ -58,6 +58,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umbral.R
+import com.umbral.expedition.domain.model.ExpeditionHomeState
+import com.umbral.expedition.domain.model.SessionReward
+import com.umbral.expedition.presentation.components.ExpeditionProgressCard
+import com.umbral.expedition.presentation.components.SessionRewardDialog
 import com.umbral.presentation.ui.components.LoadingIndicator
 import com.umbral.presentation.ui.components.StatsGraph
 import com.umbral.presentation.ui.components.StreakDisplay
@@ -76,6 +80,7 @@ fun HomeScreen(
     onNavigateToQrScan: () -> Unit = {},
     onNavigateToStats: () -> Unit = {},
     onNavigateToCreateProfile: () -> Unit = {},
+    onNavigateToExpedition: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -88,6 +93,8 @@ fun HomeScreen(
         onQrScanClick = onNavigateToQrScan,
         onStatsClick = onNavigateToStats,
         onCreateProfileClick = onNavigateToCreateProfile,
+        onExpeditionClick = onNavigateToExpedition,
+        onDismissRewardDialog = viewModel::dismissRewardDialog,
         modifier = modifier
     )
 }
@@ -100,11 +107,14 @@ private fun HomeScreenContent(
     onQrScanClick: () -> Unit,
     onStatsClick: () -> Unit,
     onCreateProfileClick: () -> Unit,
+    onExpeditionClick: () -> Unit,
+    onDismissRewardDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Animation states
     var showStatusCard by remember { mutableStateOf(false) }
     var showFirstProfileCard by remember { mutableStateOf(false) }
+    var showExpeditionCard by remember { mutableStateOf(false) }
     var showStreakCard by remember { mutableStateOf(false) }
     var showQuickActions by remember { mutableStateOf(false) }
     var showStatsPreview by remember { mutableStateOf(false) }
@@ -118,11 +128,21 @@ private fun HomeScreenContent(
             showFirstProfileCard = true
             delay(150)
         }
+        showExpeditionCard = true
+        delay(150)
         showStreakCard = true
         delay(150)
         showQuickActions = true
         delay(200)
         showStatsPreview = true
+    }
+
+    // Show reward dialog when available
+    uiState.showRewardDialog?.let { reward ->
+        SessionRewardDialog(
+            reward = reward,
+            onDismiss = onDismissRewardDialog
+        )
     }
 
     if (uiState.isLoading) {

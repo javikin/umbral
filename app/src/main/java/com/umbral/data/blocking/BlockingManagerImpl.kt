@@ -4,14 +4,21 @@ import com.umbral.domain.blocking.BlockingManager
 import com.umbral.domain.blocking.BlockingState
 import com.umbral.domain.blocking.ForegroundAppMonitor
 import com.umbral.domain.blocking.ProfileRepository
+import com.umbral.expedition.data.repository.ExpeditionRepository
+import com.umbral.expedition.domain.model.SessionReward
+import com.umbral.expedition.domain.usecase.CheckAchievementsUseCase
+import com.umbral.expedition.domain.usecase.GainEnergyUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import android.content.Context
 import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -23,7 +30,10 @@ import javax.inject.Singleton
 class BlockingManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val profileRepository: ProfileRepository,
-    private val foregroundAppMonitor: ForegroundAppMonitor
+    private val foregroundAppMonitor: ForegroundAppMonitor,
+    private val expeditionRepository: ExpeditionRepository,
+    private val gainEnergyUseCase: GainEnergyUseCase,
+    private val checkAchievementsUseCase: CheckAchievementsUseCase
 ) : BlockingManager {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -31,23 +41,43 @@ class BlockingManagerImpl @Inject constructor(
     private val _blockingState = MutableStateFlow(BlockingState())
     override val blockingState: StateFlow<BlockingState> = _blockingState.asStateFlow()
 
+    private val _rewardEvent = MutableSharedFlow<SessionReward>(extraBufferCapacity = 1)
+    override val rewardEvent: SharedFlow<SessionReward> = _rewardEvent.asSharedFlow()
+
     override val isBlocking: Boolean
         get() = _blockingState.value.isActive
+
+    // Track total sessions for achievements
+    private var totalSessionsCompleted = 0
 
     init {
         // Observe active profile changes and update blocking state
         scope.launch {
             profileRepository.getActiveProfile().collect { profile ->
+                val previousState = _blockingState.value
+
                 if (profile != null) {
+                    // Check if this is a new session starting
+                    val sessionStartTime = if (!previousState.isActive) {
+                        System.currentTimeMillis()
+                    } else {
+                        previousState.sessionStartTime
+                    }
+
                     _blockingState.value = BlockingState(
                         isActive = true,
                         activeProfileId = profile.id,
                         activeProfileName = profile.name,
                         blockedApps = profile.blockedApps.toSet(),
-                        isStrictMode = profile.isStrictMode
+                        isStrictMode = profile.isStrictMode,
+                        sessionStartTime = sessionStartTime
                     )
                     startBlockingService()
                 } else {
+                    // Session ended - award rewards if there was an active session
+                    if (previousState.isActive && previousState.sessionStartTime != null) {
+                        awardExpeditionRewards(previousState.sessionStartTime)
+                    }
                     _blockingState.value = BlockingState()
                     stopBlockingService()
                 }
@@ -146,6 +176,63 @@ class BlockingManagerImpl @Inject constructor(
             Timber.d("Blocking service stop requested")
         } catch (e: Exception) {
             Timber.e(e, "Error stopping blocking service")
+        }
+    }
+
+    /**
+     * Award expedition rewards when a blocking session completes.
+     * Calculates energy gained, XP, and checks for achievements.
+     */
+    private fun awardExpeditionRewards(sessionStartTime: Long) {
+        scope.launch {
+            try {
+                // Calculate session duration in minutes
+                val durationMs = System.currentTimeMillis() - sessionStartTime
+                val durationMinutes = (durationMs / 60_000).toInt()
+
+                // Only award rewards for sessions of at least 1 minute
+                if (durationMinutes < 1) {
+                    Timber.d("Session too short for rewards: $durationMinutes minutes")
+                    return@launch
+                }
+
+                Timber.d("Awarding expedition rewards for $durationMinutes minutes")
+
+                // Gain energy and XP
+                val energyResult = gainEnergyUseCase(durationMinutes)
+                Timber.d("Energy gained: ${energyResult.totalEnergy}, XP: ${energyResult.xpGained}")
+
+                // Increment session count
+                totalSessionsCompleted++
+
+                // Get current progress for achievement checking
+                val progress = expeditionRepository.getProgressOnce()
+                val totalMinutes = progress?.totalBlockingMinutes ?: 0
+                val currentStreak = progress?.currentStreak ?: 0
+
+                // Check for achievements
+                val achievements = checkAchievementsUseCase.checkBlockingAchievements(
+                    sessionMinutes = durationMinutes,
+                    totalMinutes = totalMinutes,
+                    currentStreak = currentStreak,
+                    totalSessions = totalSessionsCompleted
+                )
+
+                if (achievements.isNotEmpty()) {
+                    Timber.d("Unlocked ${achievements.size} achievement(s): ${achievements.map { it.title }}")
+                }
+
+                // Emit reward event
+                val reward = SessionReward(
+                    energyResult = energyResult,
+                    unlockedAchievements = achievements
+                )
+                _rewardEvent.tryEmit(reward)
+
+            } catch (e: Exception) {
+                // Don't crash the app if expedition rewards fail
+                Timber.e(e, "Error awarding expedition rewards")
+            }
         }
     }
 }
