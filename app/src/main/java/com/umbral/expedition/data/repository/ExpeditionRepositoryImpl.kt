@@ -171,11 +171,11 @@ class ExpeditionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun unlockAchievement(id: String) {
-        val achievement = achievementDao.getAchievementById(id) ?: return
+    override suspend fun unlockAchievement(id: String): Int {
+        val achievement = achievementDao.getAchievementById(id) ?: return 0
 
         // Already unlocked?
-        if (achievement.unlockedAt != null) return
+        if (achievement.unlockedAt != null) return 0
 
         // Unlock it
         val timestamp = System.currentTimeMillis()
@@ -183,5 +183,7 @@ class ExpeditionRepositoryImpl @Inject constructor(
 
         // Award stars to player progress
         progressDao.addStars(achievement.starsReward)
+
+        return achievement.starsReward
     }
 }

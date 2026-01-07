@@ -107,6 +107,7 @@ interface ExpeditionRepository {
 
     /**
      * Unlock achievement and award stars
+     * @return Stars earned from unlocking the achievement
      */
-    suspend fun unlockAchievement(id: String)
+    suspend fun unlockAchievement(id: String): Int
 }
