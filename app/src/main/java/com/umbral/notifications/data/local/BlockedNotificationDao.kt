@@ -118,6 +118,70 @@ interface BlockedNotificationDao {
         )
     """)
     suspend fun trimToLimit(keepCount: Int = 1000)
+
+    // ========== Gamification Queries ==========
+
+    /**
+     * Get total count of blocked notifications as Flow (for reactive updates).
+     * Used for achievement progress tracking.
+     * @return Flow emitting the total count
+     */
+    @Query("SELECT COUNT(*) FROM blocked_notifications")
+    fun getTotalCountFlow(): Flow<Int>
+
+    /**
+     * Get blocked notifications count for last N days.
+     * @param since Timestamp in milliseconds
+     * @return Number of notifications blocked since the timestamp
+     */
+    @Query("SELECT COUNT(*) FROM blocked_notifications WHERE timestamp >= :since")
+    suspend fun getCountSince(since: Long): Int
+
+    /**
+     * Get top blocked apps with counts, ordered by count descending.
+     * @param limit Maximum number of apps to return
+     * @return List of apps with their blocked notification counts
+     */
+    @Query("""
+        SELECT package_name, app_name, COUNT(*) as count
+        FROM blocked_notifications
+        GROUP BY package_name
+        ORDER BY count DESC
+        LIMIT :limit
+    """)
+    suspend fun getTopBlockedApps(limit: Int): List<AppNotificationCount>
+
+    /**
+     * Get top blocked apps since a timestamp.
+     * @param since Timestamp in milliseconds
+     * @param limit Maximum number of apps to return
+     * @return List of apps with their blocked notification counts since the timestamp
+     */
+    @Query("""
+        SELECT package_name, app_name, COUNT(*) as count
+        FROM blocked_notifications
+        WHERE timestamp >= :since
+        GROUP BY package_name
+        ORDER BY count DESC
+        LIMIT :limit
+    """)
+    suspend fun getTopBlockedAppsSince(since: Long, limit: Int): List<AppNotificationCount>
+
+    /**
+     * Get daily blocked notification counts for the last N days.
+     * Used for charts and statistics.
+     * @param since Timestamp in milliseconds
+     * @return List of daily counts with date strings
+     */
+    @Query("""
+        SELECT DATE(timestamp/1000, 'unixepoch', 'localtime') as date_string,
+               COUNT(*) as count
+        FROM blocked_notifications
+        WHERE timestamp >= :since
+        GROUP BY date_string
+        ORDER BY date_string ASC
+    """)
+    suspend fun getDailyBlockedCounts(since: Long): List<DailyNotificationCount>
 }
 
 /**
@@ -131,5 +195,17 @@ interface BlockedNotificationDao {
 data class AppNotificationCount(
     @ColumnInfo(name = "package_name") val packageName: String,
     @ColumnInfo(name = "app_name") val appName: String,
+    @ColumnInfo(name = "count") val count: Int
+)
+
+/**
+ * Data class for daily notification counts.
+ * Used in queries that aggregate counts by date for charts.
+ *
+ * @property dateString The date in YYYY-MM-DD format
+ * @property count Number of notifications blocked on this date
+ */
+data class DailyNotificationCount(
+    @ColumnInfo(name = "date_string") val dateString: String,
     @ColumnInfo(name = "count") val count: Int
 )

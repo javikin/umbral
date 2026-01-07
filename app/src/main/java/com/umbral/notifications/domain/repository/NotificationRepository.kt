@@ -1,7 +1,9 @@
 package com.umbral.notifications.domain.repository
 
+import com.umbral.notifications.domain.model.AppNotificationStats
 import com.umbral.notifications.domain.model.BlockedNotification
 import com.umbral.notifications.domain.model.NotificationSummary
+import com.umbral.notifications.domain.model.NotificationStats
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -72,4 +74,42 @@ interface NotificationRepository {
      * @param maxCount Maximum number of notifications to keep (default: 1000)
      */
     suspend fun trimToLimit(maxCount: Int = 1000)
+
+    // ========== Gamification Methods ==========
+
+    /**
+     * Get total blocked count as a Flow for reactive updates.
+     * Used for achievement progress tracking.
+     * @return Flow emitting the total blocked count
+     */
+    fun getTotalBlockedCountFlow(): Flow<Int>
+
+    /**
+     * Get count of notifications blocked for a specific session.
+     * Used for calculating energy bonus at session end.
+     * @param sessionId The session ID to count for
+     * @return Number of notifications blocked in the session
+     */
+    suspend fun getCountForSession(sessionId: String): Int
+
+    /**
+     * Get top apps by blocked notification count.
+     * @param limit Maximum number of apps to return (default: 5)
+     * @return List of apps with their notification counts, ordered by count descending
+     */
+    suspend fun getTopBlockedApps(limit: Int = 5): List<AppNotificationStats>
+
+    /**
+     * Get notification statistics for the stats screen.
+     * Includes total count, last 7 days count, and top apps.
+     * @return Aggregated notification statistics
+     */
+    suspend fun getNotificationStats(): NotificationStats
+
+    /**
+     * Get count of notifications blocked in the last N days.
+     * @param days Number of days to look back
+     * @return Number of notifications blocked in the period
+     */
+    suspend fun getCountForLastDays(days: Int): Int
 }

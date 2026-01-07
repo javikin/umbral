@@ -2,7 +2,7 @@ package com.umbral.expedition.domain.model
 
 /**
  * Achievement definitions and metadata.
- * Contains all 30 achievements across 3 categories.
+ * Contains all 33 achievements across 4 categories.
  */
 object AchievementDefinitions {
 
@@ -251,13 +251,40 @@ object AchievementDefinitions {
             description = "Todos los compañeros en evolución máxima",
             target = 8,
             starsReward = 150
+        ),
+
+        // ========== NOTIFICATIONS CATEGORY (3 achievements) ==========
+        AchievementDef(
+            id = "shield_mind",
+            category = Category.NOTIFICATIONS,
+            title = "Escudo Mental",
+            description = "Bloquea 100 notificaciones",
+            target = 100,
+            starsReward = 50
+        ),
+        AchievementDef(
+            id = "fortress",
+            category = Category.NOTIFICATIONS,
+            title = "Fortaleza",
+            description = "Bloquea 500 notificaciones",
+            target = 500,
+            starsReward = 100
+        ),
+        AchievementDef(
+            id = "immune",
+            category = Category.NOTIFICATIONS,
+            title = "Inmune",
+            description = "Bloquea 1000 notificaciones",
+            target = 1000,
+            starsReward = 200
         )
     )
 
     enum class Category(val displayName: String) {
         BLOCKING("Bloqueo"),
         EXPLORATION("Exploración"),
-        COMPANION("Compañeros")
+        COMPANION("Compañeros"),
+        NOTIFICATIONS("Notificaciones")
     }
 
     /**

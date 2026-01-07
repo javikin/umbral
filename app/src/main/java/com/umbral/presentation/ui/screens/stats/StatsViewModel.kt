@@ -5,7 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.umbral.data.local.dao.AppAttemptCount
 import com.umbral.data.local.dao.DailyStats
 import com.umbral.domain.stats.StatsRepository
+import com.umbral.notifications.domain.model.AppNotificationStats
+import com.umbral.notifications.domain.model.NotificationStats
+import com.umbral.notifications.domain.repository.NotificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StatsViewModel @Inject constructor(
-    private val statsRepository: StatsRepository
+    private val statsRepository: StatsRepository,
+    private val notificationRepository: NotificationRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StatsUiState())
@@ -30,11 +35,14 @@ class StatsViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-                // Get today's stats
-                val todayStats = statsRepository.getTodayStats()
+                // Load blocking stats and notification stats in parallel
+                val todayStatsDeferred = async { statsRepository.getTodayStats() }
+                val weeklyStatsDeferred = async { statsRepository.getWeeklyStats() }
+                val notificationStatsDeferred = async { notificationRepository.getNotificationStats() }
 
-                // Get weekly stats
-                val weeklyStats = statsRepository.getWeeklyStats()
+                val todayStats = todayStatsDeferred.await()
+                val weeklyStats = weeklyStatsDeferred.await()
+                val notificationStats = notificationStatsDeferred.await()
 
                 // Calculate percentage change
                 val percentageChange = calculatePercentageChange(
@@ -51,15 +59,16 @@ class StatsViewModel @Inject constructor(
                     previousWeekMinutes = weeklyStats.previousWeekMinutes,
                     percentageChange = percentageChange,
                     dailyStats = weeklyStats.dailyStats,
-                    topApps = weeklyStats.topApps
+                    topApps = weeklyStats.topApps,
+                    notificationStats = notificationStats
                 )
 
-                Timber.d("Stats loaded successfully: Today=${todayStats.blockedMinutes}min, Week=${weeklyStats.totalMinutes}min")
+                Timber.d("Stats loaded successfully: Today=${todayStats.blockedMinutes}min, Week=${weeklyStats.totalMinutes}min, Notifications=${notificationStats.totalBlocked}")
             } catch (e: Exception) {
                 Timber.e(e, "Error loading stats")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Error al cargar estadísticas"
+                    error = e.message ?: "Error al cargar estadisticas"
                 )
             }
         }
@@ -85,5 +94,6 @@ data class StatsUiState(
     val previousWeekMinutes: Int = 0,
     val percentageChange: Int = 0,
     val dailyStats: List<DailyStats> = emptyList(),
-    val topApps: List<AppAttemptCount> = emptyList()
+    val topApps: List<AppAttemptCount> = emptyList(),
+    val notificationStats: NotificationStats? = null
 )

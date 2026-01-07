@@ -3,7 +3,9 @@ package com.umbral.notifications.data.repository
 import com.umbral.notifications.data.local.BlockedNotificationDao
 import com.umbral.notifications.data.mapper.toDomain
 import com.umbral.notifications.data.mapper.toEntity
+import com.umbral.notifications.domain.model.AppNotificationStats
 import com.umbral.notifications.domain.model.BlockedNotification
+import com.umbral.notifications.domain.model.NotificationStats
 import com.umbral.notifications.domain.model.NotificationSummary
 import com.umbral.notifications.domain.repository.NotificationRepository
 import kotlinx.coroutines.flow.Flow
@@ -76,5 +78,49 @@ class NotificationRepositoryImpl @Inject constructor(
 
     override suspend fun trimToLimit(maxCount: Int) {
         dao.trimToLimit(maxCount)
+    }
+
+    // ========== Gamification Methods ==========
+
+    override fun getTotalBlockedCountFlow(): Flow<Int> {
+        return dao.getTotalCountFlow()
+    }
+
+    override suspend fun getCountForSession(sessionId: String): Int {
+        return dao.getCountForSession(sessionId)
+    }
+
+    override suspend fun getTopBlockedApps(limit: Int): List<AppNotificationStats> {
+        return dao.getTopBlockedApps(limit).map { appCount ->
+            AppNotificationStats(
+                packageName = appCount.packageName,
+                appName = appCount.appName,
+                count = appCount.count
+            )
+        }
+    }
+
+    override suspend fun getNotificationStats(): NotificationStats {
+        val totalBlocked = dao.getTotalCount()
+        val last7DaysCutoff = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L)
+        val last7Days = dao.getCountSince(last7DaysCutoff)
+        val topApps = dao.getTopBlockedApps(5).map { appCount ->
+            AppNotificationStats(
+                packageName = appCount.packageName,
+                appName = appCount.appName,
+                count = appCount.count
+            )
+        }
+
+        return NotificationStats(
+            totalBlocked = totalBlocked,
+            last7Days = last7Days,
+            topApps = topApps
+        )
+    }
+
+    override suspend fun getCountForLastDays(days: Int): Int {
+        val cutoffMillis = System.currentTimeMillis() - (days * 24 * 60 * 60 * 1000L)
+        return dao.getCountSince(cutoffMillis)
     }
 }
