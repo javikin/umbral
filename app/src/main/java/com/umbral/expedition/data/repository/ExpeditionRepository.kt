@@ -25,9 +25,19 @@ interface ExpeditionRepository {
     fun getProgress(): Flow<ProgressEntity?>
 
     /**
+     * Get player progress once (suspend)
+     */
+    suspend fun getProgressOnce(): ProgressEntity?
+
+    /**
      * Add energy to player's total (earned from blocking sessions)
      */
     suspend fun addEnergy(amount: Int)
+
+    /**
+     * Spend energy from player's total
+     */
+    suspend fun spendEnergy(amount: Int)
 
     /**
      * Add XP to player's current XP
@@ -35,9 +45,19 @@ interface ExpeditionRepository {
     suspend fun addXp(amount: Int)
 
     /**
+     * Update player level
+     */
+    suspend fun updateLevel(level: Int)
+
+    /**
      * Update current streak and potentially longest streak
      */
     suspend fun updateStreak(streak: Int)
+
+    /**
+     * Add blocking minutes to total
+     */
+    suspend fun addBlockingMinutes(minutes: Int)
 
     // ========== Companions ==========
 
@@ -52,6 +72,16 @@ interface ExpeditionRepository {
     fun getActiveCompanion(): Flow<CompanionEntity?>
 
     /**
+     * Get companion by ID
+     */
+    suspend fun getCompanionById(id: String): CompanionEntity?
+
+    /**
+     * Get companion by type
+     */
+    suspend fun getCompanionByType(type: String): CompanionEntity?
+
+    /**
      * Capture a new companion of given type
      */
     suspend fun captureCompanion(type: String)
@@ -60,6 +90,11 @@ interface ExpeditionRepository {
      * Evolve companion to next evolution state
      */
     suspend fun evolveCompanion(id: String)
+
+    /**
+     * Invest energy into companion for evolution progress
+     */
+    suspend fun investEnergyInCompanion(id: String, totalEnergy: Int)
 
     /**
      * Set a companion as active (deactivates all others)
@@ -72,6 +107,11 @@ interface ExpeditionRepository {
      * Get all discovered locations as Flow
      */
     fun getDiscoveredLocations(): Flow<List<LocationEntity>>
+
+    /**
+     * Get location by ID
+     */
+    suspend fun getLocationById(id: String): LocationEntity?
 
     /**
      * Discover a new location

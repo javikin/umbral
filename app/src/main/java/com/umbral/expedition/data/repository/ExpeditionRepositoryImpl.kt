@@ -33,10 +33,19 @@ class ExpeditionRepositoryImpl @Inject constructor(
         return progressDao.getProgress()
     }
 
+    override suspend fun getProgressOnce(): ProgressEntity? {
+        return progressDao.getProgressOnce()
+    }
+
     override suspend fun addEnergy(amount: Int) {
         // Initialize progress if it doesn't exist
         ensureProgressExists()
         progressDao.addEnergy(amount)
+    }
+
+    override suspend fun spendEnergy(amount: Int) {
+        ensureProgressExists()
+        progressDao.addEnergy(-amount) // Subtract energy
     }
 
     override suspend fun addXp(amount: Int) {
@@ -44,9 +53,19 @@ class ExpeditionRepositoryImpl @Inject constructor(
         progressDao.addXp(amount)
     }
 
+    override suspend fun updateLevel(level: Int) {
+        ensureProgressExists()
+        progressDao.updateLevel(level)
+    }
+
     override suspend fun updateStreak(streak: Int) {
         ensureProgressExists()
         progressDao.updateStreak(streak)
+    }
+
+    override suspend fun addBlockingMinutes(minutes: Int) {
+        ensureProgressExists()
+        progressDao.addBlockingMinutes(minutes)
     }
 
     /**
@@ -67,6 +86,14 @@ class ExpeditionRepositoryImpl @Inject constructor(
 
     override fun getActiveCompanion(): Flow<CompanionEntity?> {
         return companionDao.getActiveCompanion()
+    }
+
+    override suspend fun getCompanionById(id: String): CompanionEntity? {
+        return companionDao.getById(id)
+    }
+
+    override suspend fun getCompanionByType(type: String): CompanionEntity? {
+        return companionDao.getByType(type)
     }
 
     override suspend fun captureCompanion(type: String) {
@@ -91,19 +118,18 @@ class ExpeditionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun evolveCompanion(id: String) {
-        val companion = companionDao.getByType(id)
+        val companion = companionDao.getById(id)
         if (companion == null || companion.evolutionState >= 3) {
             return // Companion not found or already at max evolution
         }
 
         val newState = companion.evolutionState + 1
-        val requiredEnergy = when (newState) {
-            2 -> 500
-            3 -> 1500
-            else -> 0
-        }
+        companionDao.evolve(id, newState, companion.energyInvested)
+    }
 
-        companionDao.evolve(id, newState, requiredEnergy)
+    override suspend fun investEnergyInCompanion(id: String, totalEnergy: Int) {
+        val companion = companionDao.getById(id) ?: return
+        companionDao.update(companion.copy(energyInvested = totalEnergy))
     }
 
     override suspend fun setActiveCompanion(id: String) {
@@ -117,6 +143,10 @@ class ExpeditionRepositoryImpl @Inject constructor(
 
     override fun getDiscoveredLocations(): Flow<List<LocationEntity>> {
         return locationDao.getDiscoveredLocations()
+    }
+
+    override suspend fun getLocationById(id: String): LocationEntity? {
+        return locationDao.getById(id)
     }
 
     override suspend fun discoverLocation(locationId: String, biomeId: String, energyCost: Int) {

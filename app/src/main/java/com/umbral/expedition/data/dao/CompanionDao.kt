@@ -18,6 +18,9 @@ interface CompanionDao {
     @Query("SELECT * FROM companions WHERE is_active = 1 LIMIT 1")
     fun getActiveCompanion(): Flow<CompanionEntity?>
 
+    @Query("SELECT * FROM companions WHERE id = :id LIMIT 1")
+    suspend fun getById(id: String): CompanionEntity?
+
     @Query("SELECT * FROM companions WHERE type = :type")
     suspend fun getByType(type: String): CompanionEntity?
 
