@@ -15,6 +15,18 @@ import com.umbral.data.local.entity.BlockingEventEntity
 import com.umbral.data.local.entity.BlockingProfileEntity
 import com.umbral.data.local.entity.BlockingSessionEntity
 import com.umbral.data.local.entity.NfcTagEntity
+import com.umbral.expedition.data.dao.AchievementDao
+import com.umbral.expedition.data.dao.CompanionDao
+import com.umbral.expedition.data.dao.DecorationDao
+import com.umbral.expedition.data.dao.LocationDao
+import com.umbral.expedition.data.dao.ProgressDao
+import com.umbral.expedition.data.entity.AchievementEntity
+import com.umbral.expedition.data.entity.CompanionEntity
+import com.umbral.expedition.data.entity.DecorationEntity
+import com.umbral.expedition.data.entity.LocationEntity
+import com.umbral.expedition.data.entity.ProgressEntity
+import com.umbral.notifications.data.local.BlockedNotificationDao
+import com.umbral.notifications.data.local.BlockedNotificationEntity
 
 @Database(
     entities = [
@@ -23,9 +35,15 @@ import com.umbral.data.local.entity.NfcTagEntity
         NfcTagEntity::class,
         BlockedAttemptEntity::class,
         BlockingSessionEntity::class,
-        BlockingEventEntity::class
+        BlockingEventEntity::class,
+        CompanionEntity::class,
+        LocationEntity::class,
+        ProgressEntity::class,
+        AchievementEntity::class,
+        DecorationEntity::class,
+        BlockedNotificationEntity::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -35,6 +53,14 @@ abstract class UmbralDatabase : RoomDatabase() {
     abstract fun nfcTagDao(): NfcTagDao
     abstract fun statsDao(): StatsDao
     abstract fun blockingEventDao(): BlockingEventDao
+    abstract fun blockedNotificationDao(): BlockedNotificationDao
+
+    // Expedition DAOs
+    abstract fun companionDao(): CompanionDao
+    abstract fun locationDao(): LocationDao
+    abstract fun progressDao(): ProgressDao
+    abstract fun achievementDao(): AchievementDao
+    abstract fun decorationDao(): DecorationDao
 
     companion object {
         private const val DATABASE_NAME = "umbral_database"
@@ -49,7 +75,7 @@ abstract class UmbralDatabase : RoomDatabase() {
                     UmbralDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_2_3)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

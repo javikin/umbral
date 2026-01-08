@@ -55,9 +55,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SuccessScreen(
-    profileName: String,
-    appsCount: Int,
-    onStartBlocking: () -> Unit,
+    onCreateProfile: () -> Unit,
     onLater: () -> Unit
 ) {
     val context = LocalContext.current
@@ -147,25 +145,13 @@ fun SuccessScreen(
                 visible = showSummary,
                 enter = fadeIn(animationSpec = tween(400))
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Tu perfil \"$profileName\" está configurado",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.height(UmbralSpacing.xs))
-
-                    Text(
-                        text = "$appsCount apps serán bloqueadas cuando te enfoques",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Text(
+                    text = "Ya puedes crear tu primer perfil de bloqueo",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = UmbralSpacing.md)
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -187,8 +173,8 @@ fun SuccessScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     UmbralButton(
-                        text = "Activar bloqueo ahora",
-                        onClick = onStartBlocking,
+                        text = "Crear primer perfil",
+                        onClick = onCreateProfile,
                         fullWidth = true,
                         variant = ButtonVariant.Primary,
                         leadingIcon = Icons.Outlined.PlayArrow
@@ -285,9 +271,7 @@ private fun AnimatedSuccessIcon(
 private fun SuccessScreenPreview() {
     UmbralTheme {
         SuccessScreen(
-            profileName = "Trabajo",
-            appsCount = 12,
-            onStartBlocking = {},
+            onCreateProfile = {},
             onLater = {}
         )
     }
@@ -298,9 +282,7 @@ private fun SuccessScreenPreview() {
 private fun SuccessScreenDarkPreview() {
     UmbralTheme(darkTheme = true) {
         SuccessScreen(
-            profileName = "Estudio",
-            appsCount = 8,
-            onStartBlocking = {},
+            onCreateProfile = {},
             onLater = {}
         )
     }

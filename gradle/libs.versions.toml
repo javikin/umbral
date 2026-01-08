@@ -43,6 +43,9 @@ glance = "1.1.1"
 # Charts
 vico = "2.0.0-beta.2"
 
+# Image Loading
+coil = "2.5.0"
+
 # Logging
 timber = "5.0.1"
 
@@ -118,6 +121,9 @@ glance-material3 = { group = "androidx.glance", name = "glance-material3", versi
 
 # Charts
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+
+# Image Loading
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
 # Logging
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }

@@ -57,6 +57,12 @@ interface OnboardingManager {
     suspend fun completeOnboarding(): Result<String>  // Returns profile ID
 
     /**
+     * Completa el onboarding sin crear perfil
+     * El usuario creará su perfil desde el Home
+     */
+    suspend fun completeOnboardingSimple()
+
+    /**
      * Resetea el onboarding (para testing)
      */
     suspend fun resetOnboarding()

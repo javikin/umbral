@@ -140,6 +140,12 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
+    fun completeOnboardingSimple() {
+        viewModelScope.launch {
+            onboardingManager.completeOnboardingSimple()
+        }
+    }
+
     private fun loadInstalledApps() {
         viewModelScope.launch {
             _isLoading.value = true

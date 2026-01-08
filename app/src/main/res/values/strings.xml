@@ -39,6 +39,14 @@
     <string name="stats_blocked_time">bloqueado</string>
     <string name="stats_attempts_blocked">Intentos bloqueados</string>
 
+    <!-- Notification Stats -->
+    <string name="stats_notifications_title">Notificaciones bloqueadas</string>
+    <string name="stats_notifications_total">Total bloqueadas</string>
+    <string name="stats_notifications_last_7_days">Ultimos 7 dias</string>
+    <string name="stats_notifications_top_apps">Apps con mas notificaciones</string>
+    <string name="stats_notifications_empty">Aun no hay notificaciones bloqueadas</string>
+    <string name="stats_notifications_count">%1$d notificaciones</string>
+
     <!-- Settings -->
     <string name="settings_placeholder">Configuracion proximamente</string>
     <string name="permissions">Permisos</string>
@@ -52,6 +60,11 @@
     <string name="notification_desc">Para mostrar el estado de bloqueo</string>
     <string name="camera_permission">Camara</string>
     <string name="camera_desc">Necesario para escanear codigos QR</string>
+    <string name="notification_access_permission">Acceso a notificaciones</string>
+    <string name="notification_access_desc">Permite gestionar notificaciones de apps bloqueadas</string>
+    <string name="notification_access_required">Se requiere acceso a notificaciones</string>
+    <string name="notification_access_explanation">Umbral necesita acceso a tus notificaciones para detectar y opcionalmente bloquear notificaciones de apps bloqueadas. Esto ayuda a mantener tu enfoque.</string>
+    <string name="open_settings">Abrir ajustes</string>
     <string name="grant_permission">Conceder</string>
     <string name="granted">Concedido</string>
     <string name="about">Acerca de</string>
@@ -142,6 +155,49 @@
     <string name="category_news">Noticias</string>
     <string name="category_system">Sistema</string>
     <string name="category_other">Otras</string>
+
+    <!-- Expedition / Gamification -->
+    <string name="expedition_title">Expedición</string>
+    <string name="expedition_map">Mapa</string>
+    <string name="expedition_companions">Compañeros</string>
+    <string name="expedition_achievements">Logros</string>
+    <string name="expedition_energy">Energía</string>
+    <string name="expedition_level">Nivel</string>
+    <string name="expedition_xp">XP</string>
+
+    <!-- Companions -->
+    <string name="companion_locked">Bloqueado</string>
+    <string name="companion_available">Disponible</string>
+    <string name="companion_captured">Capturado</string>
+    <string name="companion_active">Activo</string>
+    <string name="companion_capture_button">¡Capturar!</string>
+    <string name="companion_set_active">Establecer como Activo</string>
+    <string name="companion_already_active">Compañero Activo</string>
+    <string name="companion_evolution_max">Evol. Máx</string>
+    <string name="companion_stats_title">Estadísticas</string>
+    <string name="companion_passive_bonus">Bono Pasivo</string>
+    <string name="companion_evolution_progress">Progreso de Evolución</string>
+    <string name="companion_captured_count">Capturados: %1$d/%2$d</string>
+    <string name="companion_available_count">Disponibles: %1$d</string>
+    <string name="companion_list_summary">Capturados: %1$d/%2$d • Disponibles: %3$d</string>
+
+    <!-- Locations -->
+    <string name="location_discovered">Descubierta</string>
+    <string name="location_undiscovered">Sin descubrir</string>
+    <string name="location_reveal_cost">Costo: %1$d energía</string>
+    <string name="location_lore">Historia</string>
+
+    <!-- Achievements -->
+    <string name="achievement_unlocked">¡Logro desbloqueado!</string>
+    <string name="achievement_locked">Logro bloqueado</string>
+    <string name="achievement_progress">Progreso: %1$d/%2$d</string>
+    <string name="achievement_reward_stars">Estrellas: %1$d</string>
+
+    <!-- Session Rewards -->
+    <string name="session_reward_title">¡Sesión Completada!</string>
+    <string name="session_reward_energy">+%1$d Energía</string>
+    <string name="session_reward_xp">+%1$d XP</string>
+    <string name="session_reward_level_up">¡Nivel %1$d alcanzado!</string>
 
     <!-- Common -->
     <string name="save">Guardar</string>

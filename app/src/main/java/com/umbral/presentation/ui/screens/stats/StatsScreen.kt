@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +47,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.umbral.R
 import com.umbral.data.local.dao.AppAttemptCount
 import com.umbral.data.local.dao.DailyStats
+import com.umbral.notifications.domain.model.AppNotificationStats
+import com.umbral.notifications.domain.model.NotificationStats
 import com.umbral.presentation.ui.components.UmbralCard
 import com.umbral.presentation.ui.components.UmbralElevation
 import com.umbral.presentation.ui.screens.stats.components.TopAppsCard
@@ -166,6 +169,15 @@ fun StatsScreen(
                     // Top Apps Card
                     item {
                         TopAppsCard(apps = uiState.topApps)
+                    }
+
+                    // Notification Stats Card
+                    uiState.notificationStats?.let { notifStats ->
+                        if (notifStats.totalBlocked > 0) {
+                            item {
+                                NotificationStatsCard(stats = notifStats)
+                            }
+                        }
                     }
 
                     item { Spacer(modifier = Modifier.height(UmbralSpacing.lg)) }
@@ -379,6 +391,123 @@ private fun AttemptsCard(
 // TopAppsCard is imported from components package
 
 // =============================================================================
+// NOTIFICATION STATS CARD
+// =============================================================================
+
+@Composable
+private fun NotificationStatsCard(
+    stats: NotificationStats,
+    modifier: Modifier = Modifier
+) {
+    UmbralCard(
+        modifier = modifier.fillMaxWidth(),
+        elevation = UmbralElevation.Subtle
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.NotificationsOff,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+                Spacer(modifier = Modifier.width(UmbralSpacing.md))
+                Text(
+                    text = stringResource(R.string.stats_notifications_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Spacer(modifier = Modifier.height(UmbralSpacing.md))
+
+            // Stats rows
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Total blocked
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.stats_notifications_total),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(UmbralSpacing.xs))
+                    Text(
+                        text = "${stats.totalBlocked}",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+
+                // Last 7 days
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = stringResource(R.string.stats_notifications_last_7_days),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(UmbralSpacing.xs))
+                    Text(
+                        text = "${stats.last7Days}",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            // Top apps section (if available)
+            if (stats.topApps.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(UmbralSpacing.md))
+
+                Text(
+                    text = stringResource(R.string.stats_notifications_top_apps),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+
+                // Show top 3 apps
+                stats.topApps.take(3).forEach { app ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = UmbralSpacing.xs),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = app.appName.ifEmpty { app.packageName.substringAfterLast('.') },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = "${app.count}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// =============================================================================
 // EMPTY STATE
 // =============================================================================
 
@@ -559,6 +688,37 @@ private fun WeeklyStatsCardPreview() {
     }
 }
 
+@Preview(name = "Notification Stats Card", showBackground = true)
+@Composable
+private fun NotificationStatsCardPreview() {
+    UmbralTheme {
+        NotificationStatsCard(
+            stats = NotificationStats(
+                totalBlocked = 247,
+                last7Days = 42,
+                topApps = listOf(
+                    AppNotificationStats(
+                        packageName = "com.whatsapp",
+                        appName = "WhatsApp",
+                        count = 89
+                    ),
+                    AppNotificationStats(
+                        packageName = "com.instagram.android",
+                        appName = "Instagram",
+                        count = 67
+                    ),
+                    AppNotificationStats(
+                        packageName = "com.twitter.android",
+                        appName = "Twitter",
+                        count = 45
+                    )
+                )
+            ),
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
 // =============================================================================
 // PREVIEW HELPER
 // =============================================================================
@@ -627,6 +787,11 @@ private fun StatsScreenContent(
                     item { WeeklyChartCard(uiState.dailyStats) }
                     item { AttemptsCard(uiState.todayAttempts) }
                     item { TopAppsCard(apps = uiState.topApps) }
+                    uiState.notificationStats?.let { notifStats ->
+                        if (notifStats.totalBlocked > 0) {
+                            item { NotificationStatsCard(stats = notifStats) }
+                        }
+                    }
                     item { Spacer(modifier = Modifier.height(UmbralSpacing.lg)) }
                 }
             }
