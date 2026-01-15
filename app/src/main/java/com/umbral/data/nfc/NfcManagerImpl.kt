@@ -9,8 +9,14 @@ import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.nfc.tech.IsoDep
+import android.nfc.tech.MifareUltralight
 import android.nfc.tech.Ndef
 import android.nfc.tech.NdefFormatable
+import android.nfc.tech.NfcA
+import android.nfc.tech.NfcB
+import android.nfc.tech.NfcF
+import android.nfc.tech.NfcV
 import android.os.Build
 import android.provider.Settings
 import com.umbral.data.local.dao.NfcTagDao
@@ -101,7 +107,13 @@ class NfcManagerImpl @Inject constructor(
 
             val techList = arrayOf(
                 arrayOf(Ndef::class.java.name),
-                arrayOf(NdefFormatable::class.java.name)
+                arrayOf(NdefFormatable::class.java.name),
+                arrayOf(NfcA::class.java.name),
+                arrayOf(MifareUltralight::class.java.name),
+                arrayOf(NfcV::class.java.name),
+                arrayOf(NfcF::class.java.name),
+                arrayOf(NfcB::class.java.name),
+                arrayOf(IsoDep::class.java.name)
             )
 
             try {

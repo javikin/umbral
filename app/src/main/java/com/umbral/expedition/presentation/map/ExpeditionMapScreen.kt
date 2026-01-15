@@ -1,8 +1,12 @@
 package com.umbral.expedition.presentation.map
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umbral.expedition.domain.model.Biome
 import com.umbral.expedition.domain.model.DiscoveryResult
+import com.umbral.expedition.presentation.components.ExpeditionWelcomeBanner
 import com.umbral.expedition.presentation.map.components.BiomeMapCanvas
 import com.umbral.expedition.presentation.map.components.EnergyChip
 import com.umbral.expedition.presentation.map.components.LocationDetailSheet
@@ -49,6 +55,7 @@ fun ExpeditionMapScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lastDiscoveryResult by viewModel.lastDiscoveryResult.collectAsState()
+    val showWelcomeBanner by viewModel.showWelcomeBanner.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState()
@@ -93,7 +100,8 @@ fun ExpeditionMapScreen(
                     containerColor = Color(0xFF1B5E20), // Dark forest green
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
-                )
+                ),
+                windowInsets = WindowInsets(0.dp)
             )
         },
         snackbarHost = {
@@ -114,6 +122,18 @@ fun ExpeditionMapScreen(
                     viewModel.selectLocation(locationId)
                 }
             )
+
+            // Welcome banner on top of the map
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp)
+            ) {
+                ExpeditionWelcomeBanner(
+                    visible = showWelcomeBanner,
+                    onDismiss = { viewModel.dismissWelcomeBanner() }
+                )
+            }
 
             // Show location detail sheet when a location is selected
             if (uiState.selectedLocationId != null) {

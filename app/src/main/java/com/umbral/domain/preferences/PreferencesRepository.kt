@@ -45,6 +45,10 @@ interface PreferencesRepository {
     fun getLastActiveDate(): Flow<String?>
     suspend fun setLastActiveDate(date: String)
 
+    // Expedition Welcome
+    fun isExpeditionWelcomeShown(): Flow<Boolean>
+    suspend fun setExpeditionWelcomeShown(shown: Boolean)
+
     // Clear all
     suspend fun clearAll()
 }

@@ -29,6 +29,8 @@ data class ProfileDetailUiState(
     val isStrictMode: Boolean = false,
     val blockedApps: List<String> = emptyList(),
     val linkedTags: List<NfcTag> = emptyList(),
+    val availableTags: List<NfcTag> = emptyList(), // Todos los tags (incluye los de otros perfiles)
+    val profileNames: Map<String, String> = emptyMap(), // Mapa de profileId -> nombre
     val isSaving: Boolean = false,
     val saveSuccess: Boolean = false,
     val error: String? = null
@@ -47,9 +49,14 @@ class ProfileDetailViewModel @Inject constructor(
 
     val uiState: StateFlow<ProfileDetailUiState> = combine(
         _formState,
-        nfcRepository.getAllTags()
-    ) { formState, allTags ->
+        nfcRepository.getAllTags(),
+        profileRepository.getAllProfiles()
+    ) { formState, allTags, allProfiles ->
         val linkedTags = allTags.filter { it.profileId == formState.profileId }
+        // Mostrar todos los tags excepto los ya vinculados a ESTE perfil
+        val availableTags = allTags.filter { it.profileId != formState.profileId }
+        // Mapa de profileId -> nombre para mostrar a qué perfil está vinculado cada tag
+        val profileNames = allProfiles.associate { it.id to it.name }
 
         ProfileDetailUiState(
             isLoading = formState.isLoading,
@@ -61,6 +68,8 @@ class ProfileDetailViewModel @Inject constructor(
             isStrictMode = formState.isStrictMode,
             blockedApps = formState.blockedApps,
             linkedTags = linkedTags,
+            availableTags = availableTags,
+            profileNames = profileNames,
             isSaving = formState.isSaving,
             saveSuccess = formState.saveSuccess,
             error = formState.error
@@ -156,6 +165,13 @@ class ProfileDetailViewModel @Inject constructor(
     fun unlinkTag(tagId: String) {
         viewModelScope.launch {
             nfcRepository.unlinkTagFromProfile(tagId)
+        }
+    }
+
+    fun linkTagToProfile(tagId: String) {
+        viewModelScope.launch {
+            val currentProfileId = _formState.value.profileId
+            nfcRepository.linkTagToProfile(tagId, currentProfileId)
         }
     }
 

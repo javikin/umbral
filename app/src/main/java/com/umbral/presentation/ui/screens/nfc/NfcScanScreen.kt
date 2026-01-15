@@ -16,11 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Nfc
@@ -32,7 +34,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -58,6 +62,7 @@ import com.umbral.presentation.viewmodel.ScanState
 @Composable
 fun NfcScanScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToTags: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: NfcScanViewModel = hiltViewModel()
 ) {
@@ -75,7 +80,8 @@ fun NfcScanScreen(
                             contentDescription = stringResource(R.string.back)
                         )
                     }
-                }
+                },
+                windowInsets = WindowInsets(0.dp)
             )
         },
         modifier = modifier
@@ -84,7 +90,7 @@ fun NfcScanScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(24.dp),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -100,7 +106,17 @@ fun NfcScanScreen(
                 else -> {
                     NfcScanContent(
                         scanState = uiState.scanState,
-                        onResetClick = viewModel::resetState
+                        showRegisterForm = uiState.showRegisterForm,
+                        tagName = uiState.tagName,
+                        tagLocation = uiState.tagLocation,
+                        onTagNameChange = viewModel::updateTagName,
+                        onTagLocationChange = viewModel::updateTagLocation,
+                        onShowRegisterForm = viewModel::showRegisterForm,
+                        onHideRegisterForm = viewModel::hideRegisterForm,
+                        onStartWaitingForTag = viewModel::startWaitingForTag,
+                        onCancelWaitingForTag = viewModel::cancelWaitingForTag,
+                        onResetClick = viewModel::resetState,
+                        onNavigateToTags = onNavigateToTags
                     )
                 }
             }
@@ -188,15 +204,55 @@ private fun NfcDisabledContent(
 @Composable
 private fun NfcScanContent(
     scanState: ScanState,
+    showRegisterForm: Boolean,
+    tagName: String,
+    tagLocation: String,
+    onTagNameChange: (String) -> Unit,
+    onTagLocationChange: (String) -> Unit,
+    onShowRegisterForm: () -> Unit,
+    onHideRegisterForm: () -> Unit,
+    onStartWaitingForTag: () -> Unit,
+    onCancelWaitingForTag: () -> Unit,
     onResetClick: () -> Unit,
+    onNavigateToTags: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        when (scanState) {
-            is ScanState.Idle, is ScanState.Scanning -> {
+        when {
+            showRegisterForm && scanState != ScanState.WaitingForTag -> {
+                RegisterTagForm(
+                    tagName = tagName,
+                    tagLocation = tagLocation,
+                    onTagNameChange = onTagNameChange,
+                    onTagLocationChange = onTagLocationChange,
+                    onSave = onStartWaitingForTag,
+                    onCancel = onHideRegisterForm
+                )
+            }
+            scanState == ScanState.WaitingForTag -> {
+                WaitingForTagAnimation()
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = "Acerca el tag NFC",
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Mantén el tag cerca hasta que se registre",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                OutlinedButton(onClick = onCancelWaitingForTag) {
+                    Text("Cancelar")
+                }
+            }
+            scanState is ScanState.Idle || scanState is ScanState.Scanning -> {
                 ScanningAnimation()
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
@@ -206,13 +262,23 @@ private fun NfcScanContent(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Mantén el tag cerca del teléfono",
+                    text = "Escanea un tag registrado o registra uno nuevo",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = onShowRegisterForm) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text("Registrar nuevo tag")
+                }
             }
-            is ScanState.Writing -> {
+            scanState is ScanState.Writing -> {
                 WritingAnimation()
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
@@ -228,7 +294,7 @@ private fun NfcScanContent(
                     textAlign = TextAlign.Center
                 )
             }
-            is ScanState.Success -> {
+            scanState is ScanState.Success -> {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
@@ -253,7 +319,7 @@ private fun NfcScanContent(
                     Text("Escanear otro")
                 }
             }
-            is ScanState.TagRegistered -> {
+            scanState is ScanState.TagRegistered -> {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
@@ -268,17 +334,21 @@ private fun NfcScanContent(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "\"${scanState.tag.name}\" está listo para usar",
+                    text = "\"${(scanState as ScanState.TagRegistered).tag.name}\" está listo para usar",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = onNavigateToTags) {
+                    Text("Ver mis tags")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(onClick = onResetClick) {
-                    Text("Escanear otro")
+                    Text("Registrar otro")
                 }
             }
-            is ScanState.Error -> {
+            scanState is ScanState.Error -> {
                 Icon(
                     imageVector = Icons.Default.Error,
                     contentDescription = null,
@@ -293,7 +363,7 @@ private fun NfcScanContent(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = getErrorMessage(scanState.error),
+                    text = getErrorMessage((scanState as ScanState.Error).error),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -434,6 +504,156 @@ private fun WritingAnimation(
 }
 
 @Composable
+private fun RegisterTagForm(
+    tagName: String,
+    tagLocation: String,
+    onTagNameChange: (String) -> Unit,
+    onTagLocationChange: (String) -> Unit,
+    onSave: () -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.Nfc,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Registrar nuevo tag",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Completa los datos y luego escanea el tag",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+
+        OutlinedTextField(
+            value = tagName,
+            onValueChange = onTagNameChange,
+            label = { Text("Nombre del tag") },
+            placeholder = { Text("Ej: Mi tag personal") },
+            singleLine = true,
+            leadingIcon = {
+                Icon(Icons.Default.Nfc, contentDescription = null)
+            },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = tagLocation,
+            onValueChange = onTagLocationChange,
+            label = { Text("Ubicación (opcional)") },
+            placeholder = { Text("Ej: Puerta principal") },
+            singleLine = true,
+            leadingIcon = {
+                Icon(Icons.Default.LocationOn, contentDescription = null)
+            },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onSave,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Guardar y escanear tag")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        TextButton(onClick = onCancel) {
+            Text("Cancelar")
+        }
+    }
+}
+
+@Composable
+private fun WaitingForTagAnimation(
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "waiting_pulse")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.9f,
+        targetValue = 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alpha"
+    )
+
+    Box(
+        modifier = modifier.size(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Outer pulse ring
+        Box(
+            modifier = Modifier
+                .size(180.dp)
+                .scale(scale)
+                .background(
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = alpha * 0.3f),
+                    shape = CircleShape
+                )
+        )
+
+        // Middle ring
+        Box(
+            modifier = Modifier
+                .size(140.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f),
+                    shape = CircleShape
+                )
+        )
+
+        // Inner circle with icon
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Nfc,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = Color.White
+            )
+        }
+    }
+}
+
+@Composable
 private fun RegisterTagDialog(
     tagName: String,
     tagLocation: String,
@@ -463,6 +683,9 @@ private fun RegisterTagDialog(
                     leadingIcon = {
                         Icon(Icons.Default.Nfc, contentDescription = null)
                     },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -475,6 +698,9 @@ private fun RegisterTagDialog(
                     leadingIcon = {
                         Icon(Icons.Default.LocationOn, contentDescription = null)
                     },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
             }

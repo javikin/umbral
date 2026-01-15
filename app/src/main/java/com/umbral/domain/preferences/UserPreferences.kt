@@ -12,7 +12,8 @@ data class UserPreferences(
     val darkMode: DarkMode = DarkMode.SYSTEM,
     val hapticFeedback: Boolean = true,
     val currentStreak: Int = 0,
-    val lastActiveDate: String? = null
+    val lastActiveDate: String? = null,
+    val expeditionWelcomeShown: Boolean = false
 )
 
 enum class DarkMode {

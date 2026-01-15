@@ -2,6 +2,7 @@ package com.umbral.expedition.presentation.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umbral.domain.preferences.PreferencesRepository
 import com.umbral.expedition.data.repository.ExpeditionRepository
 import com.umbral.expedition.domain.mapper.LocationMapper
 import com.umbral.expedition.domain.mapper.ProgressMapper
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,11 +29,22 @@ import javax.inject.Inject
 @HiltViewModel
 class ExpeditionMapViewModel @Inject constructor(
     private val repository: ExpeditionRepository,
-    private val discoverLocationUseCase: DiscoverLocationUseCase
+    private val discoverLocationUseCase: DiscoverLocationUseCase,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     // Selected location for detail sheet
     private val _selectedLocationId = MutableStateFlow<String?>(null)
+
+    // Welcome banner visibility
+    val showWelcomeBanner: StateFlow<Boolean> = preferencesRepository
+        .isExpeditionWelcomeShown()
+        .map { shown -> !shown } // Show banner if NOT shown yet
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
     // UI state combining repository data with local state
     val uiState: StateFlow<MapUiState> = combine(
@@ -95,6 +108,15 @@ class ExpeditionMapViewModel @Inject constructor(
      */
     fun clearDiscoveryResult() {
         _lastDiscoveryResult.value = null
+    }
+
+    /**
+     * Dismiss the welcome banner and mark it as shown
+     */
+    fun dismissWelcomeBanner() {
+        viewModelScope.launch {
+            preferencesRepository.setExpeditionWelcomeShown(true)
+        }
     }
 
     /**

@@ -47,8 +47,6 @@ fun UmbralNavHost(
             // Main destinations (with bottom nav)
             composable(NavRoutes.HOME) {
                 HomeScreen(
-                    onNavigateToNfcScan = { navController.navigate(NavRoutes.NFC_SCAN) },
-                    onNavigateToQrScan = { navController.navigate(NavRoutes.QR_SCAN) },
                     onNavigateToStats = { navController.navigate(NavRoutes.STATS) },
                     onNavigateToCreateProfile = { navController.navigate(NavRoutes.profileDetail("new")) },
                     onNavigateToExpedition = { navController.navigate(NavRoutes.EXPEDITION_MAP) }
@@ -69,26 +67,42 @@ fun UmbralNavHost(
 
             composable(NavRoutes.SETTINGS) {
                 SettingsScreen(
-                    onNavigateToNfcTags = { navController.navigate(NavRoutes.NFC_TAGS) }
+                    onNavigateToNfcTags = { navController.navigate(NavRoutes.NFC_TAGS) },
+                    onNavigateToQrCodes = { navController.navigate(NavRoutes.qrScan()) }
                 )
             }
 
             // Secondary destinations (without bottom nav)
             composable(NavRoutes.NFC_SCAN) {
                 NfcScanScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToTags = {
+                        navController.navigate(NavRoutes.NFC_TAGS) {
+                            popUpTo(NavRoutes.NFC_SCAN) { inclusive = true }
+                        }
+                    }
                 )
             }
 
             composable(NavRoutes.NFC_TAGS) {
                 TagsScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    onNavigateToScan = { navController.navigate(NavRoutes.NFC_SCAN) }
+                    onNavigateToScan = { navController.navigate(NavRoutes.nfcScan()) }
                 )
             }
 
-            composable(NavRoutes.QR_SCAN) {
+            composable(
+                route = NavRoutes.QR_SCAN,
+                arguments = listOf(
+                    navArgument("profileId") {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )
+            ) { backStackEntry ->
+                val profileId = backStackEntry.arguments?.getString("profileId") ?: ""
                 QrScanScreen(
+                    profileId = if (profileId.isNotBlank()) profileId else null,
                     onDismiss = { navController.popBackStack() }
                 )
             }
@@ -139,6 +153,8 @@ fun UmbralNavHost(
                     .getStateFlow<List<String>?>("selectedApps", null)
                     .collectAsStateWithLifecycle()
 
+                val profileId = backStackEntry.arguments?.getString("profileId") ?: "new"
+
                 ProfileDetailScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToAppSelector = { blockedApps ->
@@ -146,8 +162,13 @@ fun UmbralNavHost(
                             blockedApps.joinToString(","),
                             StandardCharsets.UTF_8.toString()
                         )
-                        val profileId = backStackEntry.arguments?.getString("profileId") ?: "new"
                         navController.navigate(NavRoutes.appSelector(profileId, encodedApps))
+                    },
+                    onNavigateToNfcScan = {
+                        navController.navigate(NavRoutes.nfcScan())
+                    },
+                    onNavigateToQrScan = { pid ->
+                        navController.navigate(NavRoutes.qrScan(pid))
                     },
                     selectedApps = selectedApps
                 )
@@ -186,7 +207,7 @@ object NavRoutes {
     const val SETTINGS = "settings"
     const val NFC_SCAN = "nfc_scan"
     const val NFC_TAGS = "nfc_tags"
-    const val QR_SCAN = "qr_scan"
+    const val QR_SCAN = "qr_scan?profileId={profileId}"
     const val PROFILE_DETAIL = "profile/{profileId}"
     const val APP_SELECTOR = "app_selector/{profileId}?blockedApps={blockedApps}"
     const val ONBOARDING = "onboarding"
@@ -200,5 +221,7 @@ object NavRoutes {
     fun profileDetail(profileId: String) = "profile/$profileId"
     fun appSelector(profileId: String, blockedApps: String = "") =
         "app_selector/$profileId?blockedApps=$blockedApps"
+    fun nfcScan() = NFC_SCAN
+    fun qrScan(profileId: String = "") = "qr_scan?profileId=$profileId"
     fun companionDetail(companionId: String) = "expedition/companion/$companionId"
 }

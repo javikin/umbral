@@ -86,39 +86,15 @@ fun ProfilesScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.profiles),
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = { onNavigateToProfileDetail("new") }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(R.string.create_profile)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         if (uiState.isLoading) {
             // Loading state
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
@@ -130,20 +106,17 @@ fun ProfilesScreen(
             // Empty state
             EmptyProfilesContent(
                 onCreateProfile = viewModel::createDefaultProfile,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+                modifier = Modifier.fillMaxSize()
             )
         } else {
             // Profiles list with staggered animation
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
                     .padding(horizontal = UmbralSpacing.screenHorizontal),
                 verticalArrangement = Arrangement.spacedBy(UmbralSpacing.cardSpacing)
             ) {
-                item { Spacer(modifier = Modifier.height(UmbralSpacing.sm)) }
+                item { Spacer(modifier = Modifier.height(UmbralSpacing.md)) }
 
                 itemsIndexed(
                     items = uiState.profiles,

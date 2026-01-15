@@ -61,16 +61,32 @@ val bottomNavItems = listOf(
     )
 )
 
+// Rutas principales que muestran bottom nav
+private val mainRoutes = setOf(
+    NavRoutes.HOME,
+    NavRoutes.PROFILES,
+    NavRoutes.STATS,
+    NavRoutes.SETTINGS
+)
+
 @Composable
 fun UmbralScaffold(
     navController: NavController,
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit
 ) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Solo mostrar bottom nav en rutas principales
+    val showBottomNav = currentRoute in mainRoutes
+
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            UmbralBottomNavigation(navController = navController)
+            if (showBottomNav) {
+                UmbralBottomNavigation(navController = navController)
+            }
         },
         content = content
     )

@@ -17,8 +17,16 @@ App Android open-source para bloqueo automático de apps mediante NFC tags.
 *Pendiente: Guías de usuario y desarrollo se crearán durante implementación*
 
 ### 🔧 Desarrollo
-- **Current:** Features en progreso activo
-- **Completed:** Features finalizadas y documentadas
+
+#### Current (En Progreso)
+- [**Blocking Screen Redesign**](development/current/blocking-screen-redesign/) - Rediseño completo de pantalla de bloqueo
+  - Investigación de mercado y tendencias 2025-2026
+  - Implementación en Jetpack Compose
+  - Guía de implementación completa
+  - Mockups visuales
+
+#### Completed
+*Pendiente: Features completadas se documentarán aquí*
 
 ### 📦 Archivado
 *Documentación histórica de decisiones cambiadas*
