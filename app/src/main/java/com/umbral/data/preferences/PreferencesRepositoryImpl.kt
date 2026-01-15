@@ -26,7 +26,8 @@ class PreferencesRepositoryImpl @Inject constructor(
             umbralPreferences.darkMode,
             umbralPreferences.hapticFeedback,
             umbralPreferences.currentStreak,
-            umbralPreferences.lastActiveDate
+            umbralPreferences.lastActiveDate,
+            umbralPreferences.expeditionWelcomeShown
         ) { values ->
             UserPreferences(
                 onboardingCompleted = values[0] as Boolean,
@@ -37,7 +38,8 @@ class PreferencesRepositoryImpl @Inject constructor(
                 darkMode = DarkMode.fromString(values[5] as String),
                 hapticFeedback = values[6] as Boolean,
                 currentStreak = values[7] as Int,
-                lastActiveDate = values[8] as String?
+                lastActiveDate = values[8] as String?,
+                expeditionWelcomeShown = values[9] as Boolean
             )
         }
     }
@@ -166,6 +168,20 @@ class PreferencesRepositoryImpl @Inject constructor(
             Timber.d("Last active date set to: $date")
         } catch (e: Exception) {
             Timber.e(e, "Error setting last active date")
+            throw e
+        }
+    }
+
+    override fun isExpeditionWelcomeShown(): Flow<Boolean> {
+        return umbralPreferences.expeditionWelcomeShown
+    }
+
+    override suspend fun setExpeditionWelcomeShown(shown: Boolean) {
+        try {
+            umbralPreferences.setExpeditionWelcomeShown(shown)
+            Timber.d("Expedition welcome shown set to: $shown")
+        } catch (e: Exception) {
+            Timber.e(e, "Error setting expedition welcome shown")
             throw e
         }
     }

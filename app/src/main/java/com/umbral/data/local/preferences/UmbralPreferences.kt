@@ -26,6 +26,7 @@ class UmbralPreferences @Inject constructor(
         val HAPTIC_FEEDBACK = booleanPreferencesKey("haptic_feedback")
         val CURRENT_STREAK = intPreferencesKey("current_streak")
         val LAST_ACTIVE_DATE = stringPreferencesKey("last_active_date")
+        val EXPEDITION_WELCOME_SHOWN = booleanPreferencesKey("expedition_welcome_shown")
     }
 
     // Onboarding
@@ -127,6 +128,17 @@ class UmbralPreferences @Inject constructor(
     suspend fun setLastActiveDate(date: String) {
         dataStore.edit { prefs ->
             prefs[Keys.LAST_ACTIVE_DATE] = date
+        }
+    }
+
+    // Expedition Welcome
+    val expeditionWelcomeShown: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[Keys.EXPEDITION_WELCOME_SHOWN] ?: false
+    }
+
+    suspend fun setExpeditionWelcomeShown(shown: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[Keys.EXPEDITION_WELCOME_SHOWN] = shown
         }
     }
 

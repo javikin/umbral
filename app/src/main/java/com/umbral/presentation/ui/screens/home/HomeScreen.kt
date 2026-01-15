@@ -76,8 +76,6 @@ import java.time.LocalDate
 
 @Composable
 fun HomeScreen(
-    onNavigateToNfcScan: () -> Unit = {},
-    onNavigateToQrScan: () -> Unit = {},
     onNavigateToStats: () -> Unit = {},
     onNavigateToCreateProfile: () -> Unit = {},
     onNavigateToExpedition: () -> Unit = {},
@@ -88,9 +86,6 @@ fun HomeScreen(
 
     HomeScreenContent(
         uiState = uiState,
-        onToggleBlocking = viewModel::toggleBlocking,
-        onNfcScanClick = onNavigateToNfcScan,
-        onQrScanClick = onNavigateToQrScan,
         onStatsClick = onNavigateToStats,
         onCreateProfileClick = onNavigateToCreateProfile,
         onExpeditionClick = onNavigateToExpedition,
@@ -102,39 +97,19 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenContent(
     uiState: HomeUiState,
-    onToggleBlocking: () -> Unit,
-    onNfcScanClick: () -> Unit,
-    onQrScanClick: () -> Unit,
     onStatsClick: () -> Unit,
     onCreateProfileClick: () -> Unit,
     onExpeditionClick: () -> Unit,
     onDismissRewardDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Animation states
-    var showStatusCard by remember { mutableStateOf(false) }
-    var showFirstProfileCard by remember { mutableStateOf(false) }
-    var showExpeditionCard by remember { mutableStateOf(false) }
-    var showStreakCard by remember { mutableStateOf(false) }
-    var showQuickActions by remember { mutableStateOf(false) }
-    var showStatsPreview by remember { mutableStateOf(false) }
+    // Animation states (simplificado)
+    var showContent by remember { mutableStateOf(false) }
 
-    // Staggered animation
+    // Single animation trigger
     LaunchedEffect(Unit) {
         delay(100)
-        showStatusCard = true
-        delay(150)
-        if (!uiState.hasProfiles) {
-            showFirstProfileCard = true
-            delay(150)
-        }
-        showExpeditionCard = true
-        delay(150)
-        showStreakCard = true
-        delay(150)
-        showQuickActions = true
-        delay(200)
-        showStatsPreview = true
+        showContent = true
     }
 
     // Show reward dialog when available
@@ -166,61 +141,38 @@ private fun HomeScreenContent(
     ) {
         Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-        // Main blocking status card with gradient
+        // Main blocking status card (compacto)
         AnimatedVisibility(
-            visible = showStatusCard,
-            enter = fadeIn(animationSpec = tween(400)) +
-                    slideInVertically(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        ),
-                        initialOffsetY = { -50 }
-                    )
+            visible = showContent,
+            enter = fadeIn(animationSpec = tween(300))
         ) {
             StatusCard(
                 isActive = uiState.isBlockingEnabled,
                 profileName = uiState.activeProfile?.name,
-                blockedAppsCount = uiState.activeProfile?.blockedApps?.size ?: 0,
-                onToggle = onToggleBlocking
+                blockedAppsCount = uiState.activeProfile?.blockedApps?.size ?: 0
             )
         }
 
         Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
         // First profile prompt card (only when no profiles exist)
-        AnimatedVisibility(
-            visible = showFirstProfileCard && !uiState.hasProfiles,
-            enter = fadeIn(animationSpec = tween(400)) +
-                    slideInVertically(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        ),
-                        initialOffsetY = { 50 }
-                    )
-        ) {
-            FirstProfilePromptCard(
-                onCreateProfile = onCreateProfileClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
         if (!uiState.hasProfiles) {
+            AnimatedVisibility(
+                visible = showContent,
+                enter = fadeIn(animationSpec = tween(300))
+            ) {
+                FirstProfilePromptCard(
+                    onCreateProfile = onCreateProfileClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
             Spacer(modifier = Modifier.height(UmbralSpacing.lg))
         }
 
         // Expedition progress card
         AnimatedVisibility(
-            visible = showExpeditionCard,
-            enter = fadeIn(animationSpec = tween(400)) +
-                    slideInVertically(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        ),
-                        initialOffsetY = { 50 }
-                    )
+            visible = showContent,
+            enter = fadeIn(animationSpec = tween(300))
         ) {
             ExpeditionProgressCard(
                 state = uiState.expeditionState,
@@ -231,57 +183,10 @@ private fun HomeScreenContent(
 
         Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-        // Streak card with mini calendar
-        AnimatedVisibility(
-            visible = showStreakCard,
-            enter = fadeIn(animationSpec = tween(400)) +
-                    slideInVertically(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        ),
-                        initialOffsetY = { 50 }
-                    )
-        ) {
-            StreakCard(
-                currentStreak = uiState.currentStreak,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(UmbralSpacing.lg))
-
-        // Quick actions for NFC/QR
-        AnimatedVisibility(
-            visible = showQuickActions,
-            enter = fadeIn(animationSpec = tween(400)) +
-                    slideInVertically(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        ),
-                        initialOffsetY = { 50 }
-                    )
-        ) {
-            QuickActionsRow(
-                onNfcClick = onNfcScanClick,
-                onQrClick = onQrScanClick
-            )
-        }
-
-        Spacer(modifier = Modifier.height(UmbralSpacing.lg))
-
         // Stats preview card
         AnimatedVisibility(
-            visible = showStatsPreview,
-            enter = fadeIn(animationSpec = tween(400)) +
-                    slideInVertically(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        ),
-                        initialOffsetY = { 100 }
-                    )
+            visible = showContent,
+            enter = fadeIn(animationSpec = tween(300))
         ) {
             StatsPreviewCard(
                 weeklyData = uiState.weeklyStats,
@@ -295,7 +200,7 @@ private fun HomeScreenContent(
 }
 
 // =============================================================================
-// STATUS CARD
+// STATUS CARD (Compacto)
 // =============================================================================
 
 @Composable
@@ -303,242 +208,87 @@ private fun StatusCard(
     isActive: Boolean,
     profileName: String?,
     blockedAppsCount: Int,
-    onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scale by animateFloatAsState(
-        targetValue = if (isActive) 1f else 0.98f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "statusScale"
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isActive)
+            MaterialTheme.colorScheme.primaryContainer
+        else
+            MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(300),
+        label = "statusBg"
     )
 
-    val gradientColors = if (isActive) {
-        listOf(
-            MaterialTheme.colorScheme.primary,
-            MaterialTheme.colorScheme.tertiary
-        )
-    } else {
-        listOf(
-            MaterialTheme.colorScheme.surfaceVariant,
-            MaterialTheme.colorScheme.surfaceVariant
-        )
-    }
+    val iconColor = if (isActive)
+        MaterialTheme.colorScheme.primary
+    else
+        MaterialTheme.colorScheme.onSurfaceVariant
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .scale(scale)
-            .clip(MaterialTheme.shapes.extraLarge)
-            .background(brush = Brush.linearGradient(gradientColors))
-            .clickable(onClick = onToggle)
-            .padding(UmbralSpacing.xl)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val contentColor = if (isActive) {
-                MaterialTheme.colorScheme.onPrimary
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            }
-
-            // Animated lock icon
-            AnimatedLockIcon(
-                isLocked = isActive,
-                tint = contentColor
-            )
-
-            Spacer(modifier = Modifier.height(UmbralSpacing.md))
-
-            Text(
-                text = if (isActive)
-                    stringResource(R.string.blocking_active)
-                else
-                    stringResource(R.string.blocking_inactive),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = contentColor
-            )
-
-            if (profileName != null && isActive) {
-                Spacer(modifier = Modifier.height(UmbralSpacing.xs))
-                Text(
-                    text = "Perfil: $profileName",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = contentColor.copy(alpha = 0.9f)
-                )
-
-                Spacer(modifier = Modifier.height(UmbralSpacing.xs))
-                Text(
-                    text = "$blockedAppsCount apps bloqueadas",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.7f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(UmbralSpacing.md))
-
-            Text(
-                text = if (isActive) "Toca para desactivar" else "Toca para activar",
-                style = MaterialTheme.typography.bodySmall,
-                color = contentColor.copy(alpha = 0.6f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun AnimatedLockIcon(
-    isLocked: Boolean,
-    tint: androidx.compose.ui.graphics.Color,
-    modifier: Modifier = Modifier
-) {
-    val rotation = remember { Animatable(0f) }
-    val scale = remember { Animatable(1f) }
-
-    LaunchedEffect(isLocked) {
-        // Bounce and rotate animation
-        scale.animateTo(
-            targetValue = 0.8f,
-            animationSpec = tween(100)
-        )
-        rotation.animateTo(
-            targetValue = if (isLocked) 0f else 15f,
-            animationSpec = tween(150, easing = LinearEasing)
-        )
-        scale.animateTo(
-            targetValue = 1.1f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            )
-        )
-        scale.animateTo(
-            targetValue = 1f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy
-            )
-        )
-    }
-
-    Box(
-        modifier = modifier
-            .size(88.dp)
-            .clip(CircleShape)
-            .background(tint.copy(alpha = 0.2f)),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.LockOpen,
-            contentDescription = null,
-            modifier = Modifier
-                .size(44.dp)
-                .scale(scale.value)
-                .rotate(rotation.value),
-            tint = tint
-        )
-    }
-}
-
-// =============================================================================
-// STREAK CARD
-// =============================================================================
-
-@Composable
-private fun StreakCard(
-    currentStreak: Int,
-    modifier: Modifier = Modifier
-) {
     UmbralCard(
-        modifier = modifier,
-        elevation = UmbralElevation.Subtle
-    ) {
-        StreakDisplay(
-            currentStreak = currentStreak,
-            showMiniCalendar = true,
-            completedDays = (0 until minOf(currentStreak, 7)).map {
-                LocalDate.now().minusDays(it.toLong())
-            }.toSet(),
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-// =============================================================================
-// QUICK ACTIONS
-// =============================================================================
-
-@Composable
-private fun QuickActionsRow(
-    onNfcClick: () -> Unit,
-    onQrClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(UmbralSpacing.md)
+        elevation = UmbralElevation.Medium
     ) {
-        QuickActionCard(
-            icon = Icons.Outlined.Nfc,
-            label = "Escanear NFC",
-            onClick = onNfcClick,
-            modifier = Modifier.weight(1f)
-        )
-        QuickActionCard(
-            icon = Icons.Outlined.QrCodeScanner,
-            label = "Escanear QR",
-            onClick = onQrClick,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun QuickActionCard(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    UmbralCard(
-        modifier = modifier,
-        elevation = UmbralElevation.Subtle,
-        onClick = onClick
-    ) {
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Compact lock icon
             Box(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(backgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = icon,
-                    contentDescription = label,
+                    imageVector = if (isActive) Icons.Default.Lock else Icons.Default.LockOpen,
+                    contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = iconColor
                 )
             }
 
-            Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+            Spacer(modifier = Modifier.width(UmbralSpacing.md))
 
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface
+            // Content
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = if (isActive)
+                        stringResource(R.string.blocking_active)
+                    else
+                        stringResource(R.string.blocking_inactive),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = if (profileName != null && isActive)
+                        "$profileName • $blockedAppsCount apps"
+                    else
+                        "Acerca un tag para activar",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Status indicator dot
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isActive)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.outline
+                    )
             )
         }
     }
 }
+
+
 
 // =============================================================================
 // STATS PREVIEW
@@ -622,7 +372,7 @@ private fun StatsPreviewCard(
 }
 
 // =============================================================================
-// FIRST PROFILE PROMPT CARD
+// FIRST PROFILE PROMPT CARD (Compacto)
 // =============================================================================
 
 @Composable
@@ -635,13 +385,13 @@ private fun FirstProfilePromptCard(
         elevation = UmbralElevation.Medium,
         onClick = onCreateProfile
     ) {
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
@@ -649,43 +399,32 @@ private fun FirstProfilePromptCard(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
-                    modifier = Modifier.size(32.dp),
+                    modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
 
-            Spacer(modifier = Modifier.height(UmbralSpacing.md))
+            Spacer(modifier = Modifier.width(UmbralSpacing.md))
 
-            Text(
-                text = "Crea tu primer perfil",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(UmbralSpacing.sm))
-
-            Text(
-                text = "Define qué apps bloquear y cómo desbloquearlas con NFC o timer",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(UmbralSpacing.lg))
-
-            Button(
-                onClick = onCreateProfile,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Crea tu primer perfil",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Crear perfil")
+                Text(
+                    text = "Define qué apps bloquear",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -717,9 +456,6 @@ private fun HomeScreenActivePreview() {
                     streakMultiplier = "1.5x"
                 )
             ),
-            onToggleBlocking = {},
-            onNfcScanClick = {},
-            onQrScanClick = {},
             onStatsClick = {},
             onCreateProfileClick = {},
             onExpeditionClick = {},
@@ -740,32 +476,6 @@ private fun HomeScreenInactivePreview() {
                 currentStreak = 5,
                 hasProfiles = true
             ),
-            onToggleBlocking = {},
-            onNfcScanClick = {},
-            onQrScanClick = {},
-            onStatsClick = {},
-            onCreateProfileClick = {},
-            onExpeditionClick = {},
-            onDismissRewardDialog = {}
-        )
-    }
-}
-
-@Preview(name = "Home Screen - Dark Theme", showBackground = true)
-@Composable
-private fun HomeScreenDarkPreview() {
-    UmbralTheme(darkTheme = true) {
-        HomeScreenContent(
-            uiState = HomeUiState(
-                isLoading = false,
-                isBlockingEnabled = true,
-                activeProfile = null,
-                currentStreak = 7,
-                hasProfiles = true
-            ),
-            onToggleBlocking = {},
-            onNfcScanClick = {},
-            onQrScanClick = {},
             onStatsClick = {},
             onCreateProfileClick = {},
             onExpeditionClick = {},
@@ -780,9 +490,6 @@ private fun HomeScreenLoadingPreview() {
     UmbralTheme {
         HomeScreenContent(
             uiState = HomeUiState(isLoading = true),
-            onToggleBlocking = {},
-            onNfcScanClick = {},
-            onQrScanClick = {},
             onStatsClick = {},
             onCreateProfileClick = {},
             onExpeditionClick = {},
@@ -799,7 +506,6 @@ private fun StatusCardActivePreview() {
             isActive = true,
             profileName = "Productividad",
             blockedAppsCount = 15,
-            onToggle = {},
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -813,19 +519,6 @@ private fun StatusCardInactivePreview() {
             isActive = false,
             profileName = null,
             blockedAppsCount = 0,
-            onToggle = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(name = "Quick Actions", showBackground = true)
-@Composable
-private fun QuickActionsPreview() {
-    UmbralTheme {
-        QuickActionsRow(
-            onNfcClick = {},
-            onQrClick = {},
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -854,9 +547,6 @@ private fun HomeScreenNoProfilesPreview() {
                 currentStreak = 0,
                 hasProfiles = false
             ),
-            onToggleBlocking = {},
-            onNfcScanClick = {},
-            onQrScanClick = {},
             onStatsClick = {},
             onCreateProfileClick = {},
             onExpeditionClick = {},

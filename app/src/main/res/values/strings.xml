@@ -164,6 +164,9 @@
     <string name="expedition_energy">Energía</string>
     <string name="expedition_level">Nivel</string>
     <string name="expedition_xp">XP</string>
+    <string name="expedition_welcome_title">Tu Expedición</string>
+    <string name="expedition_welcome_description">Gana energía cada minuto que mantienes tus apps bloqueadas. Sube de nivel, mantén tu racha y desbloquea logros.</string>
+    <string name="expedition_welcome_dismiss">Entendido</string>
 
     <!-- Companions -->
     <string name="companion_locked">Bloqueado</string>

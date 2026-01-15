@@ -38,6 +38,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Nfc
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.CircularProgressIndicator
@@ -90,6 +91,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SettingsScreen(
     onNavigateToNfcTags: () -> Unit = {},
+    onNavigateToQrCodes: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -114,28 +116,14 @@ fun SettingsScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.settings),
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         if (uiState.isLoading) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
@@ -147,11 +135,10 @@ fun SettingsScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
                     .padding(horizontal = UmbralSpacing.screenHorizontal),
                 verticalArrangement = Arrangement.spacedBy(UmbralSpacing.sm)
             ) {
-                item { Spacer(modifier = Modifier.height(UmbralSpacing.sm)) }
+                item { Spacer(modifier = Modifier.height(UmbralSpacing.md)) }
 
                 // NFC TAGS Section
                 item {
@@ -169,11 +156,27 @@ fun SettingsScreen(
                     }
                 }
 
-                // PERMISOS REQUERIDOS Section
+                // QR CODES Section
                 item {
                     AnimatedSettingsSection(
                         visible = showContent,
                         index = 1,
+                        title = "CÓDIGOS QR"
+                    ) {
+                        SettingsNavigationRow(
+                            icon = Icons.Outlined.QrCode2,
+                            title = "Gestionar códigos QR",
+                            subtitle = "Alternativa a NFC para desbloquear apps",
+                            onClick = onNavigateToQrCodes
+                        )
+                    }
+                }
+
+                // PERMISOS REQUERIDOS Section
+                item {
+                    AnimatedSettingsSection(
+                        visible = showContent,
+                        index = 2,
                         title = stringResource(R.string.required_permissions)
                     ) {
                         PermissionRow(
@@ -200,7 +203,7 @@ fun SettingsScreen(
                 item {
                     AnimatedSettingsSection(
                         visible = showContent,
-                        index = 2,
+                        index = 3,
                         title = stringResource(R.string.optional_permissions)
                     ) {
                         PermissionRow(
@@ -227,7 +230,7 @@ fun SettingsScreen(
                 item {
                     AnimatedSettingsSection(
                         visible = showContent,
-                        index = 3,
+                        index = 4,
                         title = stringResource(R.string.about)
                     ) {
                         SettingsInfoRow(
@@ -265,7 +268,7 @@ fun SettingsScreen(
                         enter = fadeIn(
                             animationSpec = tween(
                                 durationMillis = 300,
-                                delayMillis = 4 * 50
+                                delayMillis = 5 * 50
                             )
                         )
                     ) {

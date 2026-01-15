@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ================================ -->
+    <!-- Blocking Screen Strings -->
+    <!-- ================================ -->
+
+    <!-- Main Title -->
+    <string name="blocking_title">Estás en modo enfoque</string>
+    <string name="blocking_title_strict">Modo estricto activo</string>
+
+    <!-- Motivational Messages -->
+    <string name="msg_conscious_time">Estás eligiendo conscientemente tu tiempo</string>
+    <string name="msg_future_self">Tu yo futuro te lo agradecerá</string>
+    <string name="msg_small_changes">Pequeñas decisiones, grandes cambios</string>
+    <string name="msg_building_habit">Estás construyendo un mejor hábito</string>
+    <string name="msg_control">El control es tuyo</string>
+    <string name="msg_every_moment">Cada momento cuenta</string>
+    <string name="msg_valuable_attention">Tu atención es valiosa</string>
+    <string name="msg_focus_matters">Enfócate en lo que importa</string>
+    <string name="msg_present">Estás presente, estás aquí</string>
+    <string name="msg_wellbeing_first">Tu bienestar primero</string>
+    <string name="msg_calm_over_chaos">Eligiendo calma sobre caos</string>
+    <string name="msg_protect_focus">Tu concentración merece protección</string>
+
+    <!-- Stats Card -->
+    <string name="stats_focused_today">Tiempo enfocado hoy</string>
+    <string name="stats_time_format">%1$dh %2$dmin</string>
+    <string name="stats_minutes_format">%1$dmin</string>
+
+    <!-- Profile Card -->
+    <string name="profile_active">Perfil activo</string>
+
+    <!-- Timer Card -->
+    <string name="timer_unlocks_in">Se desbloqueará en</string>
+    <string name="timer_format_hours">%1$dh %2$dmin</string>
+    <string name="timer_format_minutes">%1$dmin</string>
+
+    <!-- Strict Mode -->
+    <string name="strict_mode_active">Modo estricto activo</string>
+    <string name="strict_mode_description">Necesitas tu tag NFC para continuar</string>
+
+    <!-- Buttons -->
+    <string name="btn_back_home">Volver al inicio</string>
+    <string name="btn_scan_nfc">Escanear para desbloquear</string>
+    <string name="btn_emergency">¿Necesitas acceso urgente?</string>
+
+    <!-- Accessibility -->
+    <string name="cd_breathing_icon">Icono de modo enfoque con animación</string>
+    <string name="cd_motivational_icon">Icono motivacional</string>
+    <string name="cd_stats_icon">Icono de estadísticas</string>
+    <string name="cd_profile_icon">Icono de perfil</string>
+    <string name="cd_timer_icon">Icono de temporizador</string>
+    <string name="cd_nfc_icon">Icono NFC</string>
+    <string name="cd_emergency_access">Acceso de emergencia</string>
+
+    <!-- First Time -->
+    <string name="first_time_tooltip">¡Gran decisión! Estás protegiendo tu enfoque</string>
+
+    <!-- ================================ -->
+    <!-- General App Strings -->
+    <!-- ================================ -->
+
+    <string name="app_name">Umbral</string>
+
+    <!-- Common Actions -->
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_confirm">Confirmar</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_edit">Editar</string>
+
+    <!-- Common Labels -->
+    <string name="label_name">Nombre</string>
+    <string name="label_description">Descripción</string>
+    <string name="label_apps">Apps</string>
+    <string name="label_settings">Configuración</string>
+
+    <!-- Errors -->
+    <string name="error_generic">Algo salió mal. Intenta de nuevo.</string>
+    <string name="error_nfc_not_supported">Este dispositivo no soporta NFC</string>
+    <string name="error_nfc_disabled">NFC está desactivado. Actívalo en ajustes.</string>
+    <string name="error_permission_denied">Permiso denegado</string>
+
+    <!-- Success Messages -->
+    <string name="success_saved">Guardado exitosamente</string>
+    <string name="success_deleted">Eliminado exitosamente</string>
+    <string name="success_profile_created">Perfil creado</string>
+
+</resources>

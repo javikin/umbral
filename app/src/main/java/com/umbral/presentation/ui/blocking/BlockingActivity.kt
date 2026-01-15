@@ -5,12 +5,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.EaseInOutSine
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,25 +28,55 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Diamond
+import androidx.compose.material.icons.outlined.EmojiObjects
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Nfc
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material.icons.outlined.SelfImprovement
+import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.outlined.Spa
+import androidx.compose.material.icons.outlined.Stars
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.outlined.Waves
+import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,11 +92,13 @@ import com.umbral.presentation.ui.components.UmbralButton
 import com.umbral.presentation.ui.theme.UmbralSpacing
 import com.umbral.presentation.ui.theme.UmbralTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class BlockingActivity : ComponentActivity() {
@@ -140,7 +177,67 @@ class BlockingActivity : ComponentActivity() {
 }
 
 // =============================================================================
-// BLOCKING SCREEN - SUPPORTIVE DESIGN
+// MENSAJES MOTIVACIONALES POOL - Tendencias 2026
+// =============================================================================
+
+private data class MotivationalMessage(
+    val text: String,
+    val icon: ImageVector
+)
+
+private val motivationalMessages = listOf(
+    MotivationalMessage(
+        "Estás eligiendo conscientemente tu tiempo",
+        Icons.Outlined.SelfImprovement
+    ),
+    MotivationalMessage(
+        "Tu yo futuro te lo agradecerá",
+        Icons.Outlined.EmojiObjects
+    ),
+    MotivationalMessage(
+        "Pequeñas decisiones, grandes cambios",
+        Icons.AutoMirrored.Outlined.TrendingUp
+    ),
+    MotivationalMessage(
+        "Estás construyendo un mejor hábito",
+        Icons.Outlined.Stars
+    ),
+    MotivationalMessage(
+        "El control es tuyo",
+        Icons.Outlined.Shield
+    ),
+    MotivationalMessage(
+        "Cada momento cuenta",
+        Icons.Outlined.Timer
+    ),
+    MotivationalMessage(
+        "Tu atención es valiosa",
+        Icons.Outlined.Diamond
+    ),
+    MotivationalMessage(
+        "Enfócate en lo que importa",
+        Icons.Outlined.Favorite
+    ),
+    MotivationalMessage(
+        "Estás presente, estás aquí",
+        Icons.Outlined.WbSunny
+    ),
+    MotivationalMessage(
+        "Tu bienestar primero",
+        Icons.Outlined.Spa
+    ),
+    MotivationalMessage(
+        "Eligiendo calma sobre caos",
+        Icons.Outlined.Waves
+    ),
+    MotivationalMessage(
+        "Tu concentración merece protección",
+        Icons.Outlined.Security
+    )
+)
+
+// =============================================================================
+// BLOCKING SCREEN - REDISEÑO 2026
 // =============================================================================
 
 @Composable
@@ -153,14 +250,22 @@ fun BlockingScreen(
     onUnlock: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
+
+    // Colores dark mode - azul profundo calmante
+    val darkBlueTop = Color(0xFF0D1B2A)     // Azul noche profundo
+    val darkBlueMid = Color(0xFF1B263B)     // Azul oscuro medio
+    val darkBlueBottom = Color(0xFF162447)  // Azul oscuro con toque púrpura
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f)
+                        darkBlueTop,
+                        darkBlueMid,
+                        darkBlueBottom
                     )
                 )
             )
@@ -171,21 +276,22 @@ fun BlockingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(horizontal = UmbralSpacing.screenHorizontal)
                 .padding(vertical = UmbralSpacing.xxl),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
         ) {
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(0.5f))
 
-            // Breathing shield icon
+            // Breathing shield icon con círculos concéntricos
             BreathingShieldIcon(
                 modifier = Modifier.size(140.dp)
             )
 
-            Spacer(modifier = Modifier.height(UmbralSpacing.xl))
+            Spacer(modifier = Modifier.height(UmbralSpacing.md))
 
-            // Supportive message
+            // Título contextual
             Text(
                 text = stringResource(R.string.blocking_screen_supportive_title),
                 style = MaterialTheme.typography.headlineMedium,
@@ -194,31 +300,22 @@ fun BlockingScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(UmbralSpacing.sm))
+            // Mensaje motivacional rotativo con glassmorphism
+            MotivationalCard()
 
-            Text(
-                text = stringResource(R.string.blocking_screen_supportive_message),
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White.copy(alpha = 0.9f),
-                textAlign = TextAlign.Center
-            )
-
-            // Show profile name if available
-            if (profileName != null) {
-                Spacer(modifier = Modifier.height(UmbralSpacing.xs))
-                Text(
-                    text = "Perfil: $profileName",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
-                )
+            // Stats card - Streak
+            if (currentStreak > 0) {
+                StreakCard(streak = currentStreak)
             }
 
-            Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+            // Perfil activo card
+            if (profileName != null) {
+                ProfileCard(profileName = profileName)
+            }
 
-            // Streak motivational display
-            if (currentStreak > 0) {
-                StreakMotivation(streak = currentStreak)
+            // Chip de modo estricto
+            if (isStrictMode) {
+                StrictModeChip()
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -234,9 +331,12 @@ fun BlockingScreen(
 
             // Unlock option (only if not strict mode)
             if (!isStrictMode) {
-                Spacer(modifier = Modifier.height(UmbralSpacing.md))
-
-                TextButton(onClick = onUnlock) {
+                TextButton(
+                    onClick = onUnlock,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Desbloquear con NFC"
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.Nfc,
                         contentDescription = null,
@@ -252,8 +352,6 @@ fun BlockingScreen(
                 }
             } else {
                 // Strict mode indicator
-                Spacer(modifier = Modifier.height(UmbralSpacing.md))
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -278,115 +376,324 @@ fun BlockingScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(UmbralSpacing.xl))
+            Spacer(modifier = Modifier.height(UmbralSpacing.md))
         }
     }
 }
 
 // =============================================================================
-// BREATHING SHIELD ICON
+// MOTIVATIONAL CARD - Con rotación automática
+// =============================================================================
+
+@Composable
+private fun MotivationalCard(
+    modifier: Modifier = Modifier
+) {
+    var currentIndex by remember { mutableIntStateOf(Random.nextInt(motivationalMessages.size)) }
+    var previousIndices by remember { mutableStateOf(listOf<Int>()) }
+
+    // Rotación automática cada 8 segundos
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(8000)
+
+            // Evitar repetición inmediata
+            val availableIndices = motivationalMessages.indices.filter {
+                it !in previousIndices && it != currentIndex
+            }
+
+            currentIndex = if (availableIndices.isNotEmpty()) {
+                availableIndices.random()
+            } else {
+                previousIndices = emptyList()
+                (motivationalMessages.indices).filter { it != currentIndex }.random()
+            }
+
+            previousIndices = (previousIndices + currentIndex).takeLast(3)
+        }
+    }
+
+    val currentMessage = motivationalMessages[currentIndex]
+
+    // Crossfade animation
+    AnimatedContent(
+        targetState = currentMessage,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(300)) togetherWith
+                    fadeOut(animationSpec = tween(300))
+        },
+        label = "messageTransition"
+    ) { message ->
+        GlassCard(
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = message.icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Text(
+                    text = message.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+// =============================================================================
+// STREAK CARD - Glassmorphism
+// =============================================================================
+
+@Composable
+private fun StreakCard(
+    streak: Int,
+    modifier: Modifier = Modifier
+) {
+    GlassCard(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.LocalFireDepartment,
+                contentDescription = null,
+                tint = Color(0xFFFF9800),
+                modifier = Modifier.size(28.dp)
+            )
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Racha actual",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+                Text(
+                    text = "$streak ${if (streak == 1) "día" else "días"} de enfoque",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
+
+// =============================================================================
+// PROFILE CARD - Glassmorphism
+// =============================================================================
+
+@Composable
+private fun ProfileCard(
+    profileName: String,
+    modifier: Modifier = Modifier
+) {
+    GlassCard(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Person,
+                contentDescription = null,
+                tint = Color.White.copy(alpha = 0.9f),
+                modifier = Modifier.size(24.dp)
+            )
+
+            Column {
+                Text(
+                    text = "Perfil activo",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+                Text(
+                    text = profileName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
+
+// =============================================================================
+// STRICT MODE CHIP - Con pulso animado
+// =============================================================================
+
+@Composable
+private fun StrictModeChip(
+    modifier: Modifier = Modifier
+) {
+    var pulseCount by remember { mutableIntStateOf(0) }
+    val infiniteTransition = rememberInfiniteTransition(label = "strictPulse")
+
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.7f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1000,
+                easing = EaseInOutCubic
+            ),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "strictAlpha"
+    )
+
+    LaunchedEffect(alpha) {
+        if (alpha <= 0.71f) {
+            pulseCount++
+        }
+    }
+
+    val finalAlpha = if (pulseCount >= 6) 1f else alpha
+
+    AssistChip(
+        onClick = {},
+        label = {
+            Text(
+                text = "Modo estricto activo",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Color.White
+            )
+        },
+        colors = AssistChipDefaults.assistChipColors(
+            containerColor = Color.White.copy(alpha = 0.2f),
+            labelColor = Color.White,
+            leadingIconContentColor = Color.White
+        ),
+        border = null,
+        modifier = modifier.alpha(finalAlpha)
+    )
+}
+
+// =============================================================================
+// GLASS CARD - Glassmorphism Component
+// =============================================================================
+
+@Composable
+private fun GlassCard(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        color = Color.White.copy(alpha = 0.08f),  // Más sutil en dark mode
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
+    ) {
+        content()
+    }
+}
+
+// =============================================================================
+// BREATHING SHIELD ICON - Con círculos concéntricos
 // =============================================================================
 
 @Composable
 private fun BreathingShieldIcon(modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = "breathing")
 
+    // Animación de respiración más lenta y suave
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.08f,
+        targetValue = 1.12f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOutSine),
+            animation = tween(2500, easing = EaseInOutCubic),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "scale"
+        label = "breathingScale"
     )
 
-    val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.15f,
-        targetValue = 0.35f,
+    val innerAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 0.5f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOutSine),
+            animation = tween(2500, easing = EaseInOutCubic),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "glow"
+        label = "breathingAlpha"
     )
+
+    // Colores para dark mode
+    val glowColor = Color(0xFF4A90D9)  // Azul brillante para contraste
 
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        // Outer glow
+        // Círculo exterior - glow difuso azul
         Box(
             modifier = Modifier
-                .size(140.dp)
-                .scale(scale * 1.2f)
+                .size(150.dp)
+                .scale(scale * 1.15f)
                 .background(
-                    color = Color.White.copy(alpha = glowAlpha * 0.5f),
+                    color = glowColor.copy(alpha = innerAlpha * 0.2f),
                     shape = CircleShape
                 )
         )
 
-        // Inner glow
+        // Círculo medio - glow más intenso
         Box(
             modifier = Modifier
-                .size(120.dp)
+                .size(115.dp)
                 .scale(scale)
                 .background(
-                    color = Color.White.copy(alpha = glowAlpha),
+                    color = glowColor.copy(alpha = innerAlpha * 0.4f),
                     shape = CircleShape
                 )
         )
 
-        // Shield icon
-        Icon(
-            imageVector = Icons.Filled.Shield,
-            contentDescription = "Protección activa",
-            tint = Color.White,
+        // Círculo interior con icono
+        Box(
             modifier = Modifier
-                .size(64.dp)
-                .scale(scale)
-        )
-    }
-}
-
-// =============================================================================
-// STREAK MOTIVATION
-// =============================================================================
-
-@Composable
-private fun StreakMotivation(
-    streak: Int,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .background(
-                color = Color.White.copy(alpha = 0.15f),
-                shape = MaterialTheme.shapes.large
-            )
-            .padding(horizontal = UmbralSpacing.lg, vertical = UmbralSpacing.md),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "🔥",
-            fontSize = 28.sp
-        )
-        Spacer(modifier = Modifier.width(UmbralSpacing.sm))
-        Column {
-            Text(
-                text = "$streak ${if (streak == 1) "día" else "días"}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Text(
-                text = "de enfoque continuo",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.8f)
+                .size(75.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF5BA3E0),
+                            Color(0xFF3D7BBF)
+                        )
+                    ),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Shield,
+                contentDescription = "Protección activa",
+                tint = Color.White,
+                modifier = Modifier.size(40.dp)
             )
         }
     }
 }
+
 
 // =============================================================================
 // BREATHING OVERLAY
