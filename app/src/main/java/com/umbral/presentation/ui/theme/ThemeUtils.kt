@@ -19,14 +19,143 @@ import androidx.compose.ui.graphics.Color
 object UmbralThemeUtils {
 
     // ==========================================================================
-    // THEME-AWARE GRADIENTS
+    // THEME-AWARE GRADIENTS (Design System 2.0)
     // ==========================================================================
+
+    // -------------------------------------------------------------------------
+    // Background Gradients
+    // -------------------------------------------------------------------------
+
+    /**
+     * Dark theme background gradient.
+     * Creates subtle depth from base to surface level.
+     * Usage: Main app background, full-screen backgrounds
+     */
+    val DarkBackgroundGradient = Brush.verticalGradient(
+        colors = listOf(
+            DarkBackgroundBase,
+            DarkBackgroundSurface
+        )
+    )
+
+    /**
+     * Light theme background gradient.
+     * Creates subtle depth from base to surface level.
+     * Usage: Main app background, full-screen backgrounds
+     */
+    val LightBackgroundGradient = Brush.verticalGradient(
+        colors = listOf(
+            LightBackgroundBase,
+            LightBackgroundSurface
+        )
+    )
+
+    /**
+     * Returns theme-aware background gradient.
+     * Automatically switches between light and dark variants.
+     */
+    @Composable
+    fun backgroundGradient(): Brush {
+        return if (isSystemInDarkTheme()) {
+            DarkBackgroundGradient
+        } else {
+            LightBackgroundGradient
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Accent Gradients (Sage Teal)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Dark theme accent gradient (Sage Teal).
+     * Horizontal gradient from primary to hover state.
+     * Usage: Buttons, CTAs, blocking screens, focus states
+     */
+    val DarkAccentGradient = Brush.horizontalGradient(
+        colors = listOf(
+            DarkAccentPrimary,
+            DarkAccentHover
+        )
+    )
+
+    /**
+     * Light theme accent gradient (Sage Teal).
+     * Horizontal gradient from primary to hover state.
+     * Usage: Buttons, CTAs, blocking screens, focus states
+     */
+    val LightAccentGradient = Brush.horizontalGradient(
+        colors = listOf(
+            LightAccentPrimary,
+            LightAccentHover
+        )
+    )
+
+    /**
+     * Returns theme-aware accent gradient.
+     * Automatically switches between light and dark variants.
+     */
+    @Composable
+    fun accentGradient(): Brush {
+        return if (isSystemInDarkTheme()) {
+            DarkAccentGradient
+        } else {
+            LightAccentGradient
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Card Gradients
+    // -------------------------------------------------------------------------
+
+    /**
+     * Dark theme card gradient.
+     * Creates subtle elevation from surface to elevated state.
+     * Usage: Cards, dialogs, modals, elevated containers
+     */
+    val DarkCardGradient = Brush.verticalGradient(
+        colors = listOf(
+            DarkBackgroundSurface,
+            DarkBackgroundElevated
+        )
+    )
+
+    /**
+     * Light theme card gradient.
+     * Creates subtle elevation from surface to elevated state.
+     * Usage: Cards, dialogs, modals, elevated containers
+     */
+    val LightCardGradient = Brush.verticalGradient(
+        colors = listOf(
+            LightBackgroundSurface,
+            LightBackgroundElevated
+        )
+    )
+
+    /**
+     * Returns theme-aware card gradient.
+     * Automatically switches between light and dark variants.
+     */
+    @Composable
+    fun cardGradient(): Brush {
+        return if (isSystemInDarkTheme()) {
+            DarkCardGradient
+        } else {
+            LightCardGradient
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Legacy Gradients (Preserved for compatibility)
+    // -------------------------------------------------------------------------
 
     /**
      * Returns the primary gradient colors based on current theme.
      * Used for blocking screens, CTAs, and highlights.
+     * @deprecated Use accentGradient() instead for Design System 2.0
      */
     @Composable
+    @Deprecated("Use accentGradient() instead", ReplaceWith("accentGradient()"))
     fun primaryGradientColors(): List<Color> {
         return if (isSystemInDarkTheme()) {
             listOf(BlockingGradientStartDark, BlockingGradientEndDark)
@@ -37,16 +166,20 @@ object UmbralThemeUtils {
 
     /**
      * Returns a horizontal primary gradient brush.
+     * @deprecated Use accentGradient() instead for Design System 2.0
      */
     @Composable
+    @Deprecated("Use accentGradient() instead", ReplaceWith("accentGradient()"))
     fun primaryGradientBrush(): Brush {
         return Brush.horizontalGradient(primaryGradientColors())
     }
 
     /**
      * Returns a vertical primary gradient brush.
+     * @deprecated Use backgroundGradient() or cardGradient() instead
      */
     @Composable
+    @Deprecated("Use backgroundGradient() or cardGradient() instead")
     fun primaryVerticalGradientBrush(): Brush {
         return Brush.verticalGradient(primaryGradientColors())
     }
@@ -93,7 +226,11 @@ object UmbralThemeUtils {
         center: Offset = Offset.Unspecified,
         radius: Float = Float.POSITIVE_INFINITY
     ): Brush {
-        val colors = primaryGradientColors()
+        val colors = if (isSystemInDarkTheme()) {
+            listOf(DarkAccentPrimary, DarkAccentHover)
+        } else {
+            listOf(LightAccentPrimary, LightAccentHover)
+        }
         return Brush.radialGradient(
             colors = listOf(colors[0].copy(alpha = 0.3f), Color.Transparent),
             center = center,
@@ -146,23 +283,25 @@ object UmbralThemeUtils {
 
     /**
      * Animates the background color on theme change.
+     * Uses Design System 2.0 base background colors.
      */
     @Composable
     fun animatedBackground(): Color {
         return animatedThemeColor(
-            lightColor = LightBackground,
-            darkColor = DarkBackground
+            lightColor = LightBackgroundBase,
+            darkColor = DarkBackgroundBase
         )
     }
 
     /**
      * Animates the surface color on theme change.
+     * Uses Design System 2.0 surface colors.
      */
     @Composable
     fun animatedSurface(): Color {
         return animatedThemeColor(
-            lightColor = LightSurface,
-            darkColor = DarkSurface
+            lightColor = LightBackgroundSurface,
+            darkColor = DarkBackgroundSurface
         )
     }
 }
@@ -174,16 +313,17 @@ object UmbralThemeUtils {
 /**
  * Returns a surface color with appropriate elevation for the current theme.
  * In light mode, uses shadows. In dark mode, uses tonal elevation.
+ * Updated for Design System 2.0.
  */
 @Composable
 fun surfaceColorAtElevation(elevation: SurfaceElevation): Color {
     val isDark = isSystemInDarkTheme()
     return when (elevation) {
-        SurfaceElevation.Level0 -> MaterialTheme.colorScheme.surface
-        SurfaceElevation.Level1 -> if (isDark) DarkSurfaceContainerLow else MaterialTheme.colorScheme.surface
-        SurfaceElevation.Level2 -> if (isDark) DarkSurfaceContainer else MaterialTheme.colorScheme.surfaceContainer
-        SurfaceElevation.Level3 -> if (isDark) DarkSurfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerHigh
-        SurfaceElevation.Level4 -> if (isDark) DarkSurfaceContainerHighest else MaterialTheme.colorScheme.surfaceContainerHighest
+        SurfaceElevation.Level0 -> if (isDark) DarkBackgroundBase else LightBackgroundBase
+        SurfaceElevation.Level1 -> if (isDark) DarkBackgroundSurface else LightBackgroundSurface
+        SurfaceElevation.Level2 -> if (isDark) DarkBackgroundElevated else LightBackgroundElevated
+        SurfaceElevation.Level3 -> if (isDark) DarkBackgroundElevated else LightBackgroundElevated
+        SurfaceElevation.Level4 -> if (isDark) DarkBackgroundElevated else LightBackgroundElevated
     }
 }
 
@@ -208,26 +348,38 @@ fun contentColorFor(surfaceElevation: SurfaceElevation): Color {
 }
 
 /**
- * Returns a dimmed version of the primary color for subtle highlights.
+ * Returns a dimmed version of the accent color for subtle highlights.
+ * Updated for Design System 2.0 (Sage Teal).
  */
 @Composable
-fun primaryDimmed(): Color {
+fun accentDimmed(): Color {
     return if (isSystemInDarkTheme()) {
-        UmbralPrimaryLight.copy(alpha = 0.12f)
+        DarkAccentPrimary.copy(alpha = 0.12f)
     } else {
-        UmbralPrimary.copy(alpha = 0.08f)
+        LightAccentPrimary.copy(alpha = 0.08f)
     }
 }
 
 /**
+ * Legacy function - use accentDimmed() instead.
+ * @deprecated Use accentDimmed() instead for Design System 2.0
+ */
+@Composable
+@Deprecated("Use accentDimmed() instead", ReplaceWith("accentDimmed()"))
+fun primaryDimmed(): Color {
+    return accentDimmed()
+}
+
+/**
  * Returns a color suitable for dividers based on theme.
+ * Updated for Design System 2.0.
  */
 @Composable
 fun dividerColor(): Color {
     return if (isSystemInDarkTheme()) {
-        DarkOutlineVariant.copy(alpha = 0.5f)
+        DarkBorderDefault.copy(alpha = 0.8f)
     } else {
-        LightOutlineVariant.copy(alpha = 0.5f)
+        LightBorderDefault.copy(alpha = 0.8f)
     }
 }
 
@@ -254,33 +406,23 @@ fun disabledContainerColor(): Color {
 /**
  * Provides theme-aware gradient for backgrounds.
  * Creates a subtle gradient effect that works in both themes.
+ * @deprecated Use UmbralThemeUtils.backgroundGradient() instead
  */
 @Composable
+@Deprecated("Use UmbralThemeUtils.backgroundGradient() instead", ReplaceWith("UmbralThemeUtils.backgroundGradient()"))
 fun backgroundGradientBrush(): Brush {
-    val isDark = isSystemInDarkTheme()
-    return Brush.verticalGradient(
-        colors = if (isDark) {
-            listOf(
-                DarkBackground,
-                DarkSurfaceContainerLow
-            )
-        } else {
-            listOf(
-                LightBackground,
-                LightSurfaceContainerLow
-            )
-        }
-    )
+    return UmbralThemeUtils.backgroundGradient()
 }
 
 /**
  * Returns a shimmer effect brush adapted for the current theme.
+ * Updated for Design System 2.0.
  */
 @Composable
 fun shimmerBrush(translateX: Float): Brush {
     val isDark = isSystemInDarkTheme()
-    val baseColor = if (isDark) DarkSurfaceVariant else LightSurfaceVariant
-    val highlightColor = if (isDark) DarkSurfaceContainerHigh else LightSurface
+    val baseColor = if (isDark) DarkBackgroundSurface else LightBackgroundSurface
+    val highlightColor = if (isDark) DarkBackgroundElevated else LightBackgroundElevated
 
     return Brush.linearGradient(
         colors = listOf(baseColor, highlightColor, baseColor),
