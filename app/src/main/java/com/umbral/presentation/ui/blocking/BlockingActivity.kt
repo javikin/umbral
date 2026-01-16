@@ -98,6 +98,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import kotlin.random.Random
 
 @AndroidEntryPoint
@@ -132,6 +136,7 @@ class BlockingActivity : ComponentActivity() {
                     profileName = blockingState.activeProfileName,
                     currentStreak = currentStreak,
                     isStrictMode = blockingState.isStrictMode,
+                    sessionStartTime = blockingState.sessionStartTime,
                     onGoHome = { goToHomeScreen() },
                     onUnlock = { handleUnlock() }
                 )
@@ -246,6 +251,7 @@ fun BlockingScreen(
     profileName: String?,
     currentStreak: Int,
     isStrictMode: Boolean,
+    sessionStartTime: Long?,
     onGoHome: () -> Unit,
     onUnlock: () -> Unit,
     modifier: Modifier = Modifier
@@ -302,6 +308,11 @@ fun BlockingScreen(
 
             // Mensaje motivacional rotativo con glassmorphism
             MotivationalCard()
+
+            // Tiempo transcurrido card
+            if (sessionStartTime != null) {
+                ElapsedTimeCard(sessionStartTime = sessionStartTime)
+            }
 
             // Stats card - Streak
             if (currentStreak > 0) {
@@ -444,6 +455,72 @@ private fun MotivationalCard(
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
                     modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+// =============================================================================
+// ELAPSED TIME CARD - Timer de tiempo transcurrido
+// =============================================================================
+
+@Composable
+private fun ElapsedTimeCard(
+    sessionStartTime: Long,
+    modifier: Modifier = Modifier
+) {
+    var elapsedMinutes by remember { mutableStateOf(0L) }
+
+    // Calcular tiempo inicial
+    LaunchedEffect(sessionStartTime) {
+        while (true) {
+            val startInstant = Instant.ofEpochMilli(sessionStartTime)
+            val now = Instant.now()
+            elapsedMinutes = Duration.between(startInstant, now).toMinutes()
+            delay(60_000) // Actualizar cada minuto
+        }
+    }
+
+    GlassCard(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Timer,
+                contentDescription = null,
+                tint = Color(0xFF64B5F6), // Azul claro
+                modifier = Modifier.size(28.dp)
+            )
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Tiempo enfocado",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+                Text(
+                    text = when {
+                        elapsedMinutes < 1 -> "Recién comenzaste"
+                        elapsedMinutes == 1L -> "Llevas 1 minuto"
+                        elapsedMinutes < 60 -> "Llevas $elapsedMinutes minutos"
+                        else -> {
+                            val hours = elapsedMinutes / 60
+                            val mins = elapsedMinutes % 60
+                            if (mins == 0L) {
+                                "Llevas ${hours}h enfocado"
+                            } else {
+                                "Llevas ${hours}h ${mins}m enfocado"
+                            }
+                        }
+                    },
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
                 )
             }
         }
@@ -753,6 +830,7 @@ private fun BlockingScreenWithStreakPreview() {
             profileName = "Productividad",
             currentStreak = 12,
             isStrictMode = false,
+            sessionStartTime = System.currentTimeMillis() - (25 * 60 * 1000), // 25 minutos
             onGoHome = {},
             onUnlock = {}
         )
@@ -768,6 +846,7 @@ private fun BlockingScreenStrictModePreview() {
             profileName = "Trabajo",
             currentStreak = 7,
             isStrictMode = true,
+            sessionStartTime = System.currentTimeMillis() - (90 * 60 * 1000), // 1h 30m
             onGoHome = {},
             onUnlock = {}
         )
@@ -783,6 +862,7 @@ private fun BlockingScreenNoStreakPreview() {
             profileName = null,
             currentStreak = 0,
             isStrictMode = false,
+            sessionStartTime = System.currentTimeMillis(), // Recién comenzó
             onGoHome = {},
             onUnlock = {}
         )
@@ -813,6 +893,7 @@ private fun BlockingScreenDarkPreview() {
             profileName = "Noche",
             currentStreak = 30,
             isStrictMode = false,
+            sessionStartTime = System.currentTimeMillis() - (120 * 60 * 1000), // 2 horas
             onGoHome = {},
             onUnlock = {}
         )

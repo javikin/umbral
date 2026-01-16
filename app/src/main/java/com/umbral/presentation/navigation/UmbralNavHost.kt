@@ -2,6 +2,7 @@ package com.umbral.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,6 +27,7 @@ import com.umbral.expedition.presentation.map.ExpeditionMapScreen
 import com.umbral.expedition.presentation.companion.CompanionListScreen
 import com.umbral.expedition.presentation.companion.CompanionDetailScreen
 import com.umbral.expedition.presentation.achievements.AchievementsScreen
+import com.umbral.notifications.presentation.history.NotificationHistoryScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -33,8 +35,17 @@ import java.nio.charset.StandardCharsets
 fun UmbralNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = NavRoutes.HOME
+    startDestination: String = NavRoutes.HOME,
+    navigateToNotificationHistory: Boolean = false,
+    onNavigatedToHistory: () -> Unit = {}
 ) {
+    // Handle external navigation request
+    LaunchedEffect(navigateToNotificationHistory) {
+        if (navigateToNotificationHistory) {
+            navController.navigate(NavRoutes.NOTIFICATION_HISTORY)
+            onNavigatedToHistory()
+        }
+    }
     UmbralScaffold(
         navController = navController,
         modifier = modifier
@@ -142,6 +153,13 @@ fun UmbralNavHost(
                 )
             }
 
+            // Notification History
+            composable(NavRoutes.NOTIFICATION_HISTORY) {
+                NotificationHistoryScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
             composable(
                 route = NavRoutes.PROFILE_DETAIL,
                 arguments = listOf(
@@ -217,6 +235,9 @@ object NavRoutes {
     const val COMPANION_LIST = "expedition/companions"
     const val COMPANION_DETAIL = "expedition/companion/{companionId}"
     const val ACHIEVEMENTS = "expedition/achievements"
+
+    // Notifications
+    const val NOTIFICATION_HISTORY = "notifications/history"
 
     fun profileDetail(profileId: String) = "profile/$profileId"
     fun appSelector(profileId: String, blockedApps: String = "") =

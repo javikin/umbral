@@ -119,7 +119,7 @@ fun SessionSummaryDialog(
                         )
                     ) + fadeIn()
                 ) {
-                    HeaderSection()
+                    HeaderSection(sessionDuration = summary.sessionDuration)
                 }
 
                 Spacer(modifier = Modifier.height(UmbralSpacing.lg))
@@ -190,7 +190,9 @@ fun SessionSummaryDialog(
 }
 
 @Composable
-private fun HeaderSection() {
+private fun HeaderSection(
+    sessionDuration: kotlin.time.Duration? = null
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -220,6 +222,32 @@ private fun HeaderSection() {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
+
+        // Duration subtitle
+        if (sessionDuration != null) {
+            Spacer(modifier = Modifier.height(UmbralSpacing.xs))
+            val durationMinutes = sessionDuration.inWholeMinutes
+            val durationText = when {
+                durationMinutes < 1 -> "Menos de un minuto"
+                durationMinutes == 1L -> "1 minuto de enfoque"
+                durationMinutes < 60 -> "$durationMinutes minutos de enfoque"
+                else -> {
+                    val hours = durationMinutes / 60
+                    val mins = durationMinutes % 60
+                    if (mins == 0L) {
+                        "${hours}h de enfoque"
+                    } else {
+                        "${hours}h ${mins}m de enfoque"
+                    }
+                }
+            }
+            Text(
+                text = durationText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
