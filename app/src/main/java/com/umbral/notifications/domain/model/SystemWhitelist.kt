@@ -40,11 +40,15 @@ object SystemWhitelist {
     /**
      * Notification categories that are always allowed.
      * These are Android's built-in notification categories for critical alerts.
+     *
+     * NOTE: CATEGORY_MESSAGE is intentionally NOT included here because:
+     * - Chat apps (WhatsApp, Telegram, etc.) use this category
+     * - System SMS apps are already protected via ALWAYS_ALLOWED list
+     * - If user blocks an app, they don't want ANY notifications from it
      */
     val ALLOWED_CATEGORIES = setOf(
-        Notification.CATEGORY_CALL,      // Incoming calls
-        Notification.CATEGORY_ALARM,     // Alarm clock notifications
-        Notification.CATEGORY_MESSAGE    // SMS only, not chat apps
+        Notification.CATEGORY_CALL,      // Incoming calls - always critical
+        Notification.CATEGORY_ALARM      // Alarm clock notifications - always critical
     )
 
     /**
