@@ -9,15 +9,17 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * Umbral Design System - Theme
+ * Umbral Design System 2.0 - Theme
  *
- * Light theme: Clean, minimal, warm whites
- * Dark theme: Deep blue-gray, easy on eyes
+ * Sage Teal accent colors with optimized backgrounds:
+ * - Light theme: Soft gray backgrounds with pure white surfaces
+ * - Dark theme: Deep OLED-optimized blacks with subtle elevation
  *
  * No dynamic color - we want consistent brand identity
  */
@@ -26,114 +28,114 @@ import androidx.core.view.WindowCompat
 // LIGHT COLOR SCHEME
 // =============================================================================
 private val LightColorScheme = lightColorScheme(
-    // Primary
-    primary = UmbralPrimary,
-    onPrimary = LightSurface,
-    primaryContainer = UmbralPrimaryContainer,
-    onPrimaryContainer = UmbralPrimaryDark,
+    // Primary colors (sage teal accent)
+    primary = LightAccentPrimary,
+    onPrimary = Color.White,
+    primaryContainer = LightAccentHover,
+    onPrimaryContainer = LightTextPrimary,
 
-    // Secondary
-    secondary = UmbralSecondary,
-    onSecondary = LightSurface,
-    secondaryContainer = UmbralSecondaryContainer,
-    onSecondaryContainer = UmbralSecondaryDark,
+    // Secondary colors
+    secondary = LightAccentHover,
+    onSecondary = LightTextPrimary,
+    secondaryContainer = LightBackgroundSurface,
+    onSecondaryContainer = LightTextPrimary,
 
-    // Tertiary (using success color)
-    tertiary = UmbralSuccess,
-    onTertiary = LightSurface,
-    tertiaryContainer = UmbralSuccessContainer,
-    onTertiaryContainer = UmbralSuccess,
-
-    // Error
-    error = UmbralError,
-    onError = LightSurface,
-    errorContainer = UmbralErrorContainer,
-    onErrorContainer = UmbralError,
+    // Tertiary (info)
+    tertiary = LightInfo,
+    onTertiary = Color.White,
+    tertiaryContainer = LightBackgroundSurface,
+    onTertiaryContainer = LightInfo,
 
     // Background & Surface
-    background = LightBackground,
-    onBackground = LightOnBackground,
-    surface = LightSurface,
-    onSurface = LightOnSurface,
-    surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = LightOnSurfaceVariant,
+    background = LightBackgroundBase,
+    onBackground = LightTextPrimary,
+    surface = LightBackgroundSurface,
+    onSurface = LightTextPrimary,
+    surfaceVariant = LightBackgroundElevated,
+    onSurfaceVariant = LightTextSecondary,
 
     // Surface containers (Material 3 elevation system)
-    surfaceContainer = LightSurfaceContainer,
-    surfaceContainerLow = LightSurfaceContainerLow,
-    surfaceContainerHigh = LightSurfaceContainerHigh,
-    surfaceContainerHighest = LightSurfaceContainerHighest,
-    surfaceBright = LightSurface,
-    surfaceDim = LightSurfaceVariant,
+    surfaceContainer = LightBackgroundSurface,
+    surfaceContainerLow = LightBackgroundBase,
+    surfaceContainerHigh = LightBackgroundElevated,
+    surfaceContainerHighest = LightBackgroundElevated,
+    surfaceBright = LightBackgroundSurface,
+    surfaceDim = LightBackgroundBase,
 
     // Outline
-    outline = LightOutline,
-    outlineVariant = LightOutlineVariant,
+    outline = LightBorderDefault,
+    outlineVariant = LightBorderFocus,
+
+    // Error
+    error = LightError,
+    onError = Color.White,
+    errorContainer = LightError.copy(alpha = 0.12f),
+    onErrorContainer = LightError,
 
     // Scrim
     scrim = ScrimLight,
 
     // Inverse (for snackbars, etc.)
-    inverseSurface = DarkSurface,
-    inverseOnSurface = DarkOnSurface,
-    inversePrimary = UmbralPrimaryLight
+    inverseSurface = DarkBackgroundSurface,
+    inverseOnSurface = DarkTextPrimary,
+    inversePrimary = DarkAccentPrimary
 )
 
 // =============================================================================
 // DARK COLOR SCHEME
 // =============================================================================
 private val DarkColorScheme = darkColorScheme(
-    // Primary
-    primary = UmbralPrimaryLight,
-    onPrimary = DarkBackground,
-    primaryContainer = UmbralPrimaryDark,
-    onPrimaryContainer = UmbralPrimaryLight,
+    // Primary colors (sage teal accent)
+    primary = DarkAccentPrimary,
+    onPrimary = DarkBackgroundBase,
+    primaryContainer = DarkAccentPressed,
+    onPrimaryContainer = DarkTextPrimary,
 
-    // Secondary
-    secondary = UmbralSecondaryLight,
-    onSecondary = DarkBackground,
-    secondaryContainer = UmbralSecondaryDark,
-    onSecondaryContainer = UmbralSecondaryLight,
+    // Secondary colors
+    secondary = DarkAccentHover,
+    onSecondary = DarkBackgroundBase,
+    secondaryContainer = DarkBackgroundElevated,
+    onSecondaryContainer = DarkTextPrimary,
 
-    // Tertiary (using success color)
-    tertiary = UmbralSuccessLight,
-    onTertiary = DarkBackground,
-    tertiaryContainer = UmbralSuccess,
-    onTertiaryContainer = UmbralSuccessLight,
-
-    // Error
-    error = UmbralErrorLight,
-    onError = DarkBackground,
-    errorContainer = UmbralError,
-    onErrorContainer = UmbralErrorLight,
+    // Tertiary (info)
+    tertiary = DarkInfo,
+    onTertiary = DarkBackgroundBase,
+    tertiaryContainer = DarkBackgroundElevated,
+    onTertiaryContainer = DarkInfo,
 
     // Background & Surface
-    background = DarkBackground,
-    onBackground = DarkOnBackground,
-    surface = DarkSurface,
-    onSurface = DarkOnSurface,
-    surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = DarkOnSurfaceVariant,
+    background = DarkBackgroundBase,
+    onBackground = DarkTextPrimary,
+    surface = DarkBackgroundSurface,
+    onSurface = DarkTextPrimary,
+    surfaceVariant = DarkBackgroundElevated,
+    onSurfaceVariant = DarkTextSecondary,
 
     // Surface containers (Material 3 tonal elevation - brighter = higher)
-    surfaceContainer = DarkSurfaceContainer,
-    surfaceContainerLow = DarkSurfaceContainerLow,
-    surfaceContainerHigh = DarkSurfaceContainerHigh,
-    surfaceContainerHighest = DarkSurfaceContainerHighest,
-    surfaceBright = DarkSurfaceContainerHighest,
-    surfaceDim = DarkBackground,
+    surfaceContainer = DarkBackgroundSurface,
+    surfaceContainerLow = DarkBackgroundBase,
+    surfaceContainerHigh = DarkBackgroundElevated,
+    surfaceContainerHighest = DarkBackgroundElevated,
+    surfaceBright = DarkBackgroundElevated,
+    surfaceDim = DarkBackgroundBase,
 
     // Outline
-    outline = DarkOutline,
-    outlineVariant = DarkOutlineVariant,
+    outline = DarkBorderDefault,
+    outlineVariant = DarkBorderFocus,
+
+    // Error
+    error = DarkError,
+    onError = DarkBackgroundBase,
+    errorContainer = DarkError.copy(alpha = 0.12f),
+    onErrorContainer = DarkError,
 
     // Scrim
     scrim = ScrimDark,
 
     // Inverse
-    inverseSurface = LightSurface,
-    inverseOnSurface = LightOnSurface,
-    inversePrimary = UmbralPrimary
+    inverseSurface = LightBackgroundSurface,
+    inverseOnSurface = LightTextPrimary,
+    inversePrimary = LightAccentPrimary
 )
 
 // =============================================================================
@@ -161,16 +163,16 @@ fun UmbralTheme(
 
             // Status bar color
             window.statusBarColor = if (darkTheme) {
-                DarkBackground.toArgb()
+                DarkBackgroundBase.toArgb()
             } else {
-                LightBackground.toArgb()
+                LightBackgroundBase.toArgb()
             }
 
             // Navigation bar color
             window.navigationBarColor = if (darkTheme) {
-                DarkBackground.toArgb()
+                DarkBackgroundBase.toArgb()
             } else {
-                LightBackground.toArgb()
+                LightBackgroundBase.toArgb()
             }
 
             // Icon colors (light icons on dark bg, dark icons on light bg)
