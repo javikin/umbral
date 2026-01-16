@@ -60,6 +60,8 @@ class UmbralNotificationService : NotificationListenerService() {
     private var currentSessionId: String? = null
     @Volatile
     private var blockedApps: Set<String> = emptySet()
+    @Volatile
+    private var blockNotifications: Boolean = true
 
     // Cached user whitelist for synchronous checks
     @Volatile
@@ -85,10 +87,12 @@ class UmbralNotificationService : NotificationListenerService() {
                 if (state.isActive && state.sessionId != null) {
                     currentSessionId = state.sessionId
                     blockedApps = state.blockedApps
-                    Timber.d("Blocking active - Session: ${state.sessionId}, Blocked apps: ${blockedApps.size}")
+                    blockNotifications = state.blockNotifications
+                    Timber.d("Blocking active - Session: ${state.sessionId}, Blocked apps: ${blockedApps.size}, Block notifications: $blockNotifications")
                 } else {
                     currentSessionId = null
                     blockedApps = emptySet()
+                    blockNotifications = true // Reset to default
                     Timber.d("Blocking inactive - Notifications will not be intercepted")
                 }
             }
@@ -129,6 +133,12 @@ class UmbralNotificationService : NotificationListenerService() {
         val sessionId = currentSessionId
         if (sessionId == null) {
             // Not blocking - allow all notifications
+            return
+        }
+
+        // Check if notification blocking is enabled for this profile
+        if (!blockNotifications) {
+            // Profile has notification blocking disabled - allow all notifications
             return
         }
 

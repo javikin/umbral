@@ -43,7 +43,7 @@ import com.umbral.notifications.data.local.BlockedNotificationEntity
         DecorationEntity::class,
         BlockedNotificationEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -75,7 +75,7 @@ abstract class UmbralDatabase : RoomDatabase() {
                     UmbralDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

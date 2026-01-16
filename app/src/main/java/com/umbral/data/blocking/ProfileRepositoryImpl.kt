@@ -91,6 +91,7 @@ private fun BlockingProfileEntity.toDomain(): BlockingProfile {
         colorHex = colorHex,
         isActive = isActive,
         isStrictMode = isStrictMode,
+        blockNotifications = blockNotifications,
         blockedApps = blockedApps,
         createdAt = createdAt,
         updatedAt = updatedAt
@@ -105,6 +106,7 @@ private fun BlockingProfile.toEntity(): BlockingProfileEntity {
         colorHex = colorHex,
         isActive = isActive,
         isStrictMode = isStrictMode,
+        blockNotifications = blockNotifications,
         blockedApps = blockedApps,
         createdAt = createdAt,
         updatedAt = updatedAt

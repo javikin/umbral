@@ -15,8 +15,10 @@ import androidx.lifecycle.viewModelScope
 import com.umbral.data.local.preferences.UmbralPreferences
 import com.umbral.domain.blocking.BlockingManager
 import com.umbral.domain.blocking.SessionEndedEvent
+import com.umbral.domain.blocking.SessionStartedEvent
 import com.umbral.notifications.domain.model.NotificationSummary
 import com.umbral.notifications.domain.usecase.GetNotificationSummaryUseCase
+import com.umbral.notifications.presentation.summary.SessionStartedDialog
 import com.umbral.notifications.presentation.summary.SessionSummaryDialog
 import com.umbral.presentation.ui.screens.onboarding.OnboardingNavHost
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +47,18 @@ class MainNavigationViewModel @Inject constructor(
     private val _sessionSummaryEvent = MutableSharedFlow<SessionSummaryData>(extraBufferCapacity = 1)
     val sessionSummaryEvent: SharedFlow<SessionSummaryData> = _sessionSummaryEvent.asSharedFlow()
 
+    private val _sessionStartedEvent = MutableSharedFlow<SessionStartedEvent>(extraBufferCapacity = 1)
+    val sessionStartedEvent: SharedFlow<SessionStartedEvent> = _sessionStartedEvent.asSharedFlow()
+
     init {
+        // Listen for session started events
+        viewModelScope.launch {
+            blockingManager.sessionStartedEvent.collect { event ->
+                Timber.d("Session started event received: sessionId=${event.sessionId}")
+                _sessionStartedEvent.tryEmit(event)
+            }
+        }
+
         // Listen for session ended events
         viewModelScope.launch {
             blockingManager.sessionEndedEvent.collect { event ->
@@ -58,14 +71,9 @@ class MainNavigationViewModel @Inject constructor(
     private suspend fun loadAndEmitSummary(event: SessionEndedEvent) {
         try {
             val summary = getNotificationSummaryUseCase(event.sessionId)
-            // Only show dialog if there were blocked notifications
-            if (summary.totalCount > 0) {
-                val bonusEnergy = summary.totalCount / 5
-                _sessionSummaryEvent.tryEmit(SessionSummaryData(summary, bonusEnergy))
-                Timber.d("Session summary emitted: ${summary.totalCount} notifications blocked")
-            } else {
-                Timber.d("No notifications blocked, skipping summary dialog")
-            }
+            val bonusEnergy = summary.totalCount / 5
+            _sessionSummaryEvent.tryEmit(SessionSummaryData(summary, bonusEnergy))
+            Timber.d("Session summary emitted: ${summary.totalCount} notifications blocked, duration: ${summary.sessionDuration}")
         } catch (e: Exception) {
             Timber.e(e, "Failed to load session summary")
         }
@@ -79,11 +87,21 @@ fun MainNavigation(
     val onboardingCompleted by viewModel.preferences.onboardingCompleted
         .collectAsStateWithLifecycle(initialValue = false)
 
+    // Session started dialog state
+    var showStartedDialog by remember { mutableStateOf<SessionStartedEvent?>(null) }
+
     // Session summary dialog state
     var showSummaryDialog by remember { mutableStateOf<SessionSummaryData?>(null) }
 
     // Navigation callback for when user wants to view all notifications
     var navigateToHistory by remember { mutableStateOf(false) }
+
+    // Collect session started events
+    LaunchedEffect(Unit) {
+        viewModel.sessionStartedEvent.collect { event ->
+            showStartedDialog = event
+        }
+    }
 
     // Collect session summary events
     LaunchedEffect(Unit) {
@@ -109,6 +127,16 @@ fun MainNavigation(
             UmbralNavHost(
                 navigateToNotificationHistory = navigateToHistory,
                 onNavigatedToHistory = { navigateToHistory = false }
+            )
+        }
+
+        // Session Started Dialog
+        showStartedDialog?.let { event ->
+            SessionStartedDialog(
+                event = event,
+                onDismiss = {
+                    showStartedDialog = null
+                }
             )
         }
 

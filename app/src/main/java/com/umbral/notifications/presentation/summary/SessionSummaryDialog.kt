@@ -124,7 +124,7 @@ fun SessionSummaryDialog(
 
                 Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-                // Total notifications blocked
+                // Total notifications blocked or success message
                 AnimatedVisibility(
                     visible = showStats,
                     enter = scaleIn(
@@ -134,27 +134,33 @@ fun SessionSummaryDialog(
                     ) + fadeIn()
                 ) {
                     Text(
-                        text = "Evitaste ${summary.totalCount} distracciones",
+                        text = if (summary.totalCount > 0) {
+                            "Evitaste ${summary.totalCount} distracciones"
+                        } else {
+                            "¡Sin distracciones!"
+                        },
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
 
-                Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+                // Top 5 apps breakdown (only if there are notifications)
+                if (summary.byApp.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-                // Top 5 apps breakdown
-                AnimatedVisibility(
-                    visible = showApps,
-                    enter = scaleIn(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy
+                    AnimatedVisibility(
+                        visible = showApps,
+                        enter = scaleIn(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy
+                            )
+                        ) + fadeIn()
+                    ) {
+                        AppsBreakdownSection(
+                            apps = summary.byApp.take(5)
                         )
-                    ) + fadeIn()
-                ) {
-                    AppsBreakdownSection(
-                        apps = summary.byApp.take(5)
-                    )
+                    }
                 }
 
                 // Energy bonus chip

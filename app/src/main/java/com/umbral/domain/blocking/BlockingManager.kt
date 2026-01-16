@@ -6,6 +6,19 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
+ * Event emitted when a blocking session starts.
+ * Used to trigger the session started confirmation dialog.
+ */
+data class SessionStartedEvent(
+    val sessionId: String,
+    val profileId: String,
+    val profileName: String,
+    val blockedAppsCount: Int,
+    val isStrictMode: Boolean,
+    val blockNotifications: Boolean
+)
+
+/**
  * Event emitted when a blocking session ends.
  * Used to trigger the notification summary dialog.
  */
@@ -24,6 +37,7 @@ data class BlockingState(
     val activeProfileName: String? = null,
     val blockedApps: Set<String> = emptySet(),
     val isStrictMode: Boolean = false,
+    val blockNotifications: Boolean = true,
     val sessionStartTime: Long? = null,
     val sessionId: String? = null  // String sessionId for notification tracking
 )
@@ -48,6 +62,12 @@ interface BlockingManager {
      * Emitted when a blocking session completes successfully.
      */
     val rewardEvent: SharedFlow<SessionReward>
+
+    /**
+     * One-time event flow for session starting.
+     * Emitted when a blocking session starts, used to trigger session started dialog.
+     */
+    val sessionStartedEvent: SharedFlow<SessionStartedEvent>
 
     /**
      * One-time event flow for session ending.

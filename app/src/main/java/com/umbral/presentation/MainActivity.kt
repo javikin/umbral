@@ -70,29 +70,45 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // Update the intent for singleTask mode
+        setIntent(intent)
         // Handle NFC tag when activity is already running
         handleNfcIntent(intent)
     }
 
     private fun handleNfcIntent(intent: Intent?) {
-        if (intent == null) return
+        if (intent == null) {
+            Timber.d("NFC intent is null")
+            return
+        }
 
         val action = intent.action
+        Timber.d("Intent received - action: $action, flags: ${intent.flags}")
+
         if (action == NfcAdapter.ACTION_NDEF_DISCOVERED ||
             action == NfcAdapter.ACTION_TAG_DISCOVERED ||
             action == NfcAdapter.ACTION_TECH_DISCOVERED
         ) {
-            Timber.d("NFC intent received: $action")
+            Timber.i("🏷️ NFC intent received: $action")
             lifecycleScope.launch {
-                val result = nfcManager.processTagIntent(intent)
+                try {
+                    val result = nfcManager.processTagIntent(intent)
+                    Timber.d("NFC processing result: $result")
 
-                // Handle known tag globally - toggle profile/blocking
-                if (result is NfcResult.Success) {
-                    val event = result.data
-                    if (event is TagEvent.KnownTag) {
-                        Timber.d("Known tag scanned: ${event.tag.name}, profileId: ${event.tag.profileId}")
-                        toggleProfileOrBlocking(event.tag.profileId)
+                    // Handle known tag globally - toggle profile/blocking
+                    if (result is NfcResult.Success) {
+                        val event = result.data
+                        if (event is TagEvent.KnownTag) {
+                            Timber.i("🏷️ Known tag scanned: ${event.tag.name}, profileId: ${event.tag.profileId}")
+                            toggleProfileOrBlocking(event.tag.profileId)
+                        } else {
+                            Timber.d("NFC event type: ${event::class.simpleName}")
+                        }
+                    } else if (result is NfcResult.Error) {
+                        Timber.e("NFC processing error: ${result.error}")
                     }
+                } catch (e: Exception) {
+                    Timber.e(e, "Error processing NFC intent")
                 }
             }
         }
