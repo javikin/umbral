@@ -2,42 +2,145 @@ package com.umbral.glance.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.glance.unit.ColorProvider
+import com.umbral.presentation.ui.theme.*
 
 /**
- * Umbral Widget Theme - Color Providers for Glance Widgets
+ * Umbral Widget Theme - Design System 2.0
  *
- * Uses ColorProvider with single colors for simplicity.
- * Widget will automatically adapt to system theme through Glance Material3.
- * Colors are aligned with the main app theme for consistency.
+ * Color Providers for Glance Widgets aligned with Design System 2.0
+ * - Uses sage teal accent colors from the new design system
+ * - Optimized for light theme (primary use case for home screen widgets)
+ * - High contrast ratios for accessibility
+ * - Widget will adapt to system theme through Glance Material3
+ *
+ * Note: Glance 1.1.1 ColorProvider supports single colors only.
+ * For theme-aware colors, the widget system uses GlanceTheme.colors.
  */
 object WidgetColors {
-    // Primary brand colors (using light theme versions)
-    val primary = ColorProvider(Color(0xFF6366F1))  // UmbralPrimary
-    val secondary = ColorProvider(Color(0xFF8B5CF6))  // UmbralSecondary
+    // =============================================================================
+    // PRIMARY ACCENT - Sage Teal
+    // =============================================================================
 
-    // Surface colors
-    val surface = ColorProvider(Color(0xFFFFFFFF))  // Will be overridden by Material3 theme
-    val surfaceVariant = ColorProvider(Color(0xFFF1F5F9))
-    val surfaceContainer = ColorProvider(Color(0xFFF5F5F5))
+    /**
+     * Primary accent color - sage teal
+     * Using light theme variant optimized for home screen visibility
+     */
+    val primary = ColorProvider(LightAccentPrimary)  // #3DB5AD
 
-    // Background colors
-    val background = ColorProvider(Color(0xFFFAFAFA))
+    /**
+     * Pressed/Active state for accent
+     */
+    val primaryPressed = ColorProvider(LightAccentPressed)  // #2E9D96
 
-    // Text colors
-    val onSurface = ColorProvider(Color(0xFF1F2937))
-    val onSurfaceVariant = ColorProvider(Color(0xFF6B7280))
-    val onPrimary = ColorProvider(Color(0xFFFFFFFF))
+    // =============================================================================
+    // SURFACE COLORS
+    // =============================================================================
 
-    // Semantic colors
-    val success = ColorProvider(Color(0xFF10B981))  // UmbralSuccess
-    val warning = ColorProvider(Color(0xFFF59E0B))  // UmbralWarning
-    val error = ColorProvider(Color(0xFFEF4444))  // UmbralError
+    /**
+     * Main widget surface background
+     * Pure white for clean appearance on home screen
+     */
+    val surface = ColorProvider(LightBackgroundSurface)  // #FFFFFF
 
-    // Streak/Achievement colors
-    val streak = ColorProvider(Color(0xFFF97316))  // StreakFire
-    val streakGlow = ColorProvider(Color(0xFFFED7AA))  // StreakFireGlow
+    /**
+     * Secondary surface for nested containers
+     * Soft gray for subtle contrast
+     */
+    val surfaceVariant = ColorProvider(LightBackgroundBase)  // #F8F8F8
 
-    // Outline colors
-    val outline = ColorProvider(Color(0xFFE5E7EB))
-    val outlineVariant = ColorProvider(Color(0xFFD1D5DB))
+    /**
+     * Container surface for cards or sections
+     */
+    val surfaceContainer = ColorProvider(LightBackgroundSurface)  // #FFFFFF
+
+    // =============================================================================
+    // BACKGROUND COLORS
+    // =============================================================================
+
+    /**
+     * Widget background
+     */
+    val background = ColorProvider(LightBackgroundBase)  // #F8F8F8
+
+    // =============================================================================
+    // TEXT COLORS
+    // =============================================================================
+
+    /**
+     * Primary text - headings and main content
+     * Nearly black for high contrast readability
+     */
+    val onSurface = ColorProvider(LightTextPrimary)  // #1A1A1A
+
+    /**
+     * Secondary text - supporting content, subtitles
+     * Medium gray for visual hierarchy
+     */
+    val onSurfaceVariant = ColorProvider(LightTextSecondary)  // #5C5C5C
+
+    /**
+     * Text on primary color backgrounds
+     * White for maximum contrast on sage teal
+     */
+    val onPrimary = ColorProvider(Color(0xFFFFFFFF))  // White
+
+    // =============================================================================
+    // SEMANTIC COLORS
+    // =============================================================================
+
+    /**
+     * Success state - active blocking, achievements
+     * Green for positive reinforcement
+     */
+    val success = ColorProvider(LightSuccess)  // #5CB85C
+
+    /**
+     * Warning state - needs attention
+     * Orange for cautionary states
+     */
+    val warning = ColorProvider(LightWarning)  // #E87E04
+
+    /**
+     * Error state - critical issues
+     * Red for errors and destructive actions
+     */
+    val error = ColorProvider(LightError)  // #D32F2F
+
+    /**
+     * Info state - helpful messages
+     * Blue for informational content
+     */
+    val info = ColorProvider(LightInfo)  // #2196F3
+
+    // =============================================================================
+    // STREAK/ACHIEVEMENT COLORS
+    // =============================================================================
+
+    /**
+     * Streak fire effect - orange gradient
+     * Preserved from Design System V1 for gamification consistency
+     */
+    val streak = ColorProvider(StreakFire)  // #F97316
+
+    /**
+     * Streak glow effect - softer orange
+     * For highlighting streak achievements
+     */
+    val streakGlow = ColorProvider(StreakFireGlow)  // #FED7AA
+
+    // =============================================================================
+    // OUTLINE COLORS
+    // =============================================================================
+
+    /**
+     * Default outline - subtle borders and dividers
+     * Very light for minimal visual weight
+     */
+    val outline = ColorProvider(LightBorderDefault)  // 4% black
+
+    /**
+     * Focus outline - active/focused state borders
+     * Sage teal with transparency for focus states
+     */
+    val outlineVariant = ColorProvider(LightBorderFocus)  // 30% accent
 }
