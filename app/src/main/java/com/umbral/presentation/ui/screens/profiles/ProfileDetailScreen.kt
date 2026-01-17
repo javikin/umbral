@@ -203,6 +203,14 @@ fun ProfileDetailScreen(
                     )
                 }
 
+                // Block notifications toggle
+                item {
+                    BlockNotificationsCard(
+                        isEnabled = uiState.blockNotifications,
+                        onToggle = viewModel::toggleBlockNotifications
+                    )
+                }
+
                 // Blocked apps section
                 item {
                     BlockedAppsSection(
@@ -410,6 +418,61 @@ private fun StrictModeCard(
                 )
                 Text(
                     text = "No se puede desactivar el bloqueo sin el tag NFC",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = isEnabled,
+                onCheckedChange = { onToggle() }
+            )
+        }
+    }
+}
+
+@Composable
+private fun BlockNotificationsCard(
+    isEnabled: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isEnabled) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Visibility,
+                contentDescription = null,
+                tint = if (isEnabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Bloquear notificaciones",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Oculta notificaciones de las apps bloqueadas",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -119,12 +119,12 @@ fun SessionSummaryDialog(
                         )
                     ) + fadeIn()
                 ) {
-                    HeaderSection()
+                    HeaderSection(sessionDuration = summary.sessionDuration)
                 }
 
                 Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-                // Total notifications blocked
+                // Total notifications blocked or success message
                 AnimatedVisibility(
                     visible = showStats,
                     enter = scaleIn(
@@ -134,27 +134,33 @@ fun SessionSummaryDialog(
                     ) + fadeIn()
                 ) {
                     Text(
-                        text = "Evitaste ${summary.totalCount} distracciones",
+                        text = if (summary.totalCount > 0) {
+                            "Evitaste ${summary.totalCount} distracciones"
+                        } else {
+                            "¡Sin distracciones!"
+                        },
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
 
-                Spacer(modifier = Modifier.height(UmbralSpacing.lg))
+                // Top 5 apps breakdown (only if there are notifications)
+                if (summary.byApp.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(UmbralSpacing.lg))
 
-                // Top 5 apps breakdown
-                AnimatedVisibility(
-                    visible = showApps,
-                    enter = scaleIn(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy
+                    AnimatedVisibility(
+                        visible = showApps,
+                        enter = scaleIn(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy
+                            )
+                        ) + fadeIn()
+                    ) {
+                        AppsBreakdownSection(
+                            apps = summary.byApp.take(5)
                         )
-                    ) + fadeIn()
-                ) {
-                    AppsBreakdownSection(
-                        apps = summary.byApp.take(5)
-                    )
+                    }
                 }
 
                 // Energy bonus chip
@@ -190,7 +196,9 @@ fun SessionSummaryDialog(
 }
 
 @Composable
-private fun HeaderSection() {
+private fun HeaderSection(
+    sessionDuration: kotlin.time.Duration? = null
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -220,6 +228,32 @@ private fun HeaderSection() {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
+
+        // Duration subtitle
+        if (sessionDuration != null) {
+            Spacer(modifier = Modifier.height(UmbralSpacing.xs))
+            val durationMinutes = sessionDuration.inWholeMinutes
+            val durationText = when {
+                durationMinutes < 1 -> "Menos de un minuto"
+                durationMinutes == 1L -> "1 minuto de enfoque"
+                durationMinutes < 60 -> "$durationMinutes minutos de enfoque"
+                else -> {
+                    val hours = durationMinutes / 60
+                    val mins = durationMinutes % 60
+                    if (mins == 0L) {
+                        "${hours}h de enfoque"
+                    } else {
+                        "${hours}h ${mins}m de enfoque"
+                    }
+                }
+            }
+            Text(
+                text = durationText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

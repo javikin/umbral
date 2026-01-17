@@ -27,6 +27,7 @@ data class ProfileDetailUiState(
     val colorHex: String = "#6650A4",
     val iconName: String = "shield",
     val isStrictMode: Boolean = false,
+    val blockNotifications: Boolean = true,
     val blockedApps: List<String> = emptyList(),
     val linkedTags: List<NfcTag> = emptyList(),
     val availableTags: List<NfcTag> = emptyList(), // Todos los tags (incluye los de otros perfiles)
@@ -66,6 +67,7 @@ class ProfileDetailViewModel @Inject constructor(
             colorHex = formState.colorHex,
             iconName = formState.iconName,
             isStrictMode = formState.isStrictMode,
+            blockNotifications = formState.blockNotifications,
             blockedApps = formState.blockedApps,
             linkedTags = linkedTags,
             availableTags = availableTags,
@@ -109,6 +111,7 @@ class ProfileDetailViewModel @Inject constructor(
                             colorHex = profile.colorHex,
                             iconName = profile.iconName,
                             isStrictMode = profile.isStrictMode,
+                            blockNotifications = profile.blockNotifications,
                             blockedApps = profile.blockedApps
                         )
                     }
@@ -138,6 +141,10 @@ class ProfileDetailViewModel @Inject constructor(
 
     fun toggleStrictMode() {
         _formState.update { it.copy(isStrictMode = !it.isStrictMode) }
+    }
+
+    fun toggleBlockNotifications() {
+        _formState.update { it.copy(blockNotifications = !it.blockNotifications) }
     }
 
     fun addBlockedApp(packageName: String) {
@@ -193,6 +200,7 @@ class ProfileDetailViewModel @Inject constructor(
                 colorHex = state.colorHex,
                 isActive = false,
                 isStrictMode = state.isStrictMode,
+                blockNotifications = state.blockNotifications,
                 blockedApps = state.blockedApps,
                 createdAt = if (state.isNewProfile) LocalDateTime.now() else LocalDateTime.now(),
                 updatedAt = LocalDateTime.now()
@@ -222,6 +230,7 @@ class ProfileDetailViewModel @Inject constructor(
         val colorHex: String = "#6650A4",
         val iconName: String = "shield",
         val isStrictMode: Boolean = false,
+        val blockNotifications: Boolean = true,
         val blockedApps: List<String> = emptyList(),
         val isSaving: Boolean = false,
         val saveSuccess: Boolean = false,

@@ -13,6 +13,7 @@ data class BlockingProfileEntity(
     val colorHex: String = "#6650A4",
     val isActive: Boolean = false,
     val isStrictMode: Boolean = false,
+    val blockNotifications: Boolean = true,
     val blockedApps: List<String> = emptyList(),
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now()

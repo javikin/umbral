@@ -36,7 +36,15 @@ import com.umbral.presentation.ui.theme.UmbralTheme
  * @param onCheckedChange Callback when toggle state changes
  * @param modifier Modifier for customization
  * @param enabled Whether the toggle is enabled
+ *
+ * @deprecated Use UmbralSwitch instead. This component uses Design System 1.0 and will be removed.
+ * Migration: Replace UmbralToggle with UmbralSwitch - the API is identical.
  */
+@Deprecated(
+    message = "Use UmbralSwitch instead. This component uses Design System 1.0.",
+    replaceWith = ReplaceWith("UmbralSwitch(checked, onCheckedChange, modifier, enabled)", "com.umbral.presentation.ui.components.UmbralSwitch"),
+    level = DeprecationLevel.WARNING
+)
 @Composable
 fun UmbralToggle(
     checked: Boolean,
@@ -110,7 +118,15 @@ fun UmbralToggle(
 
 /**
  * Toggle with label
+ *
+ * @deprecated Use UmbralSwitch(label = "...", ...) instead. This component uses Design System 1.0.
+ * Migration: Replace UmbralLabeledToggle with UmbralSwitch and pass the label parameter.
  */
+@Deprecated(
+    message = "Use UmbralSwitch with label parameter instead. This component uses Design System 1.0.",
+    replaceWith = ReplaceWith("UmbralSwitch(checked, onCheckedChange, modifier, enabled, label)", "com.umbral.presentation.ui.components.UmbralSwitch"),
+    level = DeprecationLevel.WARNING
+)
 @Composable
 fun UmbralLabeledToggle(
     label: String,

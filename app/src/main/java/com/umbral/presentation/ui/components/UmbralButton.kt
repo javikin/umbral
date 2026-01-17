@@ -45,16 +45,26 @@ enum class ButtonVariant {
 }
 
 /**
+ * Button sizes for UmbralButton
+ */
+enum class ButtonSize {
+    Small,   // height: 36.dp, text: labelMedium
+    Medium,  // height: 48.dp, text: labelLarge (default)
+    Large    // height: 56.dp, text: titleSmall
+}
+
+/**
  * Umbral Design System Button
  *
  * A customizable button component with support for different variants,
- * loading states, and press animations.
+ * sizes, loading states, and press animations.
  *
  * @param text Button label text
  * @param onClick Click callback
  * @param modifier Modifier for customization
  * @param enabled Whether the button is enabled
  * @param variant Visual style variant
+ * @param size Button size (Small, Medium, Large)
  * @param loading Show loading indicator instead of text
  * @param leadingIcon Optional icon before text
  * @param fullWidth Whether button takes full width
@@ -66,6 +76,7 @@ fun UmbralButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     variant: ButtonVariant = ButtonVariant.Primary,
+    size: ButtonSize = ButtonSize.Medium,
     loading: Boolean = false,
     leadingIcon: ImageVector? = null,
     fullWidth: Boolean = false
@@ -73,8 +84,9 @@ fun UmbralButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
+    // Press animation - scale to 0.98 with spring
     val scale by animateFloatAsState(
-        targetValue = if (isPressed && enabled && !loading) 0.95f else 1f,
+        targetValue = if (isPressed && enabled && !loading) 0.98f else 1f,
         animationSpec = spring(
             dampingRatio = 0.6f,
             stiffness = 500f
@@ -82,9 +94,28 @@ fun UmbralButton(
         label = "buttonScale"
     )
 
+    // Size-based dimensions
+    val buttonHeight = when (size) {
+        ButtonSize.Small -> 36.dp
+        ButtonSize.Medium -> 48.dp
+        ButtonSize.Large -> 56.dp
+    }
+
+    val horizontalPadding = when (size) {
+        ButtonSize.Small -> 16.dp
+        ButtonSize.Medium -> 24.dp
+        ButtonSize.Large -> 32.dp
+    }
+
+    val textStyle = when (size) {
+        ButtonSize.Small -> MaterialTheme.typography.labelMedium
+        ButtonSize.Medium -> MaterialTheme.typography.labelLarge
+        ButtonSize.Large -> MaterialTheme.typography.titleSmall
+    }
+
     val buttonModifier = modifier
         .scale(scale)
-        .height(UmbralSpacing.buttonHeight)
+        .height(buttonHeight)
         .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier)
 
     when (variant) {
@@ -94,9 +125,13 @@ fun UmbralButton(
                 modifier = buttonModifier,
                 enabled = enabled,
                 shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary, // Sage teal
+                    contentColor = Color(0xFF151515) // Dark text for contrast
+                ),
                 interactionSource = interactionSource,
                 contentPadding = PaddingValues(
-                    horizontal = UmbralSpacing.lg,
+                    horizontal = horizontalPadding,
                     vertical = UmbralSpacing.md
                 )
             ) {
@@ -104,7 +139,8 @@ fun UmbralButton(
                     text = text,
                     loading = loading,
                     leadingIcon = leadingIcon,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = Color(0xFF151515),
+                    textStyle = textStyle
                 )
             }
         }
@@ -121,7 +157,7 @@ fun UmbralButton(
                 ),
                 interactionSource = interactionSource,
                 contentPadding = PaddingValues(
-                    horizontal = UmbralSpacing.lg,
+                    horizontal = horizontalPadding,
                     vertical = UmbralSpacing.md
                 )
             ) {
@@ -129,7 +165,8 @@ fun UmbralButton(
                     text = text,
                     loading = loading,
                     leadingIcon = leadingIcon,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                    textStyle = textStyle
                 )
             }
         }
@@ -150,7 +187,7 @@ fun UmbralButton(
                 ),
                 interactionSource = interactionSource,
                 contentPadding = PaddingValues(
-                    horizontal = UmbralSpacing.lg,
+                    horizontal = horizontalPadding,
                     vertical = UmbralSpacing.md
                 )
             ) {
@@ -158,7 +195,8 @@ fun UmbralButton(
                     text = text,
                     loading = loading,
                     leadingIcon = leadingIcon,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    textStyle = textStyle
                 )
             }
         }
@@ -171,7 +209,7 @@ fun UmbralButton(
                 shape = MaterialTheme.shapes.small,
                 interactionSource = interactionSource,
                 contentPadding = PaddingValues(
-                    horizontal = UmbralSpacing.lg,
+                    horizontal = horizontalPadding,
                     vertical = UmbralSpacing.md
                 )
             ) {
@@ -179,7 +217,8 @@ fun UmbralButton(
                     text = text,
                     loading = loading,
                     leadingIcon = leadingIcon,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    textStyle = textStyle
                 )
             }
         }
@@ -191,7 +230,8 @@ private fun ButtonContent(
     text: String,
     loading: Boolean,
     leadingIcon: ImageVector?,
-    contentColor: Color
+    contentColor: Color,
+    textStyle: androidx.compose.ui.text.TextStyle
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -214,7 +254,8 @@ private fun ButtonContent(
             }
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelLarge
+                style = textStyle,
+                color = contentColor
             )
         }
     }
@@ -317,5 +358,35 @@ private fun UmbralButtonDarkPreview() {
             onClick = {},
             variant = ButtonVariant.Primary
         )
+    }
+}
+
+@Preview(name = "Button Sizes", showBackground = true)
+@Composable
+private fun UmbralButtonSizesPreview() {
+    UmbralTheme {
+        androidx.compose.foundation.layout.Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            UmbralButton(
+                text = "Small Button",
+                onClick = {},
+                size = ButtonSize.Small,
+                fullWidth = true
+            )
+            UmbralButton(
+                text = "Medium Button",
+                onClick = {},
+                size = ButtonSize.Medium,
+                fullWidth = true
+            )
+            UmbralButton(
+                text = "Large Button",
+                onClick = {},
+                size = ButtonSize.Large,
+                fullWidth = true
+            )
+        }
     }
 }

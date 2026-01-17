@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.umbral.presentation.ui.theme.UmbralSpacing
 
 data class ChartData(
     val label: String,
@@ -45,7 +46,7 @@ fun StatsChart(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(UmbralSpacing.md)
         ) {
             // Title
             Text(
@@ -54,7 +55,7 @@ fun StatsChart(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(UmbralSpacing.md))
 
             // Content
             if (data.isEmpty()) {
@@ -74,7 +75,7 @@ private fun EmptyChartContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(UmbralSpacing.lg),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -133,26 +134,26 @@ private fun ChartBar(
             )
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(UmbralSpacing.xs))
 
         // Bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(8.dp)
+                .height(UmbralSpacing.sm)
                 .background(
                     color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(UmbralSpacing.xs)
                 )
         ) {
             val progress = (data.value / data.maxValue).coerceIn(0f, 1f)
             Box(
                 modifier = Modifier
                     .fillMaxWidth(progress)
-                    .height(8.dp)
+                    .height(UmbralSpacing.sm)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(4.dp)
+                        shape = RoundedCornerShape(UmbralSpacing.xs)
                     )
             )
         }

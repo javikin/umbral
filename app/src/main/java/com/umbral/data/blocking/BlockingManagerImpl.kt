@@ -5,6 +5,7 @@ import com.umbral.domain.blocking.BlockingState
 import com.umbral.domain.blocking.ForegroundAppMonitor
 import com.umbral.domain.blocking.ProfileRepository
 import com.umbral.domain.blocking.SessionEndedEvent
+import com.umbral.domain.blocking.SessionStartedEvent
 import com.umbral.expedition.data.repository.ExpeditionRepository
 import com.umbral.expedition.domain.model.SessionReward
 import com.umbral.expedition.domain.usecase.CheckAchievementsUseCase
@@ -46,6 +47,9 @@ class BlockingManagerImpl @Inject constructor(
     private val _rewardEvent = MutableSharedFlow<SessionReward>(extraBufferCapacity = 1)
     override val rewardEvent: SharedFlow<SessionReward> = _rewardEvent.asSharedFlow()
 
+    private val _sessionStartedEvent = MutableSharedFlow<SessionStartedEvent>(extraBufferCapacity = 1)
+    override val sessionStartedEvent: SharedFlow<SessionStartedEvent> = _sessionStartedEvent.asSharedFlow()
+
     private val _sessionEndedEvent = MutableSharedFlow<SessionEndedEvent>(extraBufferCapacity = 1)
     override val sessionEndedEvent: SharedFlow<SessionEndedEvent> = _sessionEndedEvent.asSharedFlow()
 
@@ -83,10 +87,26 @@ class BlockingManagerImpl @Inject constructor(
                         activeProfileName = profile.name,
                         blockedApps = profile.blockedApps.toSet(),
                         isStrictMode = profile.isStrictMode,
+                        blockNotifications = profile.blockNotifications,
                         sessionStartTime = sessionStartTime,
                         sessionId = sessionId
                     )
                     startBlockingService()
+
+                    // Emit session started event for new sessions
+                    if (isNewSession && sessionId != null) {
+                        _sessionStartedEvent.tryEmit(
+                            SessionStartedEvent(
+                                sessionId = sessionId,
+                                profileId = profile.id,
+                                profileName = profile.name,
+                                blockedAppsCount = profile.blockedApps.size,
+                                isStrictMode = profile.isStrictMode,
+                                blockNotifications = profile.blockNotifications
+                            )
+                        )
+                        Timber.d("Session started event emitted: $sessionId")
+                    }
                 } else {
                     // Session ended - emit event and award rewards if there was an active session
                     if (previousState.isActive && previousState.sessionStartTime != null) {

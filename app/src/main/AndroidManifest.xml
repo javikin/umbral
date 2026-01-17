@@ -53,6 +53,7 @@
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.Umbral">
 
             <intent-filter>
@@ -60,13 +61,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- NFC Intent Filter -->
+            <!-- NFC Intent Filters (ordered by priority) -->
+            <!-- 1. NDEF_DISCOVERED - Highest priority, for our custom MIME type -->
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/vnd.umbral.profile" />
             </intent-filter>
 
+            <!-- 2. TECH_DISCOVERED - Medium priority, matches NFC technologies -->
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+
+            <!-- 3. TAG_DISCOVERED - Lowest priority, fallback for any NFC tag -->
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
