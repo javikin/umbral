@@ -15,13 +15,15 @@ import com.umbral.domain.model.PermissionStates
 import com.umbral.domain.model.PermissionStatus
 import com.umbral.domain.model.RequiredPermission
 import com.umbral.domain.onboarding.PermissionHelper
+import com.umbral.notifications.util.NotificationPermissionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PermissionHelperImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : PermissionHelper {
 
     override fun checkAllPermissions(): PermissionStates {
@@ -29,6 +31,7 @@ class PermissionHelperImpl @Inject constructor(
             usageStats = checkPermission(RequiredPermission.USAGE_STATS),
             overlay = checkPermission(RequiredPermission.OVERLAY),
             notifications = checkPermission(RequiredPermission.NOTIFICATIONS),
+            notificationListener = checkPermission(RequiredPermission.NOTIFICATION_LISTENER),
             nfc = checkNfcStatus()
         )
     }
@@ -39,6 +42,7 @@ class PermissionHelperImpl @Inject constructor(
             RequiredPermission.OVERLAY -> checkOverlayPermission()
             RequiredPermission.NOTIFICATIONS,
             RequiredPermission.POST_NOTIFICATIONS -> checkNotificationPermission()
+            RequiredPermission.NOTIFICATION_LISTENER -> checkNotificationListenerPermission()
         }
     }
 
@@ -98,6 +102,14 @@ class PermissionHelperImpl @Inject constructor(
         }
     }
 
+    private fun checkNotificationListenerPermission(): PermissionStatus {
+        return if (notificationPermissionManager.isNotificationAccessEnabled()) {
+            PermissionStatus.GRANTED
+        } else {
+            PermissionStatus.DENIED
+        }
+    }
+
     override fun openPermissionSettings(permission: RequiredPermission) {
         val intent = when (permission) {
             RequiredPermission.USAGE_STATS -> {
@@ -126,6 +138,9 @@ class PermissionHelperImpl @Inject constructor(
                         data = Uri.parse("package:${context.packageName}")
                     }
                 }
+            }
+            RequiredPermission.NOTIFICATION_LISTENER -> {
+                Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
             }
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

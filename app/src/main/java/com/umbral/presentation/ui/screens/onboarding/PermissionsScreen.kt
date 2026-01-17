@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Nfc
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -82,6 +83,7 @@ fun PermissionsScreen(
     var showPermission1 by remember { mutableStateOf(false) }
     var showPermission2 by remember { mutableStateOf(false) }
     var showPermission3 by remember { mutableStateOf(false) }
+    var showPermission4 by remember { mutableStateOf(false) }
     var showNfc by remember { mutableStateOf(false) }
     var showButton by remember { mutableStateOf(false) }
 
@@ -95,6 +97,8 @@ fun PermissionsScreen(
         showPermission2 = true
         delay(100)
         showPermission3 = true
+        delay(100)
+        showPermission4 = true
         delay(100)
         showNfc = true
         delay(200)
@@ -252,6 +256,32 @@ fun PermissionsScreen(
                             isRequired = false,
                             onRequestPermission = {
                                 viewModel.openPermissionSettings(RequiredPermission.NOTIFICATIONS)
+                            }
+                        )
+                    }
+                }
+
+                // Notification Listener (recommended)
+                item {
+                    AnimatedVisibility(
+                        visible = showPermission4,
+                        enter = fadeIn(animationSpec = tween(400)) +
+                                slideInVertically(
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                        stiffness = Spring.StiffnessLow
+                                    ),
+                                    initialOffsetY = { 50 }
+                                )
+                    ) {
+                        PermissionCard(
+                            icon = Icons.Outlined.NotificationsActive,
+                            title = "Acceso a notificaciones",
+                            description = "Recomendado para bloquear notificaciones durante sesiones de enfoque",
+                            status = uiState.permissionStates.notificationListener,
+                            isRequired = false,
+                            onRequestPermission = {
+                                viewModel.openPermissionSettings(RequiredPermission.NOTIFICATION_LISTENER)
                             }
                         )
                     }

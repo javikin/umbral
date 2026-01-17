@@ -35,6 +35,7 @@ data class PermissionStates(
     val usageStats: PermissionStatus,
     val overlay: PermissionStatus,
     val notifications: PermissionStatus,
+    val notificationListener: PermissionStatus,
     val nfc: NfcStatus
 ) {
     companion object {
@@ -42,6 +43,7 @@ data class PermissionStates(
             usageStats = PermissionStatus.NOT_REQUESTED,
             overlay = PermissionStatus.NOT_REQUESTED,
             notifications = PermissionStatus.NOT_REQUESTED,
+            notificationListener = PermissionStatus.NOT_REQUESTED,
             nfc = NfcStatus.NOT_AVAILABLE
         )
     }
