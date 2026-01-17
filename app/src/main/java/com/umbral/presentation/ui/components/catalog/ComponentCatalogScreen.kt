@@ -1,5 +1,6 @@
 package com.umbral.presentation.ui.components.catalog
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,6 +38,7 @@ import com.umbral.presentation.ui.theme.UmbralTheme
  * - Data Display
  * - Skeletons
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ComponentCatalogScreen(
     onBack: () -> Unit

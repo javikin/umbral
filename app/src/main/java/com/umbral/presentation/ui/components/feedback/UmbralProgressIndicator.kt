@@ -206,7 +206,7 @@ private fun DotsProgress(
             Canvas(modifier = Modifier.size(dotDiameter)) {
                 drawCircle(
                     color = accentColor,
-                    radius = (size.toPx() / 2) * scaleValue
+                    radius = (this.size.minDimension / 2) * scaleValue
                 )
             }
         }
@@ -254,7 +254,7 @@ private fun PulseProgress(
     ) {
         drawCircle(
             color = accentColor.copy(alpha = alpha),
-            radius = (size.toPx() / 2) * scale
+            radius = (this.size.minDimension / 2) * scale
         )
     }
 }

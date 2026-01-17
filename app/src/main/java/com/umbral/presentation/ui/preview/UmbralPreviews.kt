@@ -25,6 +25,7 @@ import com.umbral.presentation.ui.components.ShimmerCard
 import com.umbral.presentation.ui.components.ShimmerListItem
 import com.umbral.presentation.ui.components.UmbralButton
 import com.umbral.presentation.ui.components.UmbralCard
+import com.umbral.presentation.ui.components.CardVariant
 import com.umbral.presentation.ui.components.UmbralElevation
 import com.umbral.presentation.ui.components.UmbralLabeledToggle
 import com.umbral.presentation.ui.theme.UmbralSpacing
@@ -399,7 +400,7 @@ private fun LargeTextPreview() {
                     fullWidth = true
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                UmbralCard {
+                UmbralCard(variant = CardVariant.Default) {
                     Text(
                         text = "Card Title",
                         style = MaterialTheme.typography.titleMedium
@@ -447,7 +448,7 @@ private fun SmallScreenPreview() {
                     fullWidth = true
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                UmbralCard {
+                UmbralCard(variant = CardVariant.Default) {
                     Text("Content adapts to small screens")
                 }
             }

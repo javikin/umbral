@@ -1,8 +1,10 @@
 package com.umbral.presentation.ui.components.display
 
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -169,7 +171,8 @@ private fun AvatarBadgeIndicator(
                 initialValue = 1f,
                 targetValue = 1.2f,
                 animationSpec = infiniteRepeatable(
-                    animation = UmbralMotion.springGentle()
+                    animation = tween(durationMillis = UmbralMotion.slow, easing = UmbralMotion.easeInOut),
+                    repeatMode = RepeatMode.Reverse
                 ),
                 label = "badge_scale"
             )

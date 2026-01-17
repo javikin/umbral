@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.umbral.presentation.ui.components.CardVariant
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -160,7 +161,8 @@ fun ShimmerCard(
     contentLines: Int = 3
 ) {
     UmbralCard(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        variant = CardVariant.Default
     ) {
         Column(
             modifier = Modifier.padding(UmbralSpacing.sm)

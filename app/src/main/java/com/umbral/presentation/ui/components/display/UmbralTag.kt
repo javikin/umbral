@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -217,11 +220,11 @@ private fun UmbralTagWithIconPreview() {
         ) {
             UmbralTag(
                 text = "Instagram",
-                icon = androidx.compose.material.icons.Icons.Default.Phone
+                icon = Icons.Filled.Favorite
             )
             UmbralTag(
                 text = "Facebook",
-                icon = androidx.compose.material.icons.Icons.Default.Face
+                icon = Icons.Filled.Star
             )
         }
     }
@@ -241,7 +244,7 @@ private fun UmbralTagRemovablePreview() {
             )
             UmbralTag(
                 text = "TikTok",
-                icon = androidx.compose.material.icons.Icons.Default.Star,
+                icon = Icons.Filled.Star,
                 onRemove = { /* handle removal */ }
             )
         }
@@ -275,7 +278,7 @@ private fun UmbralTagDarkPreview() {
             UmbralTag(text = "Trabajo")
             UmbralTag(
                 text = "Personal",
-                icon = androidx.compose.material.icons.Icons.Default.Person
+                icon = Icons.Filled.Person
             )
             UmbralTag(
                 text = "Instagram",
@@ -296,7 +299,7 @@ private fun UmbralTagLightPreview() {
             UmbralTag(text = "Trabajo")
             UmbralTag(
                 text = "Personal",
-                icon = androidx.compose.material.icons.Icons.Default.Person
+                icon = Icons.Filled.Person
             )
             UmbralTag(
                 text = "Instagram",
