@@ -28,6 +28,8 @@ import com.umbral.expedition.presentation.companion.CompanionListScreen
 import com.umbral.expedition.presentation.companion.CompanionDetailScreen
 import com.umbral.expedition.presentation.achievements.AchievementsScreen
 import com.umbral.notifications.presentation.history.NotificationHistoryScreen
+import com.umbral.presentation.ui.components.catalog.ComponentCatalogScreen
+import com.umbral.BuildConfig
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -214,6 +216,15 @@ fun UmbralNavHost(
                     }
                 )
             }
+
+            // Component Catalog (Debug Only)
+            if (BuildConfig.DEBUG) {
+                composable(NavRoutes.COMPONENT_CATALOG) {
+                    ComponentCatalogScreen(
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+            }
         }
     }
 }
@@ -238,6 +249,9 @@ object NavRoutes {
 
     // Notifications
     const val NOTIFICATION_HISTORY = "notifications/history"
+
+    // Debug
+    const val COMPONENT_CATALOG = "component_catalog"
 
     fun profileDetail(profileId: String) = "profile/$profileId"
     fun appSelector(profileId: String, blockedApps: String = "") =
