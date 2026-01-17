@@ -4,6 +4,10 @@ agp = "8.7.3"
 kotlin = "2.1.0"
 ksp = "2.1.0-1.0.29"
 
+# Firebase
+googleServices = "4.4.2"
+firebaseAppDistribution = "5.0.0"
+
 # Core Android
 coreKtx = "1.15.0"
 lifecycleRuntimeKtx = "2.8.7"
@@ -145,6 +149,8 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 room = { id = "androidx.room", version.ref = "room" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-appdistribution = { id = "com.google.firebase.appdistribution", version.ref = "firebaseAppDistribution" }
 
 [bundles]
 compose = [
