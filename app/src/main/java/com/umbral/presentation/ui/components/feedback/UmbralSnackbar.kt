@@ -502,7 +502,7 @@ private fun UmbralSnackbarLongMessagePreview() {
             ) {
                 UmbralSnackbar(
                     message = "Este es un mensaje muy largo que demuestra cómo se comporta el snackbar con contenido extenso",
-                    variant = SnackbarVariant.Info,
+                    variant = SnackbarVariant.Warning,
                     action = SnackbarAction(
                         label = "ACCIÓN",
                         onClick = {}
